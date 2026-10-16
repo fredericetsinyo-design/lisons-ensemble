@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Télécharger Lisons Ensemble</title>
+<meta name="description" content="Installez Lisons Ensemble sur votre téléphone : la Bible, vos livres, vos notes et votre groupe de lecture.">
+<meta name="theme-color" content="#2B211C">
+<link rel="icon" href="../icons/icon-192.png">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&display=swap">
+<style>
+:root{--bg:#F6F0E6;--surface:#FFFFFF;--ink:#2A1F1A;--ink-2:#6E625A;--line:#E9DDCC;--rust:#C4552B;--mustard:#E3A82B;--denim:#3E6A9A;--teal:#1F7A72;--espresso:#2A1F1A;--shade:rgba(30,20,15,.86)}
+@media (prefers-color-scheme: dark){:root{--bg:#17120F;--surface:#221A16;--ink:#F3EAE0;--ink-2:#BBAEA2;--line:#3A2F28;color-scheme:dark}}
+*{box-sizing:border-box}html,body{margin:0}
+body{background:var(--bg);color:var(--ink);font-family:"Outfit","Segoe UI",system-ui,sans-serif;line-height:1.5}
+.hero{position:relative;overflow:hidden;color:#fff;background:var(--espresso);min-height:400px;display:flex;align-items:flex-end}
+.hero>img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:62% 30%}
+.hero::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(30,20,15,.35),var(--shade) 75%)}
+.in{position:relative;z-index:1;width:100%;max-width:980px;margin:0 auto;padding:40px max(16px,env(safe-area-inset-right,0px)) 34px max(16px,env(safe-area-inset-left,0px))}
+.logo{display:flex;align-items:center;gap:12px;margin-bottom:22px}.logo img{width:52px;height:52px;border-radius:14px}
+h1{font-size:clamp(32px,7vw,54px);margin:0;line-height:1.05;letter-spacing:-.01em}
+.hero p{font-size:17px;max-width:46ch;opacity:.92;margin:12px 0 0}
+.wrap{max-width:980px;margin:0 auto;padding:28px max(16px,env(safe-area-inset-right,0px)) 48px max(16px,env(safe-area-inset-left,0px));display:grid;gap:18px}
+@media (min-width:820px){.wrap{grid-template-columns:1.15fr 1fr}}
+.card{background:var(--surface);border-radius:24px;padding:24px;box-shadow:inset 0 0 0 1px var(--line);display:flex;flex-direction:column;gap:14px}
+.card h2{margin:0;font-size:22px}
+.tag{display:inline-block;font-size:12.5px;font-weight:600;border-radius:999px;padding:4px 11px;color:#fff;background:var(--teal);align-self:flex-start}
+.tag.i{background:var(--denim)}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:10px;border-radius:999px;padding:15px 24px;font-weight:600;font-size:17px;text-decoration:none;background:var(--rust);color:#fff}
+.btn:focus-visible{outline:3px solid var(--mustard);outline-offset:2px}
+ol{margin:0;padding-left:20px;display:grid;gap:8px;color:var(--ink-2)}ol b{color:var(--ink)}
+.small{font-size:13.5px;color:var(--ink-2);margin:0}
+.qr{display:flex;gap:18px;align-items:center;flex-wrap:wrap}
+#qr{background:#fff;padding:10px;border-radius:14px;width:180px;height:180px;max-width:100%}
+#qr img,#qr canvas{width:160px!important;height:160px!important}
+.url{font-weight:600;word-break:break-all}
+.feat{display:flex;gap:8px;flex-wrap:wrap}.feat span{background:var(--bg);border-radius:999px;padding:6px 12px;font-size:14px;box-shadow:inset 0 0 0 1px var(--line)}
+a{color:var(--rust)}
+</style>
+</head>
+<body>
+<header class="hero"><img src="../img/etude.jpg" alt="">
+  <div class="in"><div class="logo"><img src="../icons/icon-192.png" alt=""><b style="font-size:18px">Lisons Ensemble</b></div>
+    <h1>Installez l'application sur votre téléphone</h1>
+    <p>La Bible avec plans de lecture et méditation, vos livres PDF et EPUB, vos notes et votre groupe de lecture. Gratuit.</p></div>
+</header>
+<main class="wrap">
+  <section class="card">
+    <span class="tag">Android</span>
+    <h2>Télécharger pour Android</h2>
+    <a class="btn" id="apk" href="https://github.com/fredericetsinyo-design/lisons-ensemble/releases/latest/download/lisons-ensemble.apk">⬇ Télécharger l'application (APK)</a>
+    <ol>
+      <li><b>Touchez le bouton</b> ci-dessus. Le fichier (environ 5 Mo) se télécharge.</li>
+      <li><b>Ouvrez le fichier</b> depuis la notification ou le dossier Téléchargements.</li>
+      <li>Si Android demande une autorisation, touchez <b>Paramètres</b> puis activez <b>« Autoriser cette source »</b>, et revenez.</li>
+      <li>Touchez <b>Installer</b>, puis <b>Ouvrir</b>. Créez votre compte ou connectez-vous.</li>
+    </ol>
+    <p class="small">L'application se met à jour toute seule quand le site évolue : inutile de la réinstaller.</p>
+    <div class="feat"><span>Lecture vocale écran éteint</span><span>Bible hors connexion</span><span>Notes partagées</span></div>
+  </section>
+  <section class="card">
+    <span class="tag i">iPhone</span>
+    <h2>Sur iPhone</h2>
+    <ol>
+      <li>Ouvrez <a href="../">le site de l'application</a> dans <b>Safari</b>.</li>
+      <li>Touchez le bouton <b>Partager</b> (le carré avec une flèche).</li>
+      <li>Choisissez <b>« Sur l'écran d'accueil »</b>, puis <b>Ajouter</b>.</li>
+    </ol>
+    <p class="small">L'icône apparaît comme une application. Sur iPhone, utilisez le mode écoute (☾) pour que la lecture continue.</p>
+    <h2 style="margin-top:8px">Partager</h2>
+    <div class="qr"><div id="qr" role="img" aria-label="QR code vers cette page"></div>
+      <div><p class="small">Faites scanner ce code pour ouvrir cette page :</p><p class="url" id="url"></p></div></div>
+  </section>
+</main>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script>
+  var u = location.href.split('#')[0].split('?')[0];
+  document.getElementById('url').textContent = u;
+  try { new QRCode(document.getElementById('qr'), {text:u, width:160, height:160, colorDark:'#2A1F1A', colorLight:'#ffffff'}); } catch(e){}
+  if (/iphone|ipad/i.test(navigator.userAgent)) document.querySelector('.card').style.order = 2;
+</script>
+</body>
+</html>

@@ -394,6 +394,7 @@ svg.i{width:20px;height:20px;flex:none;stroke:currentColor;fill:none;stroke-widt
 .auth-card .seg{align-self:flex-start}
 .auth-card .btn{width:100%;padding-block:13px}
 .af-msg{font-size:13.5px;color:var(--danger)}
+.dl-link{display:inline-block;margin-top:14px;color:var(--mustard);font-weight:600;text-decoration:none;border-bottom:1px solid currentColor}
 .af-msg.ok{color:var(--ink-2)}
 .af-invite{background:var(--sand);color:var(--sand-ink);border-radius:14px;padding:10px 12px;font-size:13.5px}
 @media (min-width:900px){
@@ -584,6 +585,7 @@ svg.i{width:20px;height:20px;flex:none;stroke:currentColor;fill:none;stroke-widt
       <div class="tags"><span class="tag">Lire</span><span class="tag m">Annoter</span><span class="tag d">Écouter</span><span class="tag t">Partager</span></div>
       <h1>Lisons Ensemble</h1>
       <p>Lisez vos livres PDF et EPUB, annotez en choisissant qui voit vos notes, écoutez-les à voix haute et avancez avec votre groupe.</p>
+      <a class="dl-link" id="dl-link" href="telecharger/">Télécharger l'application Android →</a>
     </div>
     <div class="auth-card">
       <div class="seg" role="group" aria-label="Connexion ou inscription"><button type="button" data-act="auth-tab" data-v="in" aria-pressed="true">Se connecter</button><button type="button" data-act="auth-tab" data-v="up" aria-pressed="false">Créer un compte</button></div>
@@ -682,6 +684,26 @@ svg.i{width:20px;height:20px;flex:none;stroke:currentColor;fill:none;stroke-widt
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
 <script>
 "use strict";
+/* Speech engine: inside the Android app the phone's native voice (Capacitor TextToSpeech plugin), on the web the browser's voice.
+   The native engine keeps speaking with the screen off; Android WebViews have no browser speech at all. */
+const IS_APP = (() => { try { return !!(window.Capacitor && window.Capacitor.isNativePlatform && window.Capacitor.isNativePlatform()); } catch(e){ return false; } })();
+const NATIVE_TTS = (() => { try { return IS_APP && window.Capacitor.Plugins && window.Capacitor.Plugins.TextToSpeech || null; } catch(e){ return null; } })();
+let Utter = window.SpeechSynthesisUtterance;
+let SS = ('speechSynthesis' in window) ? window.speechSynthesis : null;
+if (NATIVE_TTS) {
+  Utter = function(text){ this.text = text; this.lang = 'fr-FR'; this.rate = 1; this.pitch = 1; this.voice = null; this.onend = null; this.onerror = null; };
+  const shim = {speaking:false, pending:false, paused:false, _cur:null, _voices:[], _ls:[],
+    speak(u){ if (shim._cur) shim._cur._cancelled = true; shim._cur = u; shim.speaking = true;
+      const opts = {text:u.text, lang:(u.voice && u.voice.lang) || u.lang || 'fr-FR', rate:u.rate || 1, pitch:u.pitch || 1, volume:1, category:'playback'};
+      if (u.voice && u.voice._i != null) opts.voice = u.voice._i;
+      NATIVE_TTS.speak(opts).then(() => { if (shim._cur === u) { shim.speaking = false; shim._cur = null; } if (!u._cancelled && u.onend) u.onend({}); })
+        .catch(() => { if (shim._cur === u) { shim.speaking = false; shim._cur = null; } if (u.onerror) u.onerror({error:u._cancelled ? 'canceled' : 'synthesis-failed'}); }); },
+    cancel(){ if (shim._cur) shim._cur._cancelled = true; shim._cur = null; shim.speaking = false; try { NATIVE_TTS.stop(); } catch(e){} },
+    pause(){}, resume(){}, getVoices(){ return shim._voices; },
+    addEventListener(ev, f){ if (ev === 'voiceschanged') shim._ls.push(f); }, set onvoiceschanged(f){ shim._ls.push(f); }};
+  SS = shim;
+  NATIVE_TTS.getSupportedVoices().then(r => { shim._voices = (r.voices || []).map((v, i) => ({...v, _i:i})); shim._ls.forEach(f => { try { f(); } catch(e){} }); }).catch(() => {});
+}
 /* ================= utilities ================= */
 const $ = (s, r = document) => r.querySelector(s);
 const $$ = (s, r = document) => Array.from(r.querySelectorAll(s));
@@ -1364,13 +1386,14 @@ function viewProfile(){
       <span class="label">Compte</span>
       <p class="muted" style="font-size:14px">Connecté avec <b>${esc(MY_EMAIL)}</b>. Vos livres, notes et groupes sont enregistrés sur le serveur et une copie reste sur cet appareil pour lire hors connexion.</p>
       <div><button class="btn danger small" data-act="logout">Se déconnecter</button></div>
+      ${IS_APP ? '' : `<p class="muted" style="font-size:14px">Sur Android, installez l'application pour une lecture vocale qui continue écran éteint : <a href="telecharger/">télécharger l'application</a>.</p>`}
     </div>
   </div></div>`;
 }
 
 /* ================= voices (Web Speech API) ================= */
 const TTS = {
-  ok: 'speechSynthesis' in window, voices: [], queue: [], qi: 0, playing: false, token: 0, timerMin: 0, timerEnd: 0,
+  ok: !!SS, voices: [], queue: [], qi: 0, playing: false, token: 0, timerMin: 0, timerEnd: 0,
 };
 const FEM = ['amelie','audrey','aurelie','marie','julie','hortense','denise','celine','lea','virginie','chantal','sylvie','eloise','vivienne','brigitte','charlotte','josephine','yvette','coralie','jacqueline','sophie','ariane','sarah','caroline','elsa','alice','manon','claire','female','femme','fra','frc'];
 const MAS = ['thomas','nicolas','daniel','paul','henri','claude','mathieu','remi','antoine','jacques','fabrice','guillaume','jean','alain','pierre','louis','gerard','yves','alexandre','maxime','remy','male','homme','frb','frd'];
@@ -1379,7 +1402,7 @@ function vgender(v){ const n = ' ' + v.name.toLowerCase().normalize('NFD').repla
   if (n.includes(' google ')) return 'f'; return '?'; }
 function vscore(v){ const n = v.name.toLowerCase(); let s = 0; if (/natural|neural|enhanced|premium|online|network|amélior|ameliore/.test(n)) s += 3; if (/google/.test(n)) s += 1; if ((v.lang||'').toLowerCase().replace('_','-') === 'fr-fr') s += 2; if (v.localService === false) s += 1; return s; }
 function frVoices(){ const fr = TTS.voices.filter(v => (v.lang || '').toLowerCase().startsWith('fr')); return fr.length ? fr : TTS.voices; }
-function loadVoices(){ if (!TTS.ok) return; TTS.voices = speechSynthesis.getVoices() || []; if (S.view.name === 'profile') fillVoiceSelects(); }
+function loadVoices(){ if (!TTS.ok) return; TTS.voices = SS.getVoices() || []; if (S.view.name === 'profile') fillVoiceSelects(); }
 function pickVoice(g){
   const pref = g === 'f' ? S.profile.voiceF : S.profile.voiceM; const list = frVoices();
   const chosen = pref && list.find(v => v.voiceURI === pref); if (chosen) return {v:chosen, pitch:1};
@@ -1397,8 +1420,8 @@ function fillVoiceSelects(){
     `${list.length} voix française${list.length>1?'s':''} sur cet appareil (${nf} féminine${nf>1?'s':''}, ${nm} masculine${nm>1?'s':''} reconnue${nm>1?'s':''}). Si une voix est mal classée, choisissez-la ici.`;
 }
 function speakTest(g){ if (!TTS.ok) return toast("La synthèse vocale n'est pas disponible ici"); stopTTS(); const {v, pitch} = pickVoice(g);
-  const u = new SpeechSynthesisUtterance(g === 'f' ? "Bonjour, je suis la voix féminine de votre lecteur." : "Bonjour, je suis la voix masculine de votre lecteur.");
-  if (v) { u.voice = v; u.lang = v.lang; } else u.lang = 'fr-FR'; u.rate = S.profile.rate; u.pitch = pitch; speechSynthesis.speak(u); }
+  const u = new Utter(g === 'f' ? "Bonjour, je suis la voix féminine de votre lecteur." : "Bonjour, je suis la voix masculine de votre lecteur.");
+  if (v) { u.voice = v; u.lang = v.lang; } else u.lang = 'fr-FR'; u.rate = S.profile.rate; u.pitch = pitch; SS.speak(u); }
 const SAMPLE_SPEECH = "Le 16/10/2026 à 19h30, 25 jeunes ont lu Jean 3:16-18 ; 72 % ont aimé le 1er chapitre. Cotisation : 5 000 FCFA, soit 2,5 % du budget… Rendez-vous p. 12, chap. IV, sur le XXe siècle !";
 function voiceSettingsHTML(){ const P = S.profile;
   return `<div class="field"><span>Longueur des pauses</span><div class="seg" role="group">${[[0.6,'Courtes'],[1,'Normales'],[1.5,'Longues']].map(([k,l]) => `<button data-act="pscale" data-v="${k}" aria-pressed="${P.pauseScale===k}">${l}</button>`).join('')}</div>
@@ -1409,7 +1432,7 @@ function voiceSettingsHTML(){ const P = S.profile;
 function speakSample(){ if (!TTS.ok) return toast("La synthèse vocale n'est pas disponible ici"); stopTTS();
   const src = ($('#pf-sample')?.value || SAMPLE_SPEECH); const parts = chunksOfText(src, S.profile.commas === 'marked'); let i = 0; const my = ++TTS.token;
   const step = () => { if (my !== TTS.token || i >= parts.length) return; const c = parts[i++]; const u = makeUtterance(speechText(src.slice(c.s, c.e)));
-    u.onend = () => { TTS.gapT = setTimeout(step, Math.round(Math.max(c.pause, i === parts.length ? 0 : 0) * (S.profile.pauseScale || 1) / Math.max(.6, S.profile.rate))); }; speechSynthesis.speak(u); };
+    u.onend = () => { TTS.gapT = setTimeout(step, Math.round(Math.max(c.pause, i === parts.length ? 0 : 0) * (S.profile.pauseScale || 1) / Math.max(.6, S.profile.rate))); }; SS.speak(u); };
   step(); }
 
 /* ================= reader ================= */
@@ -1739,7 +1762,7 @@ document.addEventListener('visibilitychange', () => {
   if (!TTS.playing) return;
   keepAwake(true);
   // If the phone still cut the voice while hidden, start again from the sentence that was being read.
-  setTimeout(() => { if (TTS.playing && !speechSynthesis.speaking && !speechSynthesis.pending) speakCurrent(true); }, 400);
+  setTimeout(() => { if (TTS.playing && !SS.speaking && !SS.pending) speakCurrent(true); }, 400);
 });
 function startTTS(from){
   if (!TTS.ok) { toast("La lecture vocale n'est pas disponible sur ce navigateur"); return; }
@@ -1748,11 +1771,11 @@ function startTTS(from){
   TTS.queue = sentencesOf(R.ch); if (!TTS.queue.length) { if (R.ch < R.content.chapters.length - 1) { gotoChapter(R.ch + 1, true).then(() => startTTS(0)); } return; }
   TTS.qi = from ?? firstVisibleSentence(); TTS.playing = true; updatePlayBtn(); hideSel(); keepAwake(true); speakCurrent(true);
 }
-function makeUtterance(text){ const u = new SpeechSynthesisUtterance(text); const {v, pitch} = pickVoice(S.profile.voiceGender);
+function makeUtterance(text){ const u = new Utter(text); const {v, pitch} = pickVoice(S.profile.voiceGender);
   if (v) { u.voice = v; u.lang = v.lang; } else u.lang = 'fr-FR'; u.rate = S.profile.rate; u.pitch = pitch; return u; }
 function speakCurrent(cancel = true){
   const my = ++TTS.token; clearTimeout(TTS.gapT);
-  if (cancel) { try { speechSynthesis.cancel(); } catch(e){} }
+  if (cancel) { try { SS.cancel(); } catch(e){} }
   if (TTS.timerEnd && Date.now() > TTS.timerEnd) { stopTTS(); TTS.timerMin = 0; TTS.timerEnd = 0; $('#tts-timer').textContent = '⏱ Off'; $('#tts-timer').classList.remove('on'); toast('Minuterie terminée'); return; }
   TTS.inGap = false;
   const item = TTS.queue[TTS.qi];
@@ -1769,21 +1792,21 @@ function speakCurrent(cancel = true){
   u.onend = () => { if (document.visibilityState === 'hidden' && Date.now() - started < 400) return; next(); };
   const started = Date.now();
   u.onerror = e => { if (e.error === 'interrupted' || e.error === 'canceled') return; next(); };
-  TTS.lastStart = Date.now(); speechSynthesis.speak(u);
+  TTS.lastStart = Date.now(); SS.speak(u);
 }
 /* Watchdog: some phones silently drop the voice when the screen turns off. While listening, if nothing is being spoken
    and we are not in a planned pause, start the current sentence again. */
 setInterval(() => { if (!TTS.ok || !TTS.playing || TTS.inGap) return;
-  try { if (speechSynthesis.paused) speechSynthesis.resume();
-    if (!speechSynthesis.speaking && !speechSynthesis.pending && Date.now() - (TTS.lastStart || 0) > 2500) speakCurrent(true); } catch(e){} }, 3000);
+  try { if (SS.paused) SS.resume();
+    if (!SS.speaking && !SS.pending && Date.now() - (TTS.lastStart || 0) > 2500) speakCurrent(true); } catch(e){} }, 3000);
 function speakPassageText(text){ if (!TTS.ok) return toast("La synthèse vocale n'est pas disponible ici"); stopTTS();
   const parts = chunksOfText(text, S.profile.commas === 'marked'); let i = 0; const my = ++TTS.token;
   const step = () => { if (my !== TTS.token || i >= parts.length) return; const c = parts[i++]; const u = makeUtterance(speechText(text.slice(c.s, c.e)));
-    u.onend = () => { TTS.gapT = setTimeout(step, Math.round((c.pause || 300) * (S.profile.pauseScale || 1) / Math.max(.6, S.profile.rate))); }; speechSynthesis.speak(u); };
+    u.onend = () => { TTS.gapT = setTimeout(step, Math.round((c.pause || 300) * (S.profile.pauseScale || 1) / Math.max(.6, S.profile.rate))); }; SS.speak(u); };
   step(); }
-function stopTTS(){ TTS.playing = false; TTS.token++; clearTimeout(TTS.gapT); keepAwake(false); updateListenView(); try { if (TTS.ok) speechSynthesis.cancel(); } catch(e){}
+function stopTTS(){ TTS.playing = false; TTS.token++; clearTimeout(TTS.gapT); keepAwake(false); updateListenView(); try { if (TTS.ok) SS.cancel(); } catch(e){}
   if (R.speak) { const p = R.speak; R.speak = null; if (R.content && p.ch === R.ch) { if (p.p >= 0) refreshPara(p.p); const h = $('#r-text .r-ch'); if (h) h.classList.remove('speak'); } } updatePlayBtn(); }
-function pauseTTS(){ TTS.playing = false; TTS.token++; clearTimeout(TTS.gapT); try { speechSynthesis.cancel(); } catch(e){} keepAwake(false); updatePlayBtn(); updateListenView(); }
+function pauseTTS(){ TTS.playing = false; TTS.token++; clearTimeout(TTS.gapT); try { SS.cancel(); } catch(e){} keepAwake(false); updatePlayBtn(); updateListenView(); }
 
 /* ================= import PDF / EPUB ================= */
 function thumb(src){ return new Promise(res => { const draw = (img, w, h) => { const W = 300, H = Math.round(W * h / w); const c = document.createElement('canvas'); c.width = W; c.height = H; c.getContext('2d').drawImage(img, 0, 0, W, H); res(c.toDataURL('image/jpeg', .8)); };
@@ -1910,10 +1933,10 @@ document.addEventListener('click', async e => {
       if (a === 'plan-done' || i < 0) { if (i < 0) st.done.push(d); toast(`Jour ${d + 1} marqué comme lu`); } else st.done.splice(i, 1);
       save(); render(); API.plan(id).catch(e => fail(e)); break; }
     case 'plan-read': case 'plan-listen': { const p = planOf(id); const refs = p.days[+el.dataset.d]; if (!refs || !refs.length) break;
-      if (a === 'plan-listen' && TTS.ok) { try { speechSynthesis.cancel(); speechSynthesis.speak(new SpeechSynthesisUtterance(' ')); } catch(_){} }
+      if (a === 'plan-listen' && TTS.ok) { try { SS.cancel(); SS.speak(new Utter(' ')); } catch(_){} }
       openRef(refs[0], {listen:a === 'plan-listen', until:refs[refs.length - 1]}); break; }
     case 'ref-read': openRef(parseRef(el.dataset.ref)); break;
-    case 'ref-listen': if (TTS.ok) { try { speechSynthesis.cancel(); speechSynthesis.speak(new SpeechSynthesisUtterance(' ')); } catch(_){} } openRef(parseRef(el.dataset.ref), {listen:true}); break;
+    case 'ref-listen': if (TTS.ok) { try { SS.cancel(); SS.speak(new Utter(' ')); } catch(_){} } openRef(parseRef(el.dataset.ref), {listen:true}); break;
     case 'med-start': { const r = parseRef(el.dataset.ref); if (!r) { toast('Passage introuvable'); break; } S.med = {ref:refLabel(r), step:0, answers:{}}; go('meditate'); break; }
     case 'med-next': if (S.med.step < MED_STEPS.length - 1) { S.med.step++; render(); } break;
     case 'med-prev': if (S.med.step > 0) { S.med.step--; render(); } break;
@@ -1923,7 +1946,7 @@ document.addEventListener('click', async e => {
     case 'med-save': { stopTTS(); const m = {id:uid(), ref:S.med.ref, answers:{...S.med.answers}, at:Date.now()}; S.meds.push(m); S.med = null; S.bibleTab = 'journal'; save(); go('bible'); toast('Méditation enregistrée dans votre journal'); API.saveMed(m).catch(e => fail(e, "La méditation est gardée sur ce téléphone mais n'a pas pu être envoyée au serveur.")); break; }
     case 'open-group': go('group', id); break;
     case 'read': openReader(id); break;
-    case 'listen': if (TTS.ok) { try { speechSynthesis.cancel(); speechSynthesis.speak(new SpeechSynthesisUtterance(' ')); } catch(_){} } openReader(id, {listen:true}); break;
+    case 'listen': if (TTS.ok) { try { SS.cancel(); SS.speak(new Utter(' ')); } catch(_){} } openReader(id, {listen:true}); break;
     case 'book-notes': openReader(id, {notes:true}); break;
     case 'import': $('#file-input').click(); break;
     case 'filter': S.filter = el.dataset.f; $$('.chips [data-act="filter"]').forEach(b => b.setAttribute('aria-pressed', b === el)); $('#grid').innerHTML = gridHTML(); break;
@@ -2027,8 +2050,9 @@ document.addEventListener('drop', e => { if (!$('#reader').hidden) return; e.pre
 
 /* ================= boot ================= */
 $('#auth-form').addEventListener('submit', submitAuth);
+if (IS_APP) { const l = $('#dl-link'); if (l) l.hidden = true; }
 (async function boot(){
-  if (TTS.ok) { loadVoices(); try { speechSynthesis.addEventListener('voiceschanged', loadVoices); } catch(e){ speechSynthesis.onvoiceschanged = loadVoices; } }
+  if (TTS.ok) { loadVoices(); try { SS.addEventListener('voiceschanged', loadVoices); } catch(e){ SS.onvoiceschanged = loadVoices; } }
   updatePlayBtn();
   try { const p = JSON.parse(localStorage.getItem('le-prefs') || 'null'); if (p) S.profile = {...S.profile, ...p}; } catch(e){}
   const code = new URLSearchParams(location.search).get('code'); if (code) { try { sessionStorage.setItem('le-code', code.trim().toUpperCase()); } catch(e){} }

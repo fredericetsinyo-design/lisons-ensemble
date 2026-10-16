@@ -1,0 +1,89 @@
+# Builds the Lisons Ensemble Android app (Capacitor) and publishes it as a GitHub release.
+# Download link that never changes: https://github.com/fredericetsinyo-design/lisons-ensemble/releases/latest/download/lisons-ensemble.apk
+name: Application Android
+
+on:
+  push:
+    branches: [main]
+    paths: ['android-app/**', '.github/workflows/android.yml']
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Vérifier le mot de passe de signature
+        env:
+          ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
+        run: |
+          if [ -z "$ANDROID_KEY_PASSWORD" ]; then
+            echo "::error::Ajoutez le secret ANDROID_KEY_PASSWORD dans Settings > Secrets and variables > Actions, puis relancez."
+            exit 1
+          fi
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+
+      - name: Installer Capacitor
+        working-directory: android-app
+        run: npm install --no-audit --no-fund
+
+      - name: Créer le projet Android
+        working-directory: android-app
+        run: |
+          npx cap add android
+          cp -r res/* android/app/src/main/res/
+          npx cap sync android
+
+      - name: Numéro de version
+        working-directory: android-app/android
+        run: |
+          sed -i "s/versionCode 1$/versionCode ${{ github.run_number }}/" app/build.gradle
+          sed -i "s/versionName \"1.0\"/versionName \"1.0.${{ github.run_number }}\"/" app/build.gradle
+          grep -n "versionCode\|versionName" app/build.gradle
+
+      - name: Compiler
+        working-directory: android-app/android
+        run: |
+          chmod +x gradlew
+          ./gradlew --no-daemon assembleRelease bundleRelease
+
+      - name: Signer
+        env:
+          ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
+        run: |
+          openssl enc -d -aes-256-cbc -pbkdf2 -iter 200000 -in android-app/release.jks.enc -out release.jks -pass env:ANDROID_KEY_PASSWORD
+          BT=$(ls -d $ANDROID_HOME/build-tools/* | sort -V | tail -1)
+          mkdir -p out
+          "$BT/zipalign" -p -f 4 android-app/android/app/build/outputs/apk/release/app-release-unsigned.apk out/aligned.apk
+          "$BT/apksigner" sign --ks release.jks --ks-pass env:ANDROID_KEY_PASSWORD --ks-key-alias lisons --key-pass env:ANDROID_KEY_PASSWORD --out out/lisons-ensemble.apk out/aligned.apk
+          "$BT/apksigner" verify --print-certs out/lisons-ensemble.apk
+          jarsigner -keystore release.jks -storepass:env ANDROID_KEY_PASSWORD -keypass:env ANDROID_KEY_PASSWORD \
+            -signedjar out/lisons-ensemble.aab android-app/android/app/build/outputs/bundle/release/app-release.aab lisons
+          rm -f release.jks out/aligned.apk
+
+      - name: Publier la version
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: android-v1.0.${{ github.run_number }}
+          name: Lisons Ensemble pour Android 1.0.${{ github.run_number }}
+          make_latest: true
+          body: |
+            Application Android de Lisons Ensemble.
+            - lisons-ensemble.apk : à installer directement sur un téléphone Android.
+            - lisons-ensemble.aab : à envoyer sur la Google Play Console.
+            Page de téléchargement : https://fredericetsinyo-design.github.io/lisons-ensemble/telecharger/
+          files: |
+            out/lisons-ensemble.apk
+            out/lisons-ensemble.aab

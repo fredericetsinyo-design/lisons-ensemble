@@ -1,0 +1,13 @@
+{
+  "appId": "tg.lambano.lisonsensemble",
+  "appName": "Lisons Ensemble",
+  "webDir": "www",
+  "server": {
+    "url": "https://fredericetsinyo-design.github.io/lisons-ensemble/",
+    "androidScheme": "https",
+    "errorPath": "index.html"
+  },
+  "android": {
+    "backgroundColor": "#2B211C"
+  }
+}

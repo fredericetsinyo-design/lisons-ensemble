@@ -1,0 +1,12 @@
+{
+  "name": "lisons-ensemble-android",
+  "private": true,
+  "version": "1.0.0",
+  "description": "Application Android de Lisons Ensemble (Capacitor). Elle ouvre le site en ligne, donc chaque mise à jour du site arrive dans l'application sans réinstallation.",
+  "dependencies": {
+    "@capacitor/android": "6.2.1",
+    "@capacitor/cli": "6.2.1",
+    "@capacitor/core": "6.2.1",
+    "@capacitor-community/text-to-speech": "4.1.1"
+  }
+}
