@@ -1,0 +1,16 @@
+{
+  "name": "Lisons Ensemble",
+  "short_name": "Lisons",
+  "description": "Lisez, annotez et écoutez vos livres avec votre groupe de lecture.",
+  "lang": "fr",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#2B211C",
+  "theme_color": "#2B211C",
+  "icons": [
+    {"src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png"},
+    {"src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png"},
+    {"src": "icons/maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable"}
+  ]
+}

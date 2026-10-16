@@ -1,0 +1,1593 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Lisons Ensemble</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#2B211C">
+<link rel="icon" href="icons/icon-192.png">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="description" content="Lisez, annotez et écoutez vos livres avec votre groupe de lecture.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&family=Literata:ital,opsz,wght@0,7..72,400;0,7..72,600;1,7..72,400&display=swap">
+<style>
+/* Layout: phone = green header band + cover grid + bottom tab bar; desktop = navy frame with icon sidebar around a white dashboard card. Reader = full-screen overlay with notes column and audio bar. */
+:root{
+  --bg:#F6F0E6; --surface:#FFFFFF; --surface-2:#FBF6EE; --ink:#2A1F1A; --ink-2:#6E625A; --line:#E9DDCC;
+  --green:#C4552B; --green-2:#A9461F; --on-green:#FFFFFF; --green-soft:#F8E1D4;
+  --navy:#2B211C; --on-navy:#FFFFFF; --navy-2:#3B2E27; --frame:#2B211C;
+  --sand:#F3E4CB; --sand-ink:#6B4A1E;
+  --mint:#F2C14E; --mint-ink:#2A1F1A;
+  --peach:#DDE8F4; --peach-ink:#24476E; --orange:#E0A32A;
+  --hl-y:#FBE38A; --hl-g:#BCE4C5; --hl-b:#C6D9F6; --hl-r:#F6C9D4;
+  --paper:#FFFFFF; --paper-ink:#2A1F1A; --speak:#FFE7A0;
+  --danger:#B3402E; --scrim:rgba(20,14,10,.5);
+  --shadow:0 12px 32px rgba(42,31,26,.14);
+  /* Colours picked from the photos: rust sweaters, mustard armchair, denim shirts, teal sleeve, library wood. Same in both themes because they sit on photos. */
+  --rust:#C4552B; --mustard:#E3A82B; --denim:#3E6A9A; --teal:#1F7A72; --espresso:#2A1F1A; --on-photo:#FFFFFF;
+  --shade:rgba(30,20,15,.88); --shade-mid:rgba(30,20,15,.5); --shade-0:rgba(30,20,15,0);
+  --cv1:#C4552B; --cv2:#3E6A9A; --cv3:#1F7A72; --cv4:#B7841A; --cv5:#2B211C; --cv6:#A8322E;
+  --f-ui:"Outfit","Avenir Next","Segoe UI",system-ui,sans-serif;
+  --f-read:"Literata",Georgia,"Times New Roman",serif;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#17120F; --surface:#221A16; --surface-2:#2A211C; --ink:#F3EAE0; --ink-2:#BBAEA2; --line:#3A2F28;
+  --green:#E27C4C; --green-2:#CF6838; --on-green:#1A0F0A; --green-soft:#4A2A1D;
+  --navy:#2E2420; --on-navy:#FFFFFF; --navy-2:#3E312A; --frame:#0F0B09;
+  --sand:#3B3022; --sand-ink:#EBD9B8;
+  --mint:#E3B23C; --mint-ink:#2A1F1A;
+  --peach:#1F3045; --peach-ink:#CFE0F3; --orange:#E8B040;
+  --hl-y:rgba(240,200,60,.38); --hl-g:rgba(90,190,120,.35); --hl-b:rgba(110,150,230,.38); --hl-r:rgba(230,110,140,.36);
+  --paper:#1B1512; --paper-ink:#EDE4DA; --speak:rgba(255,215,90,.30);
+  --danger:#F08B78; --scrim:rgba(0,0,0,.6); --shadow:0 12px 32px rgba(0,0,0,.4);
+  color-scheme:dark;
+}}
+:root[data-theme="dark"]{
+  --bg:#17120F; --surface:#221A16; --surface-2:#2A211C; --ink:#F3EAE0; --ink-2:#BBAEA2; --line:#3A2F28;
+  --green:#E27C4C; --green-2:#CF6838; --on-green:#1A0F0A; --green-soft:#4A2A1D;
+  --navy:#2E2420; --on-navy:#FFFFFF; --navy-2:#3E312A; --frame:#0F0B09;
+  --sand:#3B3022; --sand-ink:#EBD9B8;
+  --mint:#E3B23C; --mint-ink:#2A1F1A;
+  --peach:#1F3045; --peach-ink:#CFE0F3; --orange:#E8B040;
+  --hl-y:rgba(240,200,60,.38); --hl-g:rgba(90,190,120,.35); --hl-b:rgba(110,150,230,.38); --hl-r:rgba(230,110,140,.36);
+  --paper:#1B1512; --paper-ink:#EDE4DA; --speak:rgba(255,215,90,.30);
+  --danger:#F08B78; --scrim:rgba(0,0,0,.6); --shadow:0 12px 32px rgba(0,0,0,.4);
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html,body{height:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--f-ui);font-size:15px;line-height:1.45;-webkit-font-smoothing:antialiased}
+button,input,select,textarea{font:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:2px solid var(--green);outline-offset:2px}
+h1,h2,h3{text-wrap:balance;margin:0;line-height:1.15}
+p{margin:0}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+svg.i{width:20px;height:20px;flex:none;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+
+/* ---------- shell ---------- */
+.shell{min-height:100%;padding-bottom:calc(76px + env(safe-area-inset-bottom,0px))}
+.side{display:none}
+.topnav{display:none}
+.main{min-width:0}
+.tabbar{position:fixed;left:0;right:0;bottom:0;z-index:20;display:grid;grid-template-columns:repeat(4,1fr);background:var(--surface);border-top:1px solid var(--line);
+  padding:6px max(8px,env(safe-area-inset-right,0px)) calc(6px + env(safe-area-inset-bottom,0px)) max(8px,env(safe-area-inset-left,0px))}
+.tabbar button{border:0;background:none;display:flex;flex-direction:column;align-items:center;gap:2px;font-size:11.5px;color:var(--ink-2);padding:6px 0;border-radius:12px}
+.tabbar button[aria-current="page"]{color:var(--green);font-weight:600}
+.pad{padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+
+@media (min-width:960px){
+  body{background:var(--frame)}
+  .shell{display:grid;grid-template-columns:104px minmax(0,1fr);padding:0;min-height:100%;
+    padding-right:max(20px,env(safe-area-inset-right,0px));padding-left:env(safe-area-inset-left,0px)}
+  .tabbar{display:none}
+  .side{display:flex;flex-direction:column;align-items:center;gap:8px;padding-block:28px;color:var(--on-navy);position:sticky;top:0;height:100vh}
+  .logo{display:flex;flex-direction:column;align-items:center;gap:6px;font-weight:600;font-size:13px;margin-bottom:40px;letter-spacing:.02em}
+  .logo svg{width:34px;height:34px}
+  .side nav{display:flex;flex-direction:column;gap:14px;flex:1}
+  .side nav button{width:72px;border:0;background:none;color:rgba(255,255,255,.7);display:flex;flex-direction:column;align-items:center;gap:6px;font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;padding:8px 0;border-radius:14px}
+  .side nav button .dot{width:48px;height:48px;border-radius:50%;display:grid;place-items:center}
+  .side nav button[aria-current="page"]{color:#fff;font-weight:600}
+  .side nav button[aria-current="page"] .dot{background:var(--mustard);color:var(--espresso)}
+  .side nav button:hover .dot{background:rgba(255,255,255,.12)}
+  .side nav button[aria-current="page"]:hover .dot{background:var(--mustard)}
+  .main{background:var(--bg);border-radius:30px;margin-block:20px;min-height:calc(100vh - 40px);overflow:hidden}
+  .topnav{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:22px 36px 0}
+  .topnav .links{display:flex;gap:28px}
+  .topnav .links button{border:0;background:none;font-size:13px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-2);padding:6px 0;font-weight:500}
+  .topnav .links button[aria-current="page"]{color:var(--ink);font-weight:700}
+  .pad{padding-left:36px;padding-right:36px}
+}
+
+/* ---------- common ---------- */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border:0;border-radius:999px;padding:11px 18px;font-weight:600;font-size:14.5px;background:var(--green);color:var(--on-green);text-decoration:none;white-space:nowrap}
+.btn:hover{background:var(--green-2)}
+.btn.ghost{background:var(--surface);color:var(--ink);box-shadow:inset 0 0 0 1px var(--line)}
+.btn.ghost:hover{background:var(--surface-2)}
+.btn.navy{background:var(--navy);color:var(--on-navy)}
+.btn.small{padding:7px 13px;font-size:13px}
+.btn.danger{background:none;color:var(--danger);box-shadow:inset 0 0 0 1px currentColor}
+.btn[disabled]{opacity:.45;cursor:not-allowed}
+.iconbtn{width:40px;height:40px;border-radius:50%;border:0;background:var(--surface);color:var(--ink);display:grid;place-items:center;box-shadow:inset 0 0 0 1px var(--line);flex:none}
+.iconbtn:hover{background:var(--surface-2)}
+.chip{display:inline-flex;align-items:center;gap:6px;border-radius:999px;padding:5px 12px;font-size:12.5px;background:var(--sand);color:var(--sand-ink);font-weight:500;white-space:nowrap}
+.chip.demo{background:var(--peach);color:var(--peach-ink)}
+.av{width:36px;height:36px;border-radius:50%;display:inline-grid;place-items:center;font-weight:600;font-size:13px;color:#fff;flex:none;box-shadow:0 0 0 2px var(--surface)}
+.av.sm{width:26px;height:26px;font-size:10.5px}
+.av.lg{width:46px;height:46px;font-size:16px}
+.avs{display:flex}.avs .av+.av{margin-left:-8px}
+.card{background:var(--surface);border-radius:22px;padding:20px}
+.label{font-size:11.5px;letter-spacing:.09em;text-transform:uppercase;color:var(--ink-2);font-weight:600}
+.sec-h{display:flex;align-items:baseline;justify-content:space-between;gap:12px;margin:28px 0 14px}
+.sec-h h2{font-size:18px;font-weight:600}
+.muted{color:var(--ink-2)}
+.num{font-variant-numeric:tabular-nums}
+.empty{padding:22px;border-radius:18px;border:1.5px dashed var(--line);color:var(--ink-2);text-align:center}
+
+/* ---------- hero (template 1 green band) ---------- */
+.hero{position:relative;overflow:hidden;background:var(--espresso);color:var(--on-photo);border-radius:0 0 44px 0;padding-block:22px 30px;min-height:430px;display:flex;flex-direction:column;justify-content:flex-end}
+.hero>img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:64% 30%}
+.hero::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,var(--shade-mid) 0%,var(--shade-0) 30%,var(--shade) 82%)}
+.hero .band-in{position:relative;z-index:1;width:100%;flex:1;display:flex;flex-direction:column;justify-content:flex-end}
+.hero .hero-top{margin-bottom:auto;padding-bottom:24px}
+.tags{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px}
+.tag{display:inline-flex;align-items:center;gap:6px;font-size:12.5px;font-weight:600;padding:5px 11px;border-radius:999px;background:var(--rust);color:var(--on-photo)}
+.tag.m{background:var(--mustard);color:var(--espresso)}.tag.d{background:var(--denim)}.tag.t{background:var(--teal)}
+.hero-top{display:flex;justify-content:space-between;align-items:center}
+.hero-in{position:relative}
+.hello{font-weight:600;font-size:16px}
+.hero h1{font-size:30px;font-weight:600;letter-spacing:-.01em}
+.hero-sub{margin-top:10px;opacity:.88;font-size:15px}
+.search{margin-top:20px;display:flex;align-items:center;gap:10px;background:#fff;color:#22264A;border-radius:999px;padding:12px 18px;max-width:520px}
+.search input{border:0;outline:0;background:none;flex:1;min-width:0;color:#22264A;font-size:14.5px}
+.search input::placeholder{color:#7d8094}
+@media (min-width:960px){
+  .hero{border-radius:26px;margin:22px 36px 0;padding:40px;min-height:360px}
+  .hero::after{background:linear-gradient(90deg,var(--shade) 0%,var(--shade-mid) 42%,var(--shade-0) 72%)}
+  .hero>img{object-position:center 35%}
+  .hero .band-in{padding:0}
+  .hero-top{display:none}
+  .hero h1{font-size:40px;max-width:16ch}
+  .hero-sub{max-width:44ch}
+}
+.band-in{padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+
+/* dashboard row (template 2) */
+.dash{display:grid;gap:16px;margin-top:22px}
+@media (min-width:720px){.dash{grid-template-columns:1.7fr 1fr}}
+.cont{background:var(--navy);color:var(--on-navy);border-radius:24px;padding:22px;display:flex;gap:20px;align-items:center;position:relative;overflow:hidden}
+.cont .cover{width:92px;flex:none}
+.cont .meta{min-width:0;flex:1}
+.cont .label{color:rgba(255,255,255,.7)}
+.cont h3{font-size:21px;font-weight:600;margin:6px 0 2px}
+.cont .by{opacity:.75;font-size:14px}
+.bigpct{font-size:44px;font-weight:500;line-height:1;margin-top:14px;letter-spacing:-.02em}
+.bigpct small{font-size:16px;opacity:.7;margin-left:4px}
+.bar{height:6px;border-radius:6px;background:rgba(255,255,255,.18);margin-top:12px;overflow:hidden}
+.bar i{display:block;height:100%;background:var(--mint);border-radius:6px}
+.cont .acts{display:flex;gap:8px;margin-top:16px;flex-wrap:wrap}
+.cont .btn.ghost{background:rgba(255,255,255,.12);color:#fff;box-shadow:none}
+.cont .bar i{background:var(--mustard)}
+.goal{background:var(--peach);color:var(--peach-ink);border-radius:24px;padding:22px;display:flex;flex-direction:column;gap:8px}
+.goal h3{font-size:16px;font-weight:600}
+.goal .row{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.goal .big{font-size:52px;font-weight:600;line-height:1;color:var(--ink)}
+.goal p{font-size:13.5px}
+.goal .tip{background:var(--surface);color:var(--ink);border-radius:16px;padding:12px 14px;display:flex;align-items:center;gap:10px;font-size:13px;margin-top:auto}
+.goal .tip b{display:block}
+
+/* photo moments */
+.moments{display:grid;grid-auto-flow:column;grid-auto-columns:minmax(230px,1fr);gap:14px;overflow-x:auto;margin-top:22px;padding-bottom:4px;scrollbar-width:none}
+.moment{border:0;padding:0;border-radius:22px;overflow:hidden;position:relative;aspect-ratio:5/4;max-width:100%;text-align:left;color:var(--on-photo);background:var(--espresso);display:block}
+.moment img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;transition:transform .6s ease}
+.moment:hover img{transform:scale(1.05)}
+.moment .mt{position:absolute;left:10px;right:10px;bottom:10px;padding:12px 14px;border-radius:16px;display:flex;align-items:center;justify-content:space-between;gap:10px}
+.moment .mt span{display:flex;flex-direction:column;min-width:0}
+.moment .mt b{font-size:16.5px;font-weight:600}
+.moment .mt small{font-size:12.5px;opacity:.88}
+.moment .mt svg{width:22px;height:22px;flex:none}
+.m-1 .mt{background:var(--mustard);color:var(--espresso)}.m-2 .mt{background:var(--rust)}.m-3 .mt{background:var(--denim)}
+/* photo banners */
+.pbanner{position:relative;overflow:hidden;border-radius:24px;min-height:220px;display:flex;align-items:flex-end;margin-top:16px;color:var(--on-photo);background:var(--espresso)}
+.pbanner>img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.pbanner::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,var(--shade-0) 0%,var(--shade-mid) 35%,var(--shade) 78%)}
+@media (max-width:959px){.pbanner{min-height:320px}}
+.pb-in{position:relative;z-index:1;padding:20px;display:flex;justify-content:space-between;align-items:flex-end;gap:14px;flex-wrap:wrap;width:100%}
+.pb-in h1{font-size:28px;font-weight:600}
+.pb-in p{opacity:.9;margin-top:6px;max-width:52ch}
+.pb-in .acts{display:flex;gap:8px;flex-wrap:wrap}
+.pb-in .btn.ghost{background:var(--on-photo);color:var(--espresso);box-shadow:none}
+.pb-back{position:absolute;top:14px;left:14px;z-index:2;background:rgba(255,255,255,.16);color:var(--on-photo);box-shadow:none;backdrop-filter:blur(6px)}
+.pb-back:hover{background:rgba(255,255,255,.28)}
+@media (min-width:960px){.pbanner{min-height:260px;margin-top:22px}.pb-in{padding:28px 30px}.pb-in h1{font-size:34px}}
+
+/* chips filter */
+.chips{display:flex;gap:6px;overflow-x:auto;margin:24px -4px 0;padding:2px 4px;scrollbar-width:none}
+.chips button{border:0;background:none;padding:7px 14px;border-radius:999px;color:var(--ink-2);font-weight:500;white-space:nowrap;font-size:14px}
+.chips button[aria-pressed="true"]{background:var(--sand);color:var(--sand-ink);font-weight:600}
+
+/* cover grid */
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(104px,1fr));gap:20px 16px;margin-top:18px}
+@media (min-width:960px){.grid{grid-template-columns:repeat(auto-fill,minmax(132px,1fr));gap:26px 22px}}
+.tile{border:0;background:none;padding:0;text-align:center;display:flex;flex-direction:column;gap:8px;min-width:0}
+.tile .cover{width:100%}
+.tile b{font-weight:600;font-size:14px;line-height:1.25;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+.tile>span{font-size:12.5px;color:var(--ink-2);overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
+.tile .tbar{height:4px;border-radius:4px;background:var(--line);overflow:hidden;margin:0 6px}
+.tile .tbar i{display:block;height:100%;background:var(--green)}
+.tile.add .cover{display:grid;place-items:center;border:2px dashed var(--line);background:none;color:var(--green);box-shadow:none}
+.tile.add .cover svg{width:34px;height:34px}
+.cover{container-type:inline-size;aspect-ratio:2/3;max-width:100%;border-radius:6px 10px 10px 6px;overflow:hidden;box-shadow:0 10px 22px rgba(20,20,40,.22), inset 4px 0 0 rgba(0,0,0,.12);position:relative;background:var(--cv1)}
+.cover img{width:100%;height:100%;object-fit:cover;display:block}
+.cover.gen{color:#fff;text-align:left}
+.cover .cin{position:absolute;inset:0;display:flex;flex-direction:column;justify-content:space-between;padding:16cqw 12cqw 14cqw}
+.cover.gen .ct{font-weight:600;font-size:clamp(8px,15cqw,28px);line-height:1.08;overflow-wrap:break-word;hyphens:auto;position:relative;z-index:1}
+.cover.gen .ca{font-size:clamp(6px,7.5cqw,12px);position:relative;z-index:1;opacity:.85;letter-spacing:.04em;text-transform:uppercase}
+.cover.gen::after{content:"";position:absolute;inset:auto -20% -30% auto;width:80%;aspect-ratio:1;border-radius:50%;background:rgba(255,255,255,.08)}
+.cover.photo>img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.cover.photo::before{content:"";position:absolute;inset:0;background:linear-gradient(180deg,var(--shade-0) 30%,var(--shade) 100%);z-index:1}
+.cover.photo::after{display:none}
+.cover .cin{z-index:2}
+.cover.photo .cin{justify-content:flex-end;gap:4px}
+.cover .fmt{position:absolute;right:6px;top:6px;font-size:9.5px;font-weight:700;letter-spacing:.06em;background:rgba(255,255,255,.88);color:#22264A;border-radius:4px;padding:2px 5px;z-index:1}
+
+/* lower dashboard */
+.dash2{display:grid;grid-template-columns:minmax(0,1fr);gap:16px;margin-top:30px;margin-bottom:30px}
+@media (min-width:860px){.dash2{grid-template-columns:1fr 1.3fr}}
+.mrow{display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid var(--line)}
+.mrow:last-child{border-bottom:0}
+.mrow .who{flex:1;min-width:0}
+.mrow .who b{display:block;font-weight:600;font-size:14.5px}
+.mrow .who span{font-size:12.5px;color:var(--ink-2)}
+.pctbadge{font-weight:600;font-size:13.5px;border-radius:10px;padding:6px 9px;background:var(--green-soft);color:var(--green-2)}
+:root[data-theme="dark"] .pctbadge{color:var(--ink)}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .pctbadge{color:var(--ink)}}
+
+/* ---------- notes ---------- */
+.note{background:var(--surface);border-radius:18px;padding:16px;display:flex;flex-direction:column;gap:10px;box-shadow:inset 0 0 0 1px var(--line)}
+.note header{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.note header b{font-weight:600;font-size:14px}
+.note header time{font-size:12px;color:var(--ink-2);margin-left:auto}
+.vis{font-size:11.5px;font-weight:600;border-radius:999px;padding:3px 9px;background:var(--surface-2);color:var(--ink-2);box-shadow:inset 0 0 0 1px var(--line)}
+.vis.group{background:var(--green-soft);color:var(--ink);box-shadow:none}
+.vis.me{background:var(--sand);color:var(--sand-ink);box-shadow:none}
+.quote{font-family:var(--f-read);font-size:14.5px;line-height:1.5;padding:2px 0 2px 12px;border-left:4px solid var(--hl-y);color:var(--ink)}
+.quote.c-g{border-color:var(--hl-g)}.quote.c-b{border-color:var(--hl-b)}.quote.c-r{border-color:var(--hl-r)}
+.note .txt{font-size:14.5px;white-space:pre-wrap;overflow-wrap:anywhere}
+.note .src{font-size:12.5px;color:var(--ink-2)}
+.note footer{display:flex;gap:4px;flex-wrap:wrap;margin-left:-8px}
+.note footer button{border:0;background:none;color:var(--ink-2);font-size:13px;font-weight:500;padding:5px 8px;border-radius:8px;display:inline-flex;align-items:center;gap:5px}
+.note footer button:hover{background:var(--surface-2);color:var(--ink)}
+.note footer button[aria-pressed="true"]{color:var(--green)}
+.note footer svg.i{width:16px;height:16px}
+.replies{display:flex;flex-direction:column;gap:8px;padding-left:12px;border-left:2px solid var(--line)}
+.reply{font-size:13.5px}
+.reply b{font-weight:600}
+.replyform{display:flex;gap:8px}
+.replyform input{flex:1;min-width:0;border:1px solid var(--line);background:var(--surface-2);border-radius:999px;padding:8px 14px}
+.notes-list{display:flex;flex-direction:column;gap:12px}
+
+/* ---------- book detail (template 1 navy panel) ---------- */
+.bd-top{background:var(--espresso);color:var(--on-photo);border-radius:0 0 40px 0;padding-block:16px 30px;position:relative;overflow:hidden}
+.bd-bg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:.32}
+.bd-top .band-in{position:relative}
+.bd-top .back{background:rgba(255,255,255,.12);color:#fff;box-shadow:none}
+.bd-head{display:flex;gap:20px;align-items:flex-end;margin-top:16px}
+.bd-head .cover{width:118px;flex:none;box-shadow:0 18px 30px rgba(0,0,0,.35)}
+.bd-head .meta{min-width:0}
+.bd-head .by{color:var(--mustard);font-weight:500;font-size:14.5px}
+.bd-head h1{font-size:26px;font-weight:600;margin:4px 0 12px;overflow-wrap:anywhere}
+.bd-head .chips2{display:flex;gap:6px;flex-wrap:wrap}
+.bd-body{display:grid;grid-template-columns:minmax(0,1fr);gap:22px;padding-block:24px 110px}
+.bd-body h2{font-size:17px;font-weight:600;margin-bottom:10px}
+.bd-acts{display:flex;gap:8px;flex-wrap:wrap}
+.readers{display:flex;gap:16px;overflow-x:auto;padding-bottom:4px}
+.readers .r{display:flex;flex-direction:column;align-items:center;gap:6px;font-size:12.5px;min-width:64px}
+.readers .r b{font-weight:600}
+.minis{display:flex;gap:16px;overflow-x:auto;padding-bottom:6px}
+.minis .tile{width:96px;flex:none}
+.cta{position:fixed;left:0;right:0;bottom:calc(68px + env(safe-area-inset-bottom,0px));z-index:15;background:var(--mint);color:var(--mint-ink);border-radius:26px 26px 0 0;
+  padding:14px max(16px,env(safe-area-inset-right,0px)) 14px max(16px,env(safe-area-inset-left,0px));display:flex;align-items:center;justify-content:space-between;gap:12px}
+.cta .t{font-weight:600;font-size:15px;min-width:0}
+.cta .t span{display:block;font-weight:400;font-size:12.5px;opacity:.8}
+.cta .play{width:54px;height:54px;border-radius:50%;background:var(--navy);color:#fff;border:0;display:grid;place-items:center;flex:none;box-shadow:var(--shadow);margin-top:-30px}
+.cta .play svg{width:22px;height:22px}
+@media (min-width:960px){
+  .bd-wrap{display:grid;grid-template-columns:minmax(300px,380px) minmax(0,1fr);gap:28px;padding:22px 36px 36px}
+  .bd-top{border-radius:28px;padding:24px;align-self:start}
+  .bd-head{flex-direction:column;align-items:flex-start}
+  .bd-head .cover{width:170px}
+  .bd-body{padding:0}
+  .cta{position:static;border-radius:20px;margin-top:22px}
+  .cta .play{margin-top:0}
+  .bd-wrap .pad{padding:0}
+}
+
+/* ---------- groups ---------- */
+.page-h{display:flex;align-items:flex-end;justify-content:space-between;gap:12px;flex-wrap:wrap;padding-block:24px 6px}
+.page-h h1{font-size:28px;font-weight:600}
+.page-h p{color:var(--ink-2);margin-top:6px}
+.banner{display:flex;gap:10px;align-items:flex-start;background:var(--peach);color:var(--peach-ink);border-radius:16px;padding:12px 14px;font-size:13.5px;margin-top:14px}
+.glist{display:grid;gap:14px;margin-top:20px}
+@media (min-width:720px){.glist{grid-template-columns:repeat(auto-fill,minmax(300px,1fr))}}
+.gcard{background:var(--surface);border-radius:22px;padding:0 0 18px;overflow:hidden;display:flex;flex-direction:column;gap:14px;border:0;text-align:left;box-shadow:inset 0 0 0 1px var(--line)}
+.gcard>*:not(.gph){margin-inline:18px}
+.gph{height:150px;position:relative;background:var(--espresso)}
+.gph img{width:100%;height:100%;object-fit:cover;display:block}
+.gph .chip{position:absolute;left:14px;bottom:12px;background:var(--mustard);color:var(--espresso)}
+.gcard:hover{box-shadow:inset 0 0 0 1.5px var(--green)}
+.gcard h3{font-size:18px;font-weight:600}
+.gcard .row{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.gbook{display:flex;gap:12px;align-items:center;background:var(--surface-2);border-radius:14px;padding:10px}
+.gbook .cover{width:42px;flex:none}
+.gbook div{min-width:0}
+.gbook b{display:block;font-weight:600;font-size:14px;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
+.gbook span{font-size:12.5px;color:var(--ink-2)}
+.gd{display:grid;grid-template-columns:minmax(0,1fr);gap:18px;margin-top:18px;margin-bottom:30px}
+@media (min-width:900px){.gd{grid-template-columns:minmax(0,1fr) 340px;align-items:start}}
+.code{font-family:ui-monospace,"SF Mono",Menlo,monospace;font-size:20px;letter-spacing:.18em;font-weight:600}
+.cal{display:flex;flex-direction:column;gap:8px}
+.cal textarea{width:100%;border:1px solid var(--line);border-radius:12px;background:var(--surface-2);padding:10px 12px;min-height:70px;resize:vertical}
+
+/* ---------- profile ---------- */
+.form{display:grid;gap:16px}
+.field{display:flex;flex-direction:column;gap:6px}
+.field>span{font-size:13px;font-weight:600}
+.field small{color:var(--ink-2);font-size:12.5px}
+.input,select.input{border:1px solid var(--line);border-radius:12px;background:var(--surface-2);padding:10px 12px;width:100%}
+.seg{display:inline-flex;background:var(--surface-2);border-radius:999px;padding:4px;gap:2px;box-shadow:inset 0 0 0 1px var(--line);flex-wrap:wrap}
+.seg button{border:0;background:none;border-radius:999px;padding:7px 14px;font-weight:500;font-size:13.5px;color:var(--ink-2)}
+.seg button[aria-pressed="true"]{background:var(--navy);color:var(--on-navy)}
+.pgrid{display:grid;gap:16px;margin:18px 0 30px}
+@media (min-width:900px){.pgrid{grid-template-columns:1fr 1fr;align-items:start}}
+
+/* ---------- sheet ---------- */
+.sheet-scrim{position:fixed;inset:0;background:var(--scrim);z-index:60;display:flex;align-items:flex-end;justify-content:center}
+.sheet{background:var(--surface);width:100%;max-width:560px;border-radius:26px 26px 0 0;max-height:88vh;overflow:auto;
+  padding:22px max(18px,env(safe-area-inset-right,0px)) calc(22px + env(safe-area-inset-bottom,0px)) max(18px,env(safe-area-inset-left,0px));display:flex;flex-direction:column;gap:16px}
+.sheet h2{font-size:20px;font-weight:600}
+.sheet .acts{display:flex;gap:8px;justify-content:flex-end;flex-wrap:wrap}
+@media (min-width:720px){.sheet-scrim{align-items:center}.sheet{border-radius:26px;padding:26px}}
+.colors{display:flex;gap:10px}
+.colors button{width:30px;height:30px;border-radius:50%;border:0;box-shadow:inset 0 0 0 1px rgba(0,0,0,.08)}
+.colors button[aria-pressed="true"]{box-shadow:0 0 0 2px var(--surface),0 0 0 4px var(--ink)}
+.c-y{background:var(--hl-y)}.c-g{background:var(--hl-g)}.c-b{background:var(--hl-b)}.c-r{background:var(--hl-r)}
+.vis-opts{display:grid;gap:8px}
+.vis-opts label{display:flex;gap:10px;align-items:flex-start;padding:10px 12px;border-radius:14px;box-shadow:inset 0 0 0 1px var(--line);cursor:pointer}
+.vis-opts label:has(input:checked){box-shadow:inset 0 0 0 2px var(--green);background:var(--green-soft)}
+.vis-opts label.off{opacity:.5;cursor:not-allowed}
+.vis-opts b{display:block;font-weight:600;font-size:14px}
+.vis-opts small{color:var(--ink-2);font-size:12.5px}
+.mpick{display:flex;flex-wrap:wrap;gap:8px;padding-left:4px}
+.mpick label{display:flex;align-items:center;gap:6px;font-size:13.5px;background:var(--surface-2);border-radius:999px;padding:5px 10px 5px 6px}
+.progress{height:8px;border-radius:8px;background:var(--line);overflow:hidden}
+.progress i{display:block;height:100%;background:var(--green);width:0;transition:width .2s}
+.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(92px + env(safe-area-inset-bottom,0px));background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:12px;z-index:90;font-size:14px;max-width:calc(100% - 32px)}
+
+/* ---------- sign in ---------- */
+#auth{position:fixed;inset:0;z-index:30;overflow:auto;background:var(--espresso);color:var(--on-photo)}
+.auth-bg{position:fixed;inset:0;width:100%;height:100%;object-fit:cover;object-position:62% 30%}
+#auth::before{content:"";position:fixed;inset:0;background:linear-gradient(180deg,var(--shade-mid) 0%,var(--shade) 70%);z-index:0}
+.auth-wrap{position:relative;z-index:1;min-height:100%;display:flex;flex-direction:column;justify-content:flex-end;gap:22px;
+  padding:calc(40px + env(safe-area-inset-top,0px)) max(16px,env(safe-area-inset-right,0px)) calc(24px + env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px))}
+.auth-intro h1{font-size:38px;font-weight:700;letter-spacing:-.01em}
+.auth-intro p{margin-top:10px;max-width:44ch;opacity:.92;font-size:15.5px}
+.auth-card{background:var(--surface);color:var(--ink);border-radius:26px;padding:22px;display:flex;flex-direction:column;gap:16px;width:100%;max-width:440px;box-shadow:var(--shadow)}
+.auth-card .seg{align-self:flex-start}
+.auth-card .btn{width:100%;padding-block:13px}
+.af-msg{font-size:13.5px;color:var(--danger)}
+.af-msg.ok{color:var(--ink-2)}
+.af-invite{background:var(--sand);color:var(--sand-ink);border-radius:14px;padding:10px 12px;font-size:13.5px}
+@media (min-width:900px){
+  .auth-wrap{flex-direction:row;align-items:flex-end;justify-content:space-between;padding:56px 64px}
+  #auth::before{background:linear-gradient(90deg,var(--shade) 0%,var(--shade-mid) 55%,var(--shade-0) 100%)}
+  .auth-intro{max-width:520px;padding-bottom:12px}
+  .auth-intro h1{font-size:56px}
+}
+
+/* ---------- reader ---------- */
+#reader{position:fixed;inset:0;z-index:40;background:var(--paper);color:var(--paper-ink);display:flex;flex-direction:column;
+  padding-top:env(safe-area-inset-top,0px)}
+#reader[data-rt="sepia"]{--paper:#F4ECD8;--paper-ink:#3B2F1E;--line:#E2D6BC;--surface:#FBF6EA;--surface-2:#EFE5CF;--ink:#3B2F1E;--ink-2:#7A6A52;color-scheme:light}
+#reader[data-rt="light"]{--paper:#FFFFFF;--paper-ink:#24263A;--line:#E3DCCF;--surface:#FFFFFF;--surface-2:#F7F3EC;--ink:#22264A;--ink-2:#646779;color-scheme:light}
+#reader[data-rt="night"]{--paper:#111220;--paper-ink:#D9D7E4;--line:#2B2D48;--surface:#1A1C30;--surface-2:#22253C;--ink:#E4E2EE;--ink-2:#9C9EB5;--hl-y:rgba(240,200,60,.32);--hl-g:rgba(90,190,120,.3);--hl-b:rgba(110,150,230,.34);--hl-r:rgba(230,110,140,.32);--speak:rgba(255,215,90,.26);color-scheme:dark}
+.r-top{display:flex;align-items:center;gap:10px;padding:10px max(12px,env(safe-area-inset-right,0px)) 10px max(12px,env(safe-area-inset-left,0px));border-bottom:1px solid var(--line)}
+.r-top .iconbtn{background:none;box-shadow:none;color:var(--paper-ink)}
+.r-top .iconbtn:hover{background:var(--surface-2)}
+.r-top .iconbtn[aria-pressed="true"]{background:var(--surface-2);color:var(--green)}
+.r-title{flex:1;min-width:0;text-align:center}
+.r-title b{display:block;font-weight:600;font-size:14.5px;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
+.r-title span{font-size:12.5px;color:var(--ink-2);display:block;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
+.r-body{flex:1;display:flex;min-height:0;position:relative}
+.r-scroll{flex:1;overflow-y:auto;min-width:0;-webkit-overflow-scrolling:touch}
+.r-text{max-width:680px;margin:0 auto;padding:28px max(22px,env(safe-area-inset-right,0px)) 80px max(22px,env(safe-area-inset-left,0px));font-family:var(--f-read);font-size:var(--rs,19px);line-height:1.7}
+.r-text.sans{font-family:var(--f-ui)}
+.r-text h2.r-ch{font-family:var(--f-ui);font-size:1.45em;font-weight:600;margin:6px 0 1.2em;line-height:1.2}
+.r-text h3{font-size:1.15em;margin:1.4em 0 .6em;font-weight:600}
+.r-text p{margin:0 0 1em;overflow-wrap:anywhere}
+.r-text mark.hl{color:inherit;border-radius:3px;padding:.05em 0;cursor:pointer;background:var(--hl-y)}
+.r-text mark.c-g{background:var(--hl-g)}.r-text mark.c-b{background:var(--hl-b)}.r-text mark.c-r{background:var(--hl-r)}
+.r-text mark.other{background:none;border-bottom:2.5px solid var(--hl-g);border-radius:0}
+.r-text mark.other.c-y{border-color:var(--hl-y)}.r-text mark.other.c-b{border-color:var(--hl-b)}.r-text mark.other.c-r{border-color:var(--hl-r)}
+.r-text h2.r-ch.speak{background:var(--speak);border-radius:4px;box-shadow:0 0 0 3px var(--speak)}
+.r-text .speak{background:var(--speak);border-radius:3px;box-shadow:0 0 0 2px var(--speak)}
+.r-text .flash{animation:flash 1.6s ease-out}
+@keyframes flash{0%{background:var(--speak)}100%{background:transparent}}
+.r-pages{max-width:900px;margin:0 auto;padding:20px max(12px,env(safe-area-inset-right,0px)) 80px max(12px,env(safe-area-inset-left,0px))}
+.r-pages canvas{width:100%;height:auto;display:block;border-radius:6px;box-shadow:var(--shadow);background:#fff}
+.r-pages .pnote{margin-top:14px;display:flex;justify-content:center}
+.r-info{max-width:680px;margin:0 auto 0;padding:14px 22px 0}
+.r-info p{background:var(--surface-2);border-radius:12px;padding:10px 14px;font-size:13.5px;font-family:var(--f-ui)}
+.r-notes{display:none;flex-direction:column;width:360px;border-left:1px solid var(--line);background:var(--surface-2);min-height:0}
+.r-notes.open{display:flex}
+.r-notes .nh{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:14px 16px;border-bottom:1px solid var(--line)}
+.r-notes .nh h2{font-size:16px;font-weight:600}
+.r-notes .nl{flex:1;overflow:auto;padding:14px;display:flex;flex-direction:column;gap:12px}
+.r-notes .nl .note{box-shadow:none}
+@media (max-width:959px){
+  .r-notes{position:absolute;inset:auto 0 0 0;width:auto;height:72%;border-left:0;border-top:1px solid var(--line);border-radius:22px 22px 0 0;box-shadow:0 -12px 30px rgba(0,0,0,.18);z-index:3}
+}
+.r-sel{position:fixed;z-index:45;display:flex;align-items:center;gap:6px;background:var(--navy);color:#fff;border-radius:999px;padding:6px 6px 6px 10px;box-shadow:var(--shadow)}
+.r-sel .colors button{width:24px;height:24px}
+.r-sel .btn{padding:7px 12px;font-size:13px}
+.r-bottom{border-top:1px solid var(--line);padding:8px max(12px,env(safe-area-inset-right,0px)) calc(8px + env(safe-area-inset-bottom,0px)) max(12px,env(safe-area-inset-left,0px));display:flex;flex-direction:column;gap:6px;background:var(--paper)}
+.r-prog{display:flex;align-items:center;gap:10px;font-size:12px;color:var(--ink-2)}
+.r-prog .progress{flex:1;height:4px}
+.audio{display:flex;align-items:center;justify-content:space-between;gap:6px}
+.audio .grp{display:flex;align-items:center;gap:4px}
+.audio .iconbtn{background:none;box-shadow:none;color:var(--paper-ink);width:38px;height:38px}
+.audio .iconbtn:hover{background:var(--surface-2)}
+.audio .playbtn{width:50px;height:50px;border-radius:50%;border:0;background:var(--green);color:var(--on-green);display:grid;place-items:center}
+.audio .playbtn svg{width:22px;height:22px}
+.pill{border:0;background:var(--surface-2);color:var(--paper-ink);border-radius:999px;padding:7px 11px;font-size:12.5px;font-weight:600;min-width:44px}
+.pill.on{background:var(--navy);color:#fff}
+.gender{display:inline-flex;background:var(--surface-2);border-radius:999px;padding:3px}
+.gender button{border:0;background:none;border-radius:999px;padding:5px 10px;font-size:12.5px;font-weight:600;color:var(--ink-2)}
+.gender button[aria-pressed="true"]{background:var(--navy);color:#fff}
+@media (max-width:520px){ .audio .hide-s{display:none} }
+.toc{display:flex;flex-direction:column;max-height:60vh;overflow:auto}
+.toc button{border:0;background:none;text-align:left;padding:11px 8px;border-bottom:1px solid var(--line);font-size:14.5px;display:flex;justify-content:space-between;gap:10px}
+.toc button[aria-current="true"]{color:var(--green);font-weight:600}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+
+
+<div id="auth" hidden>
+  <img class="auth-bg" src="img/etude.jpg" alt="">
+  <div class="auth-wrap">
+    <div class="auth-intro">
+      <div class="tags"><span class="tag">Lire</span><span class="tag m">Annoter</span><span class="tag d">Écouter</span><span class="tag t">Partager</span></div>
+      <h1>Lisons Ensemble</h1>
+      <p>Lisez vos livres PDF et EPUB, annotez en choisissant qui voit vos notes, écoutez-les à voix haute et avancez avec votre groupe.</p>
+    </div>
+    <div class="auth-card">
+      <div class="seg" role="group" aria-label="Connexion ou inscription"><button type="button" data-act="auth-tab" data-v="in" aria-pressed="true">Se connecter</button><button type="button" data-act="auth-tab" data-v="up" aria-pressed="false">Créer un compte</button></div>
+      <p class="af-invite" id="af-invite" hidden></p>
+      <form id="auth-form" class="form" novalidate>
+        <label class="field" id="af-name-l" hidden><span>Votre nom</span><input class="input" id="af-name" autocomplete="name" maxlength="60" placeholder="Ex. : Afi Mensah"></label>
+        <label class="field"><span>E-mail</span><input class="input" id="af-email" type="email" autocomplete="email" required placeholder="vous@exemple.com"></label>
+        <label class="field"><span>Mot de passe</span><input class="input" id="af-pass" type="password" autocomplete="current-password" required><small id="af-hint" hidden>8 caractères minimum.</small></label>
+        <p class="af-msg" id="af-msg" hidden></p>
+        <button class="btn" id="af-go" type="submit">Se connecter</button>
+      </form>
+    </div>
+  </div>
+</div>
+
+<div class="shell" id="shell" hidden>
+  <aside class="side" aria-label="Navigation">
+    <div class="logo"><svg viewBox="0 0 40 40" aria-hidden="true"><path d="M6 10c5-2 10-2 14 1v21c-4-3-9-3-14-1z" fill="#E3A82B"/><path d="M34 10c-5-2-10-2-14 1v21c4-3 9-3 14-1z" fill="#fff"/></svg>Lisons<br>Ensemble</div>
+    <nav id="sidenav"></nav>
+    <button class="av lg" data-act="nav" data-v="profile" id="side-av" aria-label="Profil" style="border:0"></button>
+  </aside>
+  <main class="main" id="main">
+    <header class="topnav" id="topnav"></header>
+    <div id="view"></div>
+  </main>
+  <nav class="tabbar" id="tabbar" aria-label="Navigation"></nav>
+</div>
+
+<div id="reader" hidden>
+  <header class="r-top">
+    <button class="iconbtn" data-act="r-close" aria-label="Fermer le livre"><svg class="i" viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg></button>
+    <div class="r-title"><b id="r-book"></b><span id="r-chap"></span></div>
+    <button class="iconbtn" data-act="r-toc" aria-label="Table des matières"><svg class="i" viewBox="0 0 24 24"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></svg></button>
+    <button class="iconbtn" data-act="r-mode" id="r-modebtn" aria-label="Page originale" hidden><svg class="i" viewBox="0 0 24 24"><rect x="5" y="3" width="14" height="18" rx="2"/><path d="M9 8h6M9 12h6M9 16h3"/></svg></button>
+    <button class="iconbtn" data-act="r-aa" aria-label="Affichage"><svg class="i" viewBox="0 0 24 24"><path d="M4 19l5-14 5 14M6 14h6M15 19l3-8 3 8M16 17h4"/></svg></button>
+    <button class="iconbtn" data-act="r-notes" id="r-notesbtn" aria-label="Notes" aria-pressed="false"><svg class="i" viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></button>
+  </header>
+  <div class="r-body">
+    <div class="r-scroll" id="r-scroll">
+      <div class="r-info" id="r-info" hidden></div>
+      <article class="r-text" id="r-text"></article>
+      <div class="r-pages" id="r-pages" hidden></div>
+    </div>
+    <aside class="r-notes" id="r-notes" aria-label="Notes du livre"></aside>
+  </div>
+  <footer class="r-bottom">
+    <div class="r-prog"><button class="pill" data-act="r-prev" aria-label="Chapitre précédent">‹</button><div class="progress"><i id="r-bar"></i></div><span class="num" id="r-pct">0 %</span><button class="pill" data-act="r-next" aria-label="Chapitre suivant">›</button></div>
+    <div class="audio">
+      <div class="grp">
+        <div class="gender" role="group" aria-label="Voix">
+          <button data-act="tts-g" data-g="f" id="g-f">Femme</button><button data-act="tts-g" data-g="m" id="g-m">Homme</button>
+        </div>
+      </div>
+      <div class="grp">
+        <button class="iconbtn" data-act="tts-back" aria-label="Phrase précédente"><svg class="i" viewBox="0 0 24 24"><path d="M19 20L9 12l10-8zM5 19V5"/></svg></button>
+        <button class="playbtn" data-act="tts-play" id="tts-play" aria-label="Écouter"></button>
+        <button class="iconbtn" data-act="tts-fwd" aria-label="Phrase suivante"><svg class="i" viewBox="0 0 24 24"><path d="M5 4l10 8-10 8zM19 5v14"/></svg></button>
+      </div>
+      <div class="grp">
+        <button class="pill" data-act="tts-rate" id="tts-rate" aria-label="Vitesse">1×</button>
+        <button class="pill hide-s" data-act="tts-timer" id="tts-timer" aria-label="Minuterie">⏱ Off</button>
+      </div>
+    </div>
+  </footer>
+</div>
+<div class="r-sel" id="r-sel" hidden>
+  <div class="colors" id="sel-colors">
+    <button class="c-y" data-act="sel-hl" data-c="y" aria-label="Surligner en jaune"></button>
+    <button class="c-g" data-act="sel-hl" data-c="g" aria-label="Surligner en vert"></button>
+    <button class="c-b" data-act="sel-hl" data-c="b" aria-label="Surligner en bleu"></button>
+    <button class="c-r" data-act="sel-hl" data-c="r" aria-label="Surligner en rose"></button>
+  </div>
+  <button class="btn small" data-act="sel-note">Noter</button>
+  <button class="btn small" style="background:rgba(255,255,255,.14)" data-act="sel-listen">Écouter</button>
+</div>
+<div id="sheet-root"></div>
+<div class="toast" id="toast" hidden></div>
+<input type="file" id="file-input" accept=".pdf,.epub,application/pdf,application/epub+zip" hidden multiple>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
+<script>
+"use strict";
+/* ================= utilities ================= */
+const $ = (s, r = document) => r.querySelector(s);
+const $$ = (s, r = document) => Array.from(r.querySelectorAll(s));
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const uid = () => (window.crypto && crypto.randomUUID) ? crypto.randomUUID() : 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c => { const r = Math.random() * 16 | 0; return (c === 'x' ? r : (r & 3 | 8)).toString(16); });
+const hash = s => { let h = 0; for (const c of String(s)) h = (h * 31 + c.charCodeAt(0)) | 0; return Math.abs(h); };
+const AVC = ['#C4552B','#3E6A9A','#1F7A72','#B7841A','#7B4A8F','#A8322E','#5E7A2E','#2B211C'];
+const PHOTOS = ['img/rayons.jpg','img/jeune.jpg','img/allonge.jpg','img/etude.jpg','img/fauteuil.jpg'];
+const groupPhoto = g => g.photo || ({g1:'img/rayons.jpg', g2:'img/jeune.jpg'})[g.id] || PHOTOS[hash(g.id) % PHOTOS.length];
+const ic = {
+  books:'<svg class="i" viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20V3H6.5A2.5 2.5 0 0 0 4 5.5z"/><path d="M4 19.5A2.5 2.5 0 0 0 6.5 22H20v-5"/></svg>',
+  group:'<svg class="i" viewBox="0 0 24 24"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20a6.5 6.5 0 0 1 13 0"/><circle cx="17.5" cy="9" r="2.5"/><path d="M16 14.2a5 5 0 0 1 6 4.8"/></svg>',
+  note:'<svg class="i" viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>',
+  user:'<svg class="i" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg>',
+  play:'<svg class="i" viewBox="0 0 24 24" style="fill:currentColor;stroke:none"><path d="M7 4.5v15l13-7.5z"/></svg>',
+  pause:'<svg class="i" viewBox="0 0 24 24" style="fill:currentColor;stroke:none"><rect x="6" y="4.5" width="4" height="15" rx="1"/><rect x="14" y="4.5" width="4" height="15" rx="1"/></svg>',
+  plus:'<svg class="i" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>',
+  search:'<svg class="i" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>',
+  back:'<svg class="i" viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg>',
+  heart:'<svg class="i" viewBox="0 0 24 24"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1-1.1a5.5 5.5 0 0 0-7.8 7.8l1 1.1L12 21l7.8-7.5 1-1.1a5.5 5.5 0 0 0 0-7.8z"/></svg>',
+  reply:'<svg class="i" viewBox="0 0 24 24"><path d="M9 14L4 9l5-5"/><path d="M20 20v-7a4 4 0 0 0-4-4H4"/></svg>',
+  goto:'<svg class="i" viewBox="0 0 24 24"><path d="M7 17L17 7M8 7h9v9"/></svg>',
+  edit:'<svg class="i" viewBox="0 0 24 24"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/></svg>',
+  book:'<svg class="i" viewBox="0 0 24 24"><path d="M2 4h7a3 3 0 0 1 3 3v14a2 2 0 0 0-2-2H2zM22 4h-7a3 3 0 0 0-3 3v14a2 2 0 0 1 2-2h8z"/></svg>',
+  send:'<svg class="i" viewBox="0 0 24 24"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4z"/></svg>',
+};
+let toastT;
+function toast(msg){ const t = $('#toast'); t.textContent = msg; t.hidden = false; clearTimeout(toastT); toastT = setTimeout(() => t.hidden = true, 2600); }
+function when(ts){ const d = new Date(ts); const diff = (Date.now() - ts) / 60000;
+  if (diff < 1) return "à l'instant"; if (diff < 60) return `il y a ${Math.round(diff)} min`; if (diff < 1440) return `il y a ${Math.round(diff/60)} h`;
+  return d.toLocaleDateString('fr-FR', {day:'numeric', month:'short'}); }
+async function copy(text, btn){ try { await navigator.clipboard.writeText(text); toast('Copié'); } catch(e){ toast('Sélectionnez le texte puis copiez-le'); } }
+
+/* ================= storage (IndexedDB, falls back to memory) ================= */
+const DB = (() => {
+  const mem = new Map(); let p = null;
+  function open(){ if (p) return p; p = new Promise(res => { try { const r = indexedDB.open('lisons-ensemble', 1);
+    r.onupgradeneeded = () => r.result.createObjectStore('kv'); r.onsuccess = () => res(r.result); r.onerror = () => res(null); r.onblocked = () => res(null);
+  } catch(e){ res(null); } }); return p; }
+  async function get(k){ if (mem.has(k)) return mem.get(k); const db = await open(); if (!db) return undefined;
+    return new Promise(res => { try { const q = db.transaction('kv').objectStore('kv').get(k); q.onsuccess = () => { mem.set(k, q.result); res(q.result); }; q.onerror = () => res(undefined); } catch(e){ res(undefined); } }); }
+  async function set(k, v){ mem.set(k, v); const db = await open(); if (!db) return;
+    return new Promise(res => { try { const tx = db.transaction('kv', 'readwrite'); tx.objectStore('kv').put(v, k); tx.oncomplete = () => res(); tx.onerror = () => res(); } catch(e){ res(); } }); }
+  async function del(k){ mem.delete(k); const db = await open(); if (!db) return; try { db.transaction('kv','readwrite').objectStore('kv').delete(k); } catch(e){} }
+  return {get, set, del};
+})();
+
+/* ================= state ================= */
+const S = {
+  profile:{id:'me', name:'', voiceGender:'f', voiceF:'', voiceM:'', rate:1, defaultVis:'me', rs:19, rf:'serif', rt:'auto', pauseScale:1, commas:'natural', verses:'read'},
+  books:[], groups:[], notes:[], progress:{},
+  view:{name:'home'}, filter:'all', q:'', noteFilter:'all'
+};
+let saveT;
+function save(){ clearTimeout(saveT); saveT = setTimeout(() => { try { localStorage.setItem('le-prefs', JSON.stringify(S.profile)); } catch(e){} if (ME) DB.set('state:' + ME, {books:S.books, groups:S.groups, notes:S.notes, progress:S.progress}); }, 250); }
+/* ================= server (Supabase) ================= */
+const SB_URL = 'https://xclvxmnjwmvpwooowbdt.supabase.co';
+const SB_KEY = 'sb_publishable_PRxVdJmHtxjIMC18Dz6v_A_mEdXnfrJ';
+const APP_URL = location.origin + location.pathname;
+const sb = (window.supabase && window.supabase.createClient) ? window.supabase.createClient(SB_URL, SB_KEY, {auth:{persistSession:true, autoRefreshToken:true, detectSessionInUrl:false}}) : null;
+let ME = null, MY_EMAIL = '';
+const toL = id => id === ME ? 'me' : id;
+const toR = id => id === 'me' ? ME : id;
+function fail(e, msg){ console.error(e); toast(msg || "Le serveur n'a pas répondu. Vérifiez votre connexion Internet puis réessayez."); }
+async function q(p){ const {data, error} = await p; if (error) throw error; return data; }
+const pendingT = {};
+function later(key, fn, ms = 900){ clearTimeout(pendingT[key]); pendingT[key] = setTimeout(() => fn().catch(e => fail(e)), ms); }
+
+async function loadAll(){
+  const [profiles, groups, members, books, progress, notes, viewers, replies, likes] = await Promise.all([
+    q(sb.from('le_profiles').select('id,name,color')), q(sb.from('le_groups').select('*')), q(sb.from('le_members').select('group_id,user_id,role')),
+    q(sb.from('le_books').select('id,owner_id,group_id,title,author,format,cover,photo,chapters,descr,scanned,created_at')), q(sb.from('le_progress').select('*')),
+    q(sb.from('le_notes').select('*')), q(sb.from('le_note_viewers').select('*')), q(sb.from('le_replies').select('*').order('created_at')), q(sb.from('le_likes').select('*'))]);
+  const prof = id => profiles.find(p => p.id === id) || {name:'Membre'};
+  const progOf = u => Object.fromEntries(progress.filter(p => p.user_id === u).map(p => [p.book_id, p.pct]));
+  const mine = profiles.find(p => p.id === ME); if (mine) S.profile.name = mine.name;
+  const RANK = ['Créateur','Animateur','Membre'];
+  S.books = books.map(b => ({id:b.id, ownerId:toL(b.owner_id), groupId:b.group_id, title:b.title, author:b.author || '', format:b.format, cover:b.cover, photo:b.photo, chapters:b.chapters, desc:b.descr || '', scanned:b.scanned, addedAt:Date.parse(b.created_at)}));
+  S.progress = Object.fromEntries(progress.filter(p => p.user_id === ME).map(p => [p.book_id, {ch:p.ch, pos:p.pos, pct:p.pct, at:Date.parse(p.updated_at)}]));
+  S.groups = groups.sort((a, b) => Date.parse(a.created_at) - Date.parse(b.created_at)).map(g => ({id:g.id, name:g.name, desc:g.descr || '', code:g.code, calendar:g.calendar || '', bookId:g.book_id, createdBy:toL(g.created_by),
+    members: members.filter(m => m.group_id === g.id).map(m => ({id:toL(m.user_id), name:prof(m.user_id).name, color:prof(m.user_id).color || AVC[hash(m.user_id) % AVC.length], role:m.role, prog:progOf(m.user_id)}))
+      .sort((a, b) => RANK.indexOf(a.role) - RANK.indexOf(b.role))}));
+  S.notes = notes.map(n => ({id:n.id, bookId:n.book_id, groupId:n.group_id, authorId:toL(n.author_id), ch:n.ch, para:n.para, start:n.start_pos, end:n.end_pos, quote:n.quote || '', text:n.body || '', color:n.color, vis:n.vis,
+    viewers:viewers.filter(v => v.note_id === n.id).map(v => toL(v.user_id)), createdAt:Date.parse(n.created_at),
+    replies:replies.filter(r => r.note_id === n.id).map(r => ({authorId:toL(r.author_id), text:r.body, at:Date.parse(r.created_at)})),
+    likes:likes.filter(l => l.note_id === n.id).map(l => toL(l.user_id))}));
+  save();
+}
+const API = {
+  async saveNote(n, isNew){
+    const row = {book_id:n.bookId, group_id:n.groupId, ch:n.ch, para:n.para, start_pos:n.start, end_pos:n.end, quote:n.quote || '', body:n.text || '', color:n.color, vis:n.groupId ? n.vis : 'me', updated_at:new Date().toISOString()};
+    if (isNew) await q(sb.from('le_notes').insert({id:n.id, ...row})); else await q(sb.from('le_notes').update(row).eq('id', n.id));
+    if (!isNew) await q(sb.from('le_note_viewers').delete().eq('note_id', n.id));
+    if (n.vis === 'chosen' && (n.viewers || []).length) await q(sb.from('le_note_viewers').insert(n.viewers.map(u => ({note_id:n.id, user_id:toR(u)}))));
+  },
+  deleteNote: id => q(sb.from('le_notes').delete().eq('id', id)),
+  like: (id, on) => on ? q(sb.from('le_likes').insert({note_id:id, user_id:ME})) : q(sb.from('le_likes').delete().eq('note_id', id).eq('user_id', ME)),
+  reply: (id, text) => q(sb.from('le_replies').insert({note_id:id, body:text})),
+  progress(bookId){ const p = S.progress[bookId]; if (!p || !ME) return;
+    later('prog:' + bookId, () => q(sb.from('le_progress').upsert({user_id:ME, book_id:bookId, ch:p.ch, pos:p.pos, pct:p.pct, updated_at:new Date().toISOString()})), 1500); },
+  async createBook(b){
+    const c = contentCache.get(b.id) || await DB.get('content:' + b.id); if (!c) throw new Error('Contenu introuvable');
+    await q(sb.from('le_books').insert({id:b.id, group_id:b.groupId, title:String(b.title).slice(0, 300), author:String(b.author || '').slice(0, 200), format:b.format, cover:b.cover || null, photo:b.photo || null, chapters:b.chapters, descr:b.desc || '', scanned:!!c.scanned}));
+    const {file, ...rest} = c;
+    await q(sb.storage.from('le-books').upload(`${b.id}/content.json`, new Blob([JSON.stringify(rest)], {type:'application/json'}), {upsert:true}));
+    if (file) await q(sb.storage.from('le-books').upload(`${b.id}/file.pdf`, new Blob([file], {type:'application/pdf'}), {upsert:true}));
+    const g = groupOf(b.groupId); if (g && g.bookId === b.id && isLead(g)) await q(sb.from('le_groups').update({book_id:b.id}).eq('id', g.id));
+  },
+  async moveBook(b){
+    await q(sb.from('le_books').update({group_id:b.groupId}).eq('id', b.id));
+    await q(sb.from('le_notes').update(b.groupId ? {group_id:b.groupId} : {group_id:null, vis:'me'}).eq('book_id', b.id).eq('author_id', ME));
+    const g = groupOf(b.groupId); if (g && g.bookId === b.id && isLead(g)) await q(sb.from('le_groups').update({book_id:b.id}).eq('id', g.id));
+  },
+  async deleteBook(id){ await sb.storage.from('le-books').remove([`${id}/content.json`, `${id}/file.pdf`]); await q(sb.from('le_books').delete().eq('id', id)); },
+  createGroup: (name, descr) => q(sb.rpc('le_create_group', {p_name:name, p_descr:descr})),
+  joinGroup: code => q(sb.rpc('le_join_group', {p_code:code})),
+  calendar(g){ later('cal:' + g.id, () => q(sb.from('le_groups').update({calendar:g.calendar}).eq('id', g.id))); },
+  groupBook: (gid, bid) => q(sb.from('le_groups').update({book_id:bid}).eq('id', gid)),
+  profileName(){ later('name', () => q(sb.from('le_profiles').upsert({id:ME, name:(S.profile.name || '').trim().slice(0, 60) || 'Lecteur'}))); },
+};
+async function fetchContent(id){ const {data, error} = await sb.storage.from('le-books').download(`${id}/content.json`); if (error) throw error; return JSON.parse(await data.text()); }
+async function fetchPdfFile(id){ const {data, error} = await sb.storage.from('le-books').download(`${id}/file.pdf`); if (error) throw error; return await data.arrayBuffer(); }
+async function ensureSample(){
+  if (S.books.length) return;
+  const b = {id:uid(), ownerId:'me', title:'Lire ensemble', author:"Livre d'exemple", format:'sample', cover:null, photo:'img/livre.jpg', chapters:SAMPLE.chapters.length, groupId:null, addedAt:Date.now(),
+    desc:"Livre d'exemple offert à l'inscription. Trois courts chapitres pour essayer la lecture, les notes et la lecture vocale. Vous pouvez le supprimer."};
+  contentCache.set(b.id, {chapters:SAMPLE.chapters}); await API.createBook(b); S.books.push(b); save();
+}
+let rtChan = null;
+function startRealtime(){ if (rtChan || !sb) return; rtChan = sb.channel('le-live');
+  ['le_notes','le_replies','le_likes'].forEach(t => rtChan.on('postgres_changes', {event:'*', schema:'public', table:t}, () => later('rt', refreshLive, 700)));
+  rtChan.subscribe(); }
+async function refreshLive(){
+  if (!ME) return; await loadAll();
+  if ($('#sheet-root').innerHTML) return;
+  if (!$('#reader').hidden) { if (R.book && R.content) { R.content.chapters[R.ch]?.blocks.forEach((_, i) => refreshPara(i)); renderNotesPanel(); } return; }
+  const ae = document.activeElement; if (ae && /INPUT|TEXTAREA|SELECT/.test(ae.tagName)) return; render();
+}
+document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible' && ME) later('rt', refreshLive, 300); });
+
+/* sign in / create account */
+let authMode = 'in';
+const takeCode = () => { try { return sessionStorage.getItem('le-code'); } catch(e){ return null; } };
+function setAuthMode(m){ authMode = m; $$('[data-act="auth-tab"]').forEach(b => b.setAttribute('aria-pressed', b.dataset.v === m));
+  $('#af-name-l').hidden = m !== 'up'; $('#af-hint').hidden = m !== 'up'; $('#af-go').textContent = m === 'up' ? 'Créer mon compte' : 'Se connecter';
+  $('#af-pass').autocomplete = m === 'up' ? 'new-password' : 'current-password'; authMsg(''); }
+function authMsg(t, ok){ const m = $('#af-msg'); m.hidden = !t; m.textContent = t || ''; m.classList.toggle('ok', !!ok); }
+function showAuth(msg){
+  $('#shell').hidden = true; $('#reader').hidden = true; $('#auth').hidden = false; document.body.style.overflow = '';
+  const code = takeCode(); $('#af-invite').hidden = !code; if (code) { $('#af-invite').textContent = `Vous êtes invité à rejoindre un groupe de lecture (code ${code}). Connectez-vous ou créez votre compte : vous le rejoindrez aussitôt.`; setAuthMode('up'); }
+  if (msg) authMsg(msg);
+}
+async function submitAuth(e){
+  e.preventDefault(); if (!sb) return;
+  const email = $('#af-email').value.trim(), pass = $('#af-pass').value, name = $('#af-name').value.trim(); const btn = $('#af-go');
+  if (authMode === 'up' && !name) return authMsg('Indiquez votre nom : il sera visible par les membres de vos groupes.');
+  if (pass.length < 8 && authMode === 'up') return authMsg('Choisissez un mot de passe d’au moins 8 caractères.');
+  btn.disabled = true; authMsg(authMode === 'up' ? 'Création du compte…' : 'Connexion…', true);
+  try {
+    if (authMode === 'up') {
+      const r = await fetch(SB_URL + '/functions/v1/le-signup', {method:'POST', headers:{'Content-Type':'application/json', apikey:SB_KEY, Authorization:'Bearer ' + SB_KEY}, body:JSON.stringify({email, password:pass, name})});
+      const j = await r.json().catch(() => ({}));
+      if (r.status === 409) { setAuthMode('in'); authMsg(j.error); return; }
+      if (!r.ok) throw new Error(j.error || 'Inscription impossible pour le moment.');
+    }
+    const {error} = await sb.auth.signInWithPassword({email, password:pass});
+    if (error) throw new Error(/invalid login|credentials/i.test(error.message) ? 'E-mail ou mot de passe incorrect.' : error.message);
+  } catch(err){ authMsg(err.message === 'Failed to fetch' ? "Pas de connexion au serveur. Vérifiez Internet puis réessayez." : err.message); }
+  finally { btn.disabled = false; }
+}
+async function startApp(session){
+  if (ME === session.user.id) return;
+  ME = session.user.id; MY_EMAIL = session.user.email || '';
+  $('#auth').hidden = true; $('#shell').hidden = false;
+  const cached = await DB.get('state:' + ME);
+  if (cached) { Object.assign(S, cached); render(); }
+  try {
+    const nm = (session.user.user_metadata?.name || S.profile.name || MY_EMAIL.split('@')[0] || 'Lecteur').slice(0, 60);
+    await q(sb.from('le_profiles').upsert({id:ME, name:nm}, {onConflict:'id', ignoreDuplicates:true}));
+    await loadAll(); await ensureSample();
+    const code = takeCode();
+    if (code) { try { sessionStorage.removeItem('le-code'); } catch(e){}
+      const gid = await API.joinGroup(code);
+      if (gid) { await loadAll(); S.view = {name:'group', id:gid}; toast(`Bienvenue dans « ${groupOf(gid)?.name || 'le groupe'} »`); }
+      else toast("Ce code d'invitation ne correspond à aucun groupe."); }
+    if (location.search) history.replaceState(null, '', location.pathname);
+    render(); startRealtime();
+  } catch(e){ fail(e, cached ? 'Hors ligne : vous voyez les données enregistrées sur cet appareil.' : undefined); if (!cached) render(); }
+}
+async function logout(){ stopTTS(); try { if (rtChan) { await sb.removeChannel(rtChan); rtChan = null; } await sb.auth.signOut(); } catch(e){}
+  ME = null; S.books = []; S.groups = []; S.notes = []; S.progress = {}; S.view = {name:'home'}; contentCache.clear(); showAuth(); }
+
+const me = () => ({id:'me', name:S.profile.name || 'Moi', color:'#C4552B'});
+const groupOf = id => S.groups.find(g => g.id === id);
+const bookOf = id => S.books.find(b => b.id === id);
+const myRole = g => (g?.members.find(m => m.id === 'me') || {}).role || '';
+const isLead = g => ['Créateur','Animateur'].includes(myRole(g));
+const pct = id => (S.progress[id]?.pct) || 0;
+const VIS = {me:'Moi seul', chosen:'Membres choisis', leads:'Animateurs', group:'Tout le groupe'};
+function memberById(id, g){ if (id === 'me') return me(); for (const gr of (g ? [g] : S.groups)) { const m = gr.members.find(x => x.id === id); if (m) return m; } return {id, name:'Membre', color:'#646779'}; }
+function canSee(n){
+  if (n.authorId === 'me') return true;
+  const g = groupOf(n.groupId); if (!g || !g.members.some(m => m.id === 'me')) return false;
+  if (n.vis === 'group') return true;
+  if (n.vis === 'chosen') return (n.viewers || []).includes('me');
+  if (n.vis === 'leads') return isLead(g);
+  return false;
+}
+function avatar(p, cls = ''){ const n = p.name || '?'; const ini = n.split(/\s+/).map(w => w[0]).slice(0,2).join('').toUpperCase();
+  return `<span class="av ${cls}" style="background:${p.color || AVC[hash(n) % AVC.length]}" title="${esc(n)}" aria-hidden="true">${esc(ini)}</span>`; }
+function coverHTML(b, extra = ''){
+  const fmt = b.format === 'sample' ? '' : `<span class="fmt">${b.format === 'pdf' ? 'PDF' : 'EPUB'}</span>`;
+  if (b.photo) return `<div class="cover gen photo ${extra}"><img src="${b.photo}" alt="" loading="lazy"><div class="cin"><span class="ct">${esc(b.title)}</span><span class="ca">${esc(b.author || '')}</span></div></div>`;
+  if (b.cover) return `<div class="cover ${extra}">${fmt}<img src="${b.cover}" alt=""></div>`;
+  return `<div class="cover gen ${extra}" style="background:var(--cv${(hash(b.title) % 6) + 1})">${fmt}<div class="cin"><span class="ct">${esc(b.title)}</span><span class="ca">${esc(b.author || '')}</span></div></div>`;
+}
+
+/* ================= sample content (example data, clearly marked) ================= */
+const SAMPLE = {
+  chapters:[
+    {title:'Pourquoi lire ensemble', blocks:[
+      "Lire seul est un plaisir. Lire ensemble devient une conversation. Quand plusieurs personnes avancent dans le même livre, chacune remarque des choses différentes : une phrase qui touche, une idée qui dérange, une question restée sans réponse.",
+      "Un groupe de lecture ne demande pas d'être expert. Il demande seulement un peu de régularité et l'envie d'écouter. Une page lue par cinq personnes contient souvent plus de sens qu'une page lue cinq fois par la même personne.",
+      "Le rythme compte plus que la vitesse. Mieux vaut deux chapitres bien lus avant chaque rencontre qu'un livre entier parcouru à la hâte. Fixez un calendrier simple et tenez-le.",
+      "Enfin, un groupe protège la lecture du quotidien. Savoir que d'autres attendent votre avis mardi soir aide à ouvrir le livre le dimanche."]},
+    {title:'Prendre des notes qui servent', blocks:[
+      "Une bonne note est courte. Elle garde la trace d'un moment de lecture : ce que vous avez compris, ce qui vous a surpris, ce que vous voulez demander au groupe.",
+      "Surlignez peu. Si tout est surligné, plus rien ne ressort. Choisissez la phrase qui porte l'idée, puis écrivez en une ou deux lignes pourquoi vous l'avez choisie.",
+      "Toutes les notes ne sont pas faites pour être partagées. Certaines sont personnelles et doivent le rester. D'autres sont des questions que vous préférez poser d'abord à l'animateur. D'autres encore lancent la discussion pour tout le groupe.",
+      "C'est pourquoi chaque note a sa propre visibilité. Vous décidez, note par note, qui peut la lire. Vous pouvez aussi changer d'avis plus tard."]},
+    {title:'Animer une rencontre', blocks:[
+      "L'animateur n'est pas un professeur. Son rôle est de faire circuler la parole et de veiller à ce que chacun trouve sa place.",
+      "Avant la rencontre, parcourez les notes partagées. Elles montrent ce qui a marqué le groupe et les questions qui reviennent. Choisissez-en trois ou quatre pour ouvrir l'échange.",
+      "Pendant la rencontre, lisez à voix haute le passage dont il est question. Entendre le texte remet tout le monde au même endroit, même ceux qui ont pris du retard.",
+      "Après la rencontre, fixez la suite du calendrier et invitez chacun à noter une seule idée qu'il emporte avec lui."]}
+  ].map(c => ({title:c.title, blocks:c.blocks.map(x => ({t:'p', x}))}))
+};
+
+/* ================= navigation ================= */
+const NAV = [['home','Bibliothèque',ic.books],['groups','Groupes',ic.group],['notes','Notes',ic.note],['profile','Profil',ic.user]];
+function go(name, id){ S.view = {name, id}; render(); window.scrollTo(0,0); $('#main').scrollTop = 0; }
+function renderNav(){
+  const cur = S.view.name === 'book' ? 'home' : S.view.name === 'group' ? 'groups' : S.view.name;
+  $('#tabbar').innerHTML = NAV.map(([v,l,i]) => `<button data-act="nav" data-v="${v}" ${cur===v?'aria-current="page"':''}>${i}<span>${l}</span></button>`).join('');
+  $('#sidenav').innerHTML = NAV.slice(0,3).map(([v,l,i]) => `<button data-act="nav" data-v="${v}" ${cur===v?'aria-current="page"':''}><span class="dot">${i}</span>${l}</button>`).join('')
+    + `<button data-act="nav" data-v="profile" ${cur==='profile'?'aria-current="page"':''}><span class="dot"><svg class="i" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg></span>Réglages</button>`;
+  const sa = $('#side-av'); sa.innerHTML = esc((S.profile.name||'M').slice(0,1).toUpperCase()); sa.style.background = '#C4552B';
+  const g = S.groups[0];
+  const mem = g ? g.members.slice(0,3).map(m => avatar(m.id==='me'?me():m,'sm')).join('') : '';
+  $('#topnav').innerHTML = `<div class="links">${NAV.slice(0,3).map(([v,l]) => `<button data-act="nav" data-v="${v}" ${cur===v?'aria-current="page"':''}>${l}</button>`).join('')}</div>
+    ${g ? `<button class="btn ghost small" data-act="open-group" data-id="${g.id}" style="gap:10px"><span class="avs">${mem}</span><span class="num">${g.members.length} membres</span></button>` : ''}`;
+}
+function render(){
+  renderNav();
+  const v = S.view.name;
+  const html = v === 'home' ? viewHome() : v === 'book' ? viewBook(S.view.id) : v === 'groups' ? viewGroups() : v === 'group' ? viewGroup(S.view.id) : v === 'notes' ? viewNotes() : viewProfile();
+  $('#view').innerHTML = html;
+  if (v === 'profile') fillVoiceSelects();
+}
+
+/* ================= views ================= */
+function currentBook(){ const withP = S.books.filter(b => pct(b.id) > 0 && pct(b.id) < .999); withP.sort((a,b) => (S.progress[b.id].at||0) - (S.progress[a.id].at||0)); return withP[0] || S.books[0]; }
+function bookTile(b){ const p = pct(b.id);
+  return `<button class="tile" data-act="open-book" data-id="${b.id}">${coverHTML(b)}<b>${esc(b.title)}</b><span>${esc(b.author || '—')}</span>${p>0?`<div class="tbar"><i style="width:${Math.round(p*100)}%"></i></div>`:''}</button>`; }
+function gridHTML(){
+  const q = S.q.trim().toLowerCase();
+  let list = S.books.filter(b => !q || (b.title + ' ' + b.author).toLowerCase().includes(q));
+  if (S.filter === 'reading') list = list.filter(b => pct(b.id) > 0 && pct(b.id) < .999);
+  else if (S.filter === 'mine') list = list.filter(b => !b.groupId);
+  else if (S.filter.startsWith('g:')) list = list.filter(b => b.groupId === S.filter.slice(2));
+  list.sort((a,b) => b.addedAt - a.addedAt);
+  return list.map(bookTile).join('') + `<button class="tile add" data-act="import"><div class="cover">${ic.plus}</div><b>Importer</b><span>PDF ou EPUB</span></button>`;
+}
+function continueCard(b){
+  const p = pct(b.id), g = groupOf(b.groupId);
+  return `<div class="cont">${coverHTML(b)}<div class="meta"><span class="label">Lecture en cours${g ? ' · ' + esc(g.name) : ''}</span>
+    <h3>${esc(b.title)}</h3><p class="by">${esc(b.author || '')}</p>
+    <div class="bigpct num">${Math.round(p*100)}<small>% lu</small></div><div class="bar"><i style="width:${Math.round(p*100)}%"></i></div>
+    <div class="acts"><button class="btn" data-act="read" data-id="${b.id}">${ic.book} Continuer</button><button class="btn ghost" data-act="listen" data-id="${b.id}">${ic.play} Écouter</button></div></div></div>`;
+}
+function gauge(f){ const a = Math.PI * (1 - Math.max(0, Math.min(1, f))); const x = 60 + 46*Math.cos(a), y = 58 - 46*Math.sin(a);
+  return `<svg viewBox="0 0 120 66" width="120" height="66" aria-hidden="true"><path d="M14 58A46 46 0 0 1 106 58" fill="none" stroke="var(--surface)" stroke-width="9" stroke-linecap="round" opacity=".7"/>
+  <path d="M14 58A46 46 0 0 1 ${x.toFixed(1)} ${y.toFixed(1)}" fill="none" stroke="var(--orange)" stroke-width="9" stroke-linecap="round"/><circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="4" fill="var(--surface)"/></svg>`; }
+function groupAvg(g){ if (!g?.bookId) return 0; const vals = g.members.map(m => m.id === 'me' ? pct(g.bookId) : (m.prog?.[g.bookId] || 0)); return vals.reduce((a,b)=>a+b,0) / vals.length; }
+function goalCard(){
+  const g = S.groups.find(x => x.bookId) ; if (!g) return `<div class="goal"><h3>Objectif du groupe</h3><p>Créez un groupe et choisissez un livre pour suivre la progression de tous.</p><button class="btn navy small" data-act="nav" data-v="groups" style="align-self:flex-start">Voir les groupes</button></div>`;
+  const avg = groupAvg(g), b = bookOf(g.bookId);
+  return `<div class="goal"><h3>Progression · ${esc(g.name)}</h3><div class="row"><span class="big num">${Math.round(avg*100)}<small style="font-size:18px">%</small></span>${gauge(avg)}</div>
+    <p>Moyenne des ${g.members.length} membres sur « ${esc(b?.title || '')} ». ${esc((g.calendar||'').split('\n')[0])}</p>
+    <button class="tip" data-act="open-group" data-id="${g.id}" style="border:0;text-align:left">${ic.group}<span><b>Voir le groupe</b>Membres, calendrier et notes partagées</span></button></div>`;
+}
+function membersCard(){
+  const g = S.groups.find(x => x.bookId); if (!g) return '';
+  const rows = g.members.map(m => ({m: m.id === 'me' ? {...me(), role:m.role} : m, p: m.id === 'me' ? pct(g.bookId) : (m.prog?.[g.bookId] || 0), role:m.role})).sort((a,b) => b.p - a.p).slice(0,5);
+  return `<div class="card"><div class="sec-h" style="margin-top:0"><h2>Qui avance</h2><span class="muted" style="font-size:13px">${esc(g.name)}</span></div>
+    ${rows.map(r => `<div class="mrow">${avatar(r.m)}<div class="who"><b>${esc(r.m.name)}</b><span>${esc(r.role)}</span></div><span class="pctbadge num">${Math.round(r.p*100)} %</span></div>`).join('')}</div>`;
+}
+function feedCard(){
+  const list = S.notes.filter(n => n.groupId && n.vis !== 'me' && canSee(n)).sort((a,b) => b.createdAt - a.createdAt).slice(0,3);
+  return `<div><div class="sec-h" style="margin-top:0"><h2>Dernières notes partagées</h2><button class="btn ghost small" data-act="nav" data-v="notes">Tout voir</button></div>
+    <div class="notes-list">${list.map(n => noteCard(n, {book:true})).join('') || '<p class="empty">Aucune note partagée pour le moment.</p>'}</div></div>`;
+}
+function viewHome(){
+  const cur = currentBook();
+  const chips = [['all','Tous'],['reading','En cours'],['mine','Mes livres'], ...S.groups.map(g => ['g:'+g.id, g.name])];
+  return `<section class="hero"><img src="img/etude.jpg" alt=""><div class="band-in hero-in">
+      <div class="hero-top"><p class="hello">Bonjour, ${esc(S.profile.name || '')} !</p><button style="border:0;background:none;padding:0" data-act="nav" data-v="profile" aria-label="Profil">${avatar({...me(), color:'#3E6A9A'})}</button></div>
+      <div class="tags"><span class="tag">Lire</span><span class="tag m">Annoter</span><span class="tag d">Écouter</span><span class="tag t">Partager</span></div>
+      <h1>Vos livres,<br>vos groupes, vos notes.</h1>
+      <p class="hero-sub">Lisez à votre rythme, annotez, écoutez et échangez avec votre groupe.</p>
+      <label class="search">${ic.search}<span class="sr">Rechercher</span><input id="q" type="search" placeholder="Chercher un titre ou un auteur" value="${esc(S.q)}" autocomplete="off"></label>
+    </div></section>
+    <div class="pad">
+      <div class="dash">${cur ? continueCard(cur) : ''}${goalCard()}</div>
+      <div class="moments">
+        <button class="moment m-1" data-act="${cur ? 'listen' : 'import'}" data-id="${cur ? cur.id : ''}"><img src="img/fauteuil.jpg" alt="" loading="lazy"><div class="mt"><span><b>Écouter</b><small>Voix féminine ou masculine</small></span>${ic.play}</div></button>
+        <button class="moment m-2" data-act="nav" data-v="notes"><img src="img/canape.jpg" alt="" loading="lazy"><div class="mt"><span><b>Annoter</b><small>Vos notes et celles du groupe</small></span>${ic.note}</div></button>
+        <button class="moment m-3" data-act="nav" data-v="groups"><img src="img/allonge.jpg" alt="" loading="lazy"><div class="mt"><span><b>Lire en groupe</b><small>${S.groups.length} groupe${S.groups.length>1?'s':''} privé${S.groups.length>1?'s':''}</small></span>${ic.group}</div></button>
+      </div>
+      <div class="chips" role="group" aria-label="Filtrer">${chips.map(([k,l]) => `<button data-act="filter" data-f="${k}" aria-pressed="${S.filter===k}">${esc(l)}</button>`).join('')}</div>
+      <div class="grid" id="grid">${gridHTML()}</div>
+      <div class="dash2">${membersCard()}${feedCard()}</div>
+    </div>`;
+}
+function viewBook(id){
+  const b = bookOf(id); if (!b) { S.view = {name:'home'}; return viewHome(); }
+  const g = groupOf(b.groupId), p = pct(b.id), pr = S.progress[b.id];
+  const notes = S.notes.filter(n => n.bookId === b.id && canSee(n));
+  const shared = notes.filter(n => n.vis !== 'me').length, mine = notes.filter(n => n.authorId === 'me').length;
+  const readers = g ? g.members.map(m => ({m: m.id==='me' ? me() : m, p: m.id==='me' ? p : (m.prog?.[b.id] || 0)})) : [];
+  const others = S.books.filter(x => x.id !== b.id && x.groupId === b.groupId).slice(0,6);
+  const chLabel = pr ? (b.format === 'pdf' ? `page ${pr.ch + 1}` : `chapitre ${pr.ch + 1}`) : 'début';
+  return `<div class="bd-wrap">
+    <section class="bd-top"><img class="bd-bg" src="img/bibliotheque.jpg" alt=""><div class="band-in">
+      <button class="iconbtn back" data-act="nav" data-v="home" aria-label="Retour">${ic.back}</button>
+      <div class="bd-head">${coverHTML(b)}<div class="meta"><p class="by">${esc(b.author || 'Auteur inconnu')}</p><h1>${esc(b.title)}</h1>
+        <div class="chips2"><span class="chip">${b.format === 'pdf' ? 'PDF' : b.format === 'epub' ? 'EPUB' : 'Exemple'}</span><span class="chip">${g ? esc(g.name) : 'Livre personnel'}</span><span class="chip num">${b.chapters} ${b.format === 'pdf' ? 'pages' : 'chapitres'}</span></div></div></div>
+    </div></section>
+    <div class="bd-body pad">
+      <div><h2>Description</h2><p class="muted">${esc(b.desc || 'Aucune description. Le livre est prêt à être lu et écouté.')}</p></div>
+      <div class="bd-acts"><button class="btn" data-act="read" data-id="${b.id}">${ic.book} ${p > 0 ? 'Continuer la lecture' : 'Commencer la lecture'}</button>
+        <button class="btn ghost" data-act="listen" data-id="${b.id}">${ic.play} Écouter</button>
+        ${b.ownerId === 'me' ? `<button class="btn ghost" data-act="move-book" data-id="${b.id}">${ic.group} ${g ? 'Changer de groupe' : 'Partager dans un groupe'}</button>` : ''}</div>
+      <div class="card"><div class="sec-h" style="margin-top:0"><h2>Notes</h2><button class="btn ghost small" data-act="book-notes" data-id="${b.id}">Ouvrir</button></div>
+        <p class="muted num">${mine} note${mine>1?'s':''} de vous · ${shared} note${shared>1?'s':''} partagée${shared>1?'s':''} visible${shared>1?'s':''} pour vous</p></div>
+      ${g ? `<div><h2>Qui lit ce livre</h2><div class="readers">${readers.map(r => `<div class="r">${avatar(r.m,'lg')}<b class="num">${Math.round(r.p*100)} %</b><span class="muted">${esc(r.m.name.split(' ')[0])}</span></div>`).join('')}</div></div>` : ''}
+      ${others.length ? `<div><h2>Dans le même ${g ? 'groupe' : 'rayon'}</h2><div class="minis">${others.map(bookTile).join('')}</div></div>` : ''}
+      ${b.ownerId === 'me' ? `<div><button class="btn danger small" data-act="del-book" data-id="${b.id}">Supprimer ce livre</button></div>` : `<p class="muted" style="font-size:13px">Partagé par ${esc(memberById(toL(b.ownerId), g).name)}.</p>`}
+      <div class="cta"><div class="t">${p > 0 ? `Reprendre au ${chLabel}` : 'Commencer la lecture'}<span class="num">${Math.round(p*100)} % lu</span></div>
+        <button class="play" data-act="listen" data-id="${b.id}" aria-label="Écouter le livre">${ic.play}</button></div>
+    </div></div>`;
+}
+function viewGroups(){
+  return `<div class="pad"><div class="pbanner"><img src="img/jeune.jpg" alt="" style="object-position:60% 35%"><div class="pb-in"><div><h1>Groupes de lecture</h1><p>Groupes privés, rejoints uniquement sur invitation.</p></div>
+    <div class="acts"><button class="btn ghost" data-act="join-group">Rejoindre avec un code</button><button class="btn" data-act="new-group">${ic.plus} Créer un groupe</button></div></div></div>
+    <div class="glist">${S.groups.map(g => { const b = bookOf(g.bookId);
+      return `<button class="gcard" data-act="open-group" data-id="${g.id}"><div class="gph"><img src="${groupPhoto(g)}" alt="" loading="lazy"><span class="chip">${esc(myRole(g))}</span></div><div class="row"><h3>${esc(g.name)}</h3><span class="muted num" style="font-size:13px">${g.code}</span></div>
+        <p class="muted" style="font-size:14px">${esc(g.desc || '')}</p>
+        ${b ? `<div class="gbook">${coverHTML(b)}<div><b>${esc(b.title)}</b><span class="num">Moyenne du groupe : ${Math.round(groupAvg(g)*100)} %</span></div></div>` : '<p class="empty" style="padding:12px">Pas encore de livre du moment</p>'}
+        <div class="row"><span class="avs">${g.members.slice(0,5).map(m => avatar(m.id==='me'?me():m,'sm')).join('')}</span><span class="muted num" style="font-size:13px">${g.members.length} membres</span></div></button>`; }).join('')}</div></div>`;
+}
+function viewGroup(id){
+  const g = groupOf(id); if (!g) { S.view = {name:'groups'}; return viewGroups(); }
+  const b = bookOf(g.bookId), lead = isLead(g);
+  const gBooks = S.books.filter(x => x.groupId === g.id);
+  const feed = S.notes.filter(n => n.groupId === g.id && n.vis !== 'me' && canSee(n)).sort((a,c) => c.createdAt - a.createdAt);
+  const rows = g.members.map(m => ({m: m.id==='me' ? me() : m, role:m.role, p: g.bookId ? (m.id==='me' ? pct(g.bookId) : (m.prog?.[g.bookId] || 0)) : 0}));
+  return `<div class="pad"><div class="pbanner"><img src="${groupPhoto(g)}" alt=""><button class="iconbtn pb-back" data-act="nav" data-v="groups" aria-label="Retour aux groupes">${ic.back}</button>
+      <div class="pb-in"><div><h1>${esc(g.name)}</h1><p>${esc(g.desc || '')} · vous êtes ${esc(myRole(g).toLowerCase())}</p></div>
+      <div class="acts"><span class="avs">${g.members.slice(0,5).map(m => avatar(m.id==='me'?me():m)).join('')}</span>${g.demo ? '<span class="chip demo">Groupe d\'exemple</span>' : ''}</div></div></div>
+    <div class="gd"><div style="display:grid;gap:18px;min-width:0">
+      ${b ? `<div class="cont">${coverHTML(b)}<div class="meta"><span class="label">Livre du moment</span><h3>${esc(b.title)}</h3><p class="by">${esc(b.author||'')}</p>
+          <div class="bigpct num">${Math.round(groupAvg(g)*100)}<small>% en moyenne</small></div><div class="bar"><i style="width:${Math.round(groupAvg(g)*100)}%"></i></div>
+          <div class="acts"><button class="btn" data-act="read" data-id="${b.id}">${ic.book} Lire</button><button class="btn ghost" data-act="listen" data-id="${b.id}">${ic.play} Écouter</button></div></div></div>`
+        : `<div class="empty">Aucun livre du moment. ${lead ? 'Ajoutez un livre au groupe puis choisissez-le ci-dessous.' : ''}</div>`}
+      <div class="card cal"><span class="label">Calendrier de lecture</span>
+        ${lead ? `<textarea id="cal-${g.id}" data-act-input="cal" data-id="${g.id}" placeholder="Ex. : chapitres 1 à 3 avant mardi">${esc(g.calendar || '')}</textarea>` : `<p style="white-space:pre-wrap">${esc(g.calendar || 'Pas encore de calendrier.')}</p>`}
+        ${lead && gBooks.length ? `<label class="field"><span>Livre du moment</span><select class="input" id="gb-${g.id}" data-act-change="gbook" data-id="${g.id}">${gBooks.map(x => `<option value="${x.id}" ${x.id===g.bookId?'selected':''}>${esc(x.title)}</option>`).join('')}</select></label>` : ''}
+      </div>
+      <div><div class="sec-h" style="margin-top:6px"><h2>Fil des notes partagées</h2><span class="muted num" style="font-size:13px">${feed.length} visibles pour vous</span></div>
+        <div class="notes-list">${feed.map(n => noteCard(n, {book:true})).join('') || '<p class="empty">Aucune note partagée dans ce groupe.</p>'}</div></div>
+    </div>
+    <div style="display:grid;gap:18px">
+      <div class="card" style="display:grid;gap:10px"><span class="label">Invitation</span><span class="code">${esc(g.code)}</span>
+        <p class="muted" style="font-size:13.5px">Partagez le lien sur WhatsApp : la personne crée son compte et rejoint « ${esc(g.name)} » directement.</p>
+        <button class="btn ghost small" data-act="copy-invite" data-id="${g.id}" style="justify-self:start">Copier l'invitation</button></div>
+      <div class="card"><div class="sec-h" style="margin-top:0"><h2>Membres</h2><span class="muted num">${g.members.length}</span></div>
+        ${rows.map(r => `<div class="mrow">${avatar(r.m)}<div class="who"><b>${esc(r.m.name)}</b><span>${esc(r.role)}</span></div>${g.bookId ? `<span class="pctbadge num">${Math.round(r.p*100)} %</span>` : ''}</div>`).join('')}</div>
+    </div></div></div>`;
+}
+function noteCard(n, o = {}){
+  const g = groupOf(n.groupId), a = memberById(n.authorId, g), b = bookOf(n.bookId), mine = n.authorId === 'me';
+  const liked = (n.likes || []).includes('me');
+  const where = b ? (b.format === 'pdf' ? `p. ${n.ch + 1}` : `chap. ${n.ch + 1}`) : '';
+  return `<article class="note" data-note="${n.id}"><header>${avatar(a,'sm')}<b>${esc(mine ? 'Vous' : a.name)}</b><span class="vis ${n.vis}">${VIS[n.vis]}${n.vis==='chosen' && mine ? ' (' + (n.viewers||[]).length + ')' : ''}</span><time>${when(n.createdAt)}</time></header>
+    ${o.book && b ? `<span class="src">${esc(b.title)} · ${where}</span>` : ''}
+    ${n.quote ? `<blockquote class="quote c-${n.color}" style="margin:0">${esc(n.quote)}</blockquote>` : ''}
+    ${n.text ? `<p class="txt">${esc(n.text)}</p>` : ''}
+    ${(n.replies||[]).length ? `<div class="replies">${n.replies.map(r => `<p class="reply"><b>${esc(r.authorId==='me' ? 'Vous' : memberById(r.authorId, g).name)}</b> ${esc(r.text)}</p>`).join('')}</div>` : ''}
+    <footer>${n.vis !== 'me' || !mine ? `<button data-act="like" data-id="${n.id}" aria-pressed="${liked}">${ic.heart}<span class="num">${(n.likes||[]).length || ''}</span></button>
+      <button data-act="reply-open" data-id="${n.id}">${ic.reply} Répondre</button>` : ''}
+      <button data-act="goto-note" data-id="${n.id}">${ic.goto} Passage</button>
+      ${mine ? `<button data-act="edit-note" data-id="${n.id}">${ic.edit} Modifier</button>` : ''}</footer>
+    <form class="replyform" data-id="${n.id}" hidden><input id="rep-${n.id}" placeholder="Votre réponse" aria-label="Votre réponse"><button class="iconbtn" aria-label="Envoyer">${ic.send}</button></form>
+  </article>`;
+}
+function viewNotes(){
+  let list = S.notes.filter(canSee);
+  if (S.noteFilter === 'mine') list = list.filter(n => n.authorId === 'me');
+  if (S.noteFilter === 'shared') list = list.filter(n => n.authorId !== 'me');
+  list.sort((a,b) => b.createdAt - a.createdAt);
+  const f = [['all','Toutes'],['mine','Mes notes'],['shared','Partagées avec moi']];
+  return `<div class="pad"><div class="pbanner"><img src="img/lecture.jpg" alt="" style="object-position:50% 30%"><div class="pb-in"><div><h1>Notes</h1><p>Vos notes et celles que les membres ont choisi de vous montrer.</p></div>
+    <div class="acts"><button class="btn ghost" data-act="export-notes">Exporter mes notes</button></div></div></div>
+    <div class="chips" style="margin-top:12px">${f.map(([k,l]) => `<button data-act="note-filter" data-f="${k}" aria-pressed="${S.noteFilter===k}">${l}</button>`).join('')}</div>
+    <div class="notes-list" style="margin:18px 0 30px;max-width:760px">${list.map(n => noteCard(n, {book:true})).join('') || '<p class="empty">Aucune note ici. Sélectionnez un passage dans un livre pour en créer une.</p>'}</div></div>`;
+}
+function viewProfile(){
+  const P = S.profile;
+  return `<div class="pad"><div class="pbanner"><img src="img/fauteuil.jpg" alt="" style="object-position:60% 40%"><div class="pb-in"><div><h1>Profil et réglages</h1><p>Votre nom, vos voix de lecture et l'affichage. Ces réglages restent sur cet appareil.</p></div></div></div>
+  <div class="pgrid">
+    <div class="card form">
+      <span class="label">Profil</span>
+      <label class="field"><span>Votre nom</span><input class="input" id="pf-name" value="${esc(P.name)}" data-act-input="pname"></label>
+      <div class="field"><span>Visibilité par défaut des notes</span>
+        <div class="seg" role="group">${Object.entries(VIS).map(([k,l]) => `<button data-act="pvis" data-v="${k}" aria-pressed="${P.defaultVis===k}">${l}</button>`).join('')}</div></div>
+      <div class="field"><span>Thème de lecture</span>
+        <div class="seg" role="group">${[['auto','Auto'],['light','Clair'],['sepia','Sépia'],['night','Nuit']].map(([k,l]) => `<button data-act="prt" data-v="${k}" aria-pressed="${P.rt===k}">${l}</button>`).join('')}</div></div>
+    </div>
+    <div class="card form">
+      <span class="label">Lecture vocale</span>
+      <div class="field"><span>Voix préférée</span><div class="seg" role="group"><button data-act="pgender" data-v="f" aria-pressed="${P.voiceGender==='f'}">Féminine</button><button data-act="pgender" data-v="m" aria-pressed="${P.voiceGender==='m'}">Masculine</button></div></div>
+      <label class="field"><span>Voix féminine</span><select class="input" id="pf-vf" data-act-change="vf"></select></label>
+      <label class="field"><span>Voix masculine</span><select class="input" id="pf-vm" data-act-change="vm"></select>
+        <small id="voice-hint"></small></label>
+      <label class="field"><span>Vitesse : <span class="num" id="rate-v">${P.rate}×</span></span><input type="range" id="pf-rate" min="0.6" max="2" step="0.1" value="${P.rate}" data-act-input="rate"></label>
+      <div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn small" data-act="test-voice" data-v="f">${ic.play} Tester la voix féminine</button><button class="btn small navy" data-act="test-voice" data-v="m">${ic.play} Tester la voix masculine</button></div>
+      <p class="muted" style="font-size:13px">Pour des voix plus naturelles sur Android : Paramètres › Accessibilité › Synthèse vocale › Google › installer les voix françaises (version haute qualité). Sur iPhone : Réglages › Accessibilité › Contenu énoncé › Voix › Français, puis téléchargez une voix « améliorée ».</p>
+    </div>
+    <div class="card form">
+      <span class="label">Lecture naturelle</span>
+      ${voiceSettingsHTML()}
+      <label class="field"><span>Essayer avec votre texte</span><textarea class="input" id="pf-sample" rows="3" data-act-input="sample">${esc(SAMPLE_SPEECH)}</textarea></label>
+      <div class="field"><span>Ce que la voix prononce</span><p class="quote" id="pf-spoken" style="font-size:14px">${esc(speechText(SAMPLE_SPEECH))}</p></div>
+      <div><button class="btn small" data-act="test-sample">${ic.play} Écouter l'exemple</button></div>
+    </div>
+    <div class="card form">
+      <span class="label">Compte</span>
+      <p class="muted" style="font-size:14px">Connecté avec <b>${esc(MY_EMAIL)}</b>. Vos livres, notes et groupes sont enregistrés sur le serveur et une copie reste sur cet appareil pour lire hors connexion.</p>
+      <div><button class="btn danger small" data-act="logout">Se déconnecter</button></div>
+    </div>
+  </div></div>`;
+}
+
+/* ================= voices (Web Speech API) ================= */
+const TTS = {
+  ok: 'speechSynthesis' in window, voices: [], queue: [], qi: 0, playing: false, token: 0, timerMin: 0, timerEnd: 0,
+};
+const FEM = ['amelie','audrey','aurelie','marie','julie','hortense','denise','celine','lea','virginie','chantal','sylvie','eloise','vivienne','brigitte','charlotte','josephine','yvette','coralie','jacqueline','sophie','ariane','sarah','caroline','elsa','alice','manon','claire','female','femme','fra','frc'];
+const MAS = ['thomas','nicolas','daniel','paul','henri','claude','mathieu','remi','antoine','jacques','fabrice','guillaume','jean','alain','pierre','louis','gerard','yves','alexandre','maxime','remy','male','homme','frb','frd'];
+function vgender(v){ const n = ' ' + v.name.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/[^a-z0-9]+/g,' ') + ' ';
+  if (FEM.some(w => n.includes(' ' + w + ' '))) return 'f'; if (MAS.some(w => n.includes(' ' + w + ' '))) return 'm';
+  if (n.includes(' google ')) return 'f'; return '?'; }
+function vscore(v){ const n = v.name.toLowerCase(); let s = 0; if (/natural|neural|enhanced|premium|online|network|amélior|ameliore/.test(n)) s += 3; if (/google/.test(n)) s += 1; if ((v.lang||'').toLowerCase().replace('_','-') === 'fr-fr') s += 2; if (v.localService === false) s += 1; return s; }
+function frVoices(){ const fr = TTS.voices.filter(v => (v.lang || '').toLowerCase().startsWith('fr')); return fr.length ? fr : TTS.voices; }
+function loadVoices(){ if (!TTS.ok) return; TTS.voices = speechSynthesis.getVoices() || []; if (S.view.name === 'profile') fillVoiceSelects(); }
+function pickVoice(g){
+  const pref = g === 'f' ? S.profile.voiceF : S.profile.voiceM; const list = frVoices();
+  const chosen = pref && list.find(v => v.voiceURI === pref); if (chosen) return {v:chosen, pitch:1};
+  const match = list.filter(v => vgender(v) === g).sort((a,b) => vscore(b) - vscore(a))[0]; if (match) return {v:match, pitch:1};
+  const any = list.slice().sort((a,b) => vscore(b) - vscore(a))[0];
+  // No voice of that gender on this phone: shift the pitch of the best available one.
+  const other = any ? vgender(any) : '?'; return {v:any || null, pitch: other === g ? 1 : (g === 'm' ? 0.78 : 1.18)};
+}
+function fillVoiceSelects(){
+  const list = frVoices(); const P = S.profile;
+  const opt = sel => `<option value="">Automatique</option>` + list.map(v => { const g = vgender(v); return `<option value="${esc(v.voiceURI)}" ${v.voiceURI===sel?'selected':''}>${esc(v.name)} · ${esc(v.lang)}${g==='f'?' · féminine':g==='m'?' · masculine':''}</option>`; }).join('');
+  const f = $('#pf-vf'), m = $('#pf-vm'); if (!f) return; f.innerHTML = opt(P.voiceF); m.innerHTML = opt(P.voiceM);
+  const nf = list.filter(v => vgender(v)==='f').length, nm = list.filter(v => vgender(v)==='m').length;
+  $('#voice-hint').textContent = !TTS.ok ? "Ce navigateur ne propose pas la synthèse vocale." : !list.length ? 'Aucune voix détectée pour le moment.' :
+    `${list.length} voix française${list.length>1?'s':''} sur cet appareil (${nf} féminine${nf>1?'s':''}, ${nm} masculine${nm>1?'s':''} reconnue${nm>1?'s':''}). Si une voix est mal classée, choisissez-la ici.`;
+}
+function speakTest(g){ if (!TTS.ok) return toast("La synthèse vocale n'est pas disponible ici"); stopTTS(); const {v, pitch} = pickVoice(g);
+  const u = new SpeechSynthesisUtterance(g === 'f' ? "Bonjour, je suis la voix féminine de votre lecteur." : "Bonjour, je suis la voix masculine de votre lecteur.");
+  if (v) { u.voice = v; u.lang = v.lang; } else u.lang = 'fr-FR'; u.rate = S.profile.rate; u.pitch = pitch; speechSynthesis.speak(u); }
+const SAMPLE_SPEECH = "Le 16/10/2026 à 19h30, 25 jeunes ont lu Jean 3:16-18 ; 72 % ont aimé le 1er chapitre. Cotisation : 5 000 FCFA, soit 2,5 % du budget… Rendez-vous p. 12, chap. IV, sur le XXe siècle !";
+function voiceSettingsHTML(){ const P = S.profile;
+  return `<div class="field"><span>Longueur des pauses</span><div class="seg" role="group">${[[0.6,'Courtes'],[1,'Normales'],[1.5,'Longues']].map(([k,l]) => `<button data-act="pscale" data-v="${k}" aria-pressed="${P.pauseScale===k}">${l}</button>`).join('')}</div>
+      <small>Pause après chaque point, point-virgule, deux-points, points de suspension et fin de paragraphe.</small></div>
+    <div class="field"><span>Virgules</span><div class="seg" role="group"><button data-act="pcomma" data-v="natural" aria-pressed="${P.commas==='natural'}">Respiration naturelle</button><button data-act="pcomma" data-v="marked" aria-pressed="${P.commas==='marked'}">Pause marquée</button></div>
+      <small>« Pause marquée » ajoute un court silence à chaque virgule si votre voix les enchaîne trop vite.</small></div>
+    <div class="field"><span>Numéros de versets collés au texte (ex. « 16Car Dieu… »)</span><div class="seg" role="group"><button data-act="pverse" data-v="read" aria-pressed="${P.verses==='read'}">Les lire</button><button data-act="pverse" data-v="skip" aria-pressed="${P.verses==='skip'}">Les ignorer</button></div></div>`; }
+function speakSample(){ if (!TTS.ok) return toast("La synthèse vocale n'est pas disponible ici"); stopTTS();
+  const src = ($('#pf-sample')?.value || SAMPLE_SPEECH); const parts = chunksOfText(src, S.profile.commas === 'marked'); let i = 0; const my = ++TTS.token;
+  const step = () => { if (my !== TTS.token || i >= parts.length) return; const c = parts[i++]; const u = makeUtterance(speechText(src.slice(c.s, c.e)));
+    u.onend = () => { TTS.gapT = setTimeout(step, Math.round(Math.max(c.pause, i === parts.length ? 0 : 0) * (S.profile.pauseScale || 1) / Math.max(.6, S.profile.rate))); }; speechSynthesis.speak(u); };
+  step(); }
+
+/* ================= reader ================= */
+const R = {book:null, content:null, ch:0, mode:'text', pdf:null, sel:null, notesOpen:false, speak:null};
+const contentCache = new Map();
+async function getContent(id){ if (contentCache.has(id)) return contentCache.get(id); let c = await DB.get('content:' + id);
+  if (!c) { try { toast('Téléchargement du livre…'); c = await fetchContent(id); DB.set('content:' + id, c); } catch(e){ c = null; } }
+  if (c) contentCache.set(id, c); return c; }
+async function openReader(id, o = {}){
+  const b = bookOf(id); if (!b) return; const c = await getContent(id);
+  if (!c) return toast("Impossible d'ouvrir ce livre : vérifiez votre connexion Internet puis réessayez.");
+  R.book = b; R.content = c; R.pdf = null; R.notesOpen = !!o.notes;
+  const pr = S.progress[id] || {ch:0, pos:0};
+  R.ch = Math.min(o.ch ?? pr.ch ?? 0, c.chapters.length - 1);
+  R.mode = (b.format === 'pdf' && c.scanned) ? 'page' : 'text';
+  const rd = $('#reader'); rd.hidden = false; rd.dataset.rt = S.profile.rt === 'auto' ? '' : S.profile.rt;
+  document.body.style.overflow = 'hidden';
+  $('#r-book').textContent = b.title; $('#r-modebtn').hidden = b.format !== 'pdf';
+  updateGenderBtns(); $('#tts-rate').textContent = S.profile.rate + '×';
+  await renderChapter(o.para != null ? null : (o.ch == null ? pr.pos : 0));
+  if (o.para != null) flashPara(o.para);
+  renderNotesPanel();
+  if (o.listen) startTTS();
+}
+function closeReader(){ stopTTS(); hideSel(); $('#reader').hidden = true; document.body.style.overflow = ''; saveProgress(true); render(); }
+function chapterTitle(i){ const ch = R.content.chapters[i]; return ch?.title || (R.book.format === 'pdf' ? `Page ${i+1}` : `Chapitre ${i+1}`); }
+async function renderChapter(pos){
+  const chs = R.content.chapters, ch = chs[R.ch];
+  $('#r-chap').textContent = `${chapterTitle(R.ch)} · ${R.ch + 1}/${chs.length}`;
+  const t = $('#r-text'); t.className = 'r-text' + (S.profile.rf === 'sans' ? ' sans' : ''); t.style.setProperty('--rs', S.profile.rs + 'px');
+  const info = $('#r-info');
+  if (R.content.scanned) { info.hidden = false; info.innerHTML = '<p>Ce PDF semble scanné (images sans texte). La lecture vocale et le surlignage ne sont pas possibles sur ce fichier. Vous pouvez ajouter des notes sur la page.</p>'; }
+  else info.hidden = true;
+  if (R.mode === 'page') { t.hidden = true; $('#r-pages').hidden = false; await renderPdfPage(); }
+  else { $('#r-pages').hidden = true; t.hidden = false;
+    t.innerHTML = `<h2 class="r-ch">${esc(chapterTitle(R.ch))}</h2>` + (ch.blocks.length ? ch.blocks.map((bk, i) => bk.t === 'h' ? `<h3 data-p="${i}">${esc(bk.x)}</h3>` : `<p data-p="${i}">${paraInner(i)}</p>`).join('') : '<p class="muted">Cette page ne contient pas de texte.</p>'); }
+  $('#r-modebtn').setAttribute('aria-pressed', R.mode === 'page');
+  const sc = $('#r-scroll'); requestAnimationFrame(() => { sc.scrollTop = pos ? pos * (sc.scrollHeight - sc.clientHeight) : 0; updateProg(); });
+}
+function paraInner(i){
+  const bk = R.content.chapters[R.ch].blocks[i]; const text = bk.x; const L = text.length;
+  const ranges = S.notes.filter(n => n.bookId === R.book.id && n.ch === R.ch && n.para === i && n.start >= 0 && canSee(n))
+    .map(n => ({s:Math.max(0,n.start), e:Math.min(L,n.end), n}));
+  const sp = R.speak && R.speak.ch === R.ch && R.speak.p === i ? R.speak : null;
+  const pts = new Set([0, L]); ranges.forEach(r => { pts.add(r.s); pts.add(r.e); }); if (sp) { pts.add(sp.s); pts.add(sp.e); }
+  const arr = [...pts].filter(x => x >= 0 && x <= L).sort((a,b) => a-b); let out = '';
+  for (let k = 0; k < arr.length - 1; k++) { const a = arr[k], z = arr[k+1]; if (a === z) continue;
+    let seg = esc(text.slice(a, z));
+    const cov = ranges.filter(r => r.s <= a && r.e >= z).sort((x,y) => (x.n.authorId === 'me' ? 1 : 0) - (y.n.authorId === 'me' ? 1 : 0)).pop();
+    if (cov) seg = `<mark class="hl c-${cov.n.color}${cov.n.authorId === 'me' ? '' : ' other'}" data-n="${cov.n.id}">${seg}</mark>`;
+    if (sp && sp.s <= a && sp.e >= z) seg = `<span class="speak">${seg}</span>`;
+    out += seg; }
+  return out;
+}
+function refreshPara(i){ const el = $(`#r-text [data-p="${i}"]`); if (el && el.tagName === 'P') el.innerHTML = paraInner(i); }
+function flashPara(i){ const el = $(`#r-text [data-p="${i}"]`); if (!el) return; el.scrollIntoView({block:'center'}); el.classList.remove('flash'); void el.offsetWidth; el.classList.add('flash'); }
+function updateProg(){
+  const sc = $('#r-scroll'); const pos = sc.scrollHeight > sc.clientHeight ? sc.scrollTop / (sc.scrollHeight - sc.clientHeight) : 1;
+  const n = R.content.chapters.length; const p = Math.min(1, (R.ch + pos) / n);
+  $('#r-bar').style.width = (p * 100).toFixed(1) + '%'; $('#r-pct').textContent = Math.round(p * 100) + ' %';
+  S.progress[R.book.id] = {ch:R.ch, pos, pct: Math.max(p, R.ch === n - 1 && pos > .97 ? 1 : p), at:Date.now()};
+}
+let progT; function saveProgress(now){ clearTimeout(progT); if (R.book) API.progress(R.book.id); if (now) save(); else progT = setTimeout(save, 800); }
+async function gotoChapter(i, keepAudio){ if (!R.content || i < 0 || i >= R.content.chapters.length) return; if (!keepAudio) stopTTS(); hideSel(); R.ch = i; await renderChapter(0); updateProg(); saveProgress(); renderNotesPanel(); }
+
+/* PDF page mode */
+async function getPdf(){ if (R.pdf) return R.pdf; if (!window.pdfjsLib) throw new Error('pdf.js');
+  if (!R.content.file) { R.content.file = await fetchPdfFile(R.book.id); DB.set('content:' + R.book.id, R.content); } pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+  R.pdf = await pdfjsLib.getDocument({data: new Uint8Array(R.content.file.slice(0))}).promise; return R.pdf; }
+async function renderPdfPage(){
+  const box = $('#r-pages'); box.innerHTML = '<p class="muted" style="text-align:center">Chargement de la page…</p>';
+  try { const pdf = await getPdf(); const page = await pdf.getPage(R.ch + 1); const w = Math.min(box.clientWidth - 24, 900);
+    const vp0 = page.getViewport({scale:1}); const scale = w / vp0.width; const dpr = Math.min(2, window.devicePixelRatio || 1); const vp = page.getViewport({scale: scale * dpr});
+    const cv = document.createElement('canvas'); cv.width = vp.width; cv.height = vp.height; cv.setAttribute('aria-label', `Page ${R.ch + 1}`);
+    await page.render({canvasContext: cv.getContext('2d'), viewport: vp}).promise;
+    box.innerHTML = ''; box.appendChild(cv);
+    const d = document.createElement('div'); d.className = 'pnote'; d.innerHTML = `<button class="btn small" data-act="page-note">${ic.note} Note sur cette page</button>`; box.appendChild(d);
+  } catch(e){ box.innerHTML = '<p class="muted" style="text-align:center">Impossible d\'afficher la page originale. Le mode texte reste disponible.</p>'; }
+}
+
+/* notes panel */
+function renderNotesPanel(){
+  const p = $('#r-notes'); p.classList.toggle('open', R.notesOpen); $('#r-notesbtn').setAttribute('aria-pressed', R.notesOpen);
+  if (!R.notesOpen) return;
+  const scope = R.panelScope || 'ch';
+  let list = S.notes.filter(n => n.bookId === R.book.id && canSee(n)); if (scope === 'ch') list = list.filter(n => n.ch === R.ch);
+  list.sort((a,b) => a.ch - b.ch || a.para - b.para || a.start - b.start);
+  p.innerHTML = `<div class="nh"><h2>Notes</h2><div class="seg" role="group"><button data-act="panel-scope" data-v="ch" aria-pressed="${scope==='ch'}">Ce ${R.book.format==='pdf'?'feuillet':'chapitre'}</button><button data-act="panel-scope" data-v="all" aria-pressed="${scope==='all'}">Tout</button></div>
+    <button class="iconbtn" data-act="r-notes" aria-label="Fermer les notes"><svg class="i" viewBox="0 0 24 24"><path d="M18 6L6 18M6 6l12 12"/></svg></button></div>
+    <div class="nl">${list.map(n => noteCard(n)).join('') || '<p class="empty">Sélectionnez un passage pour le surligner ou écrire une note.</p>'}</div>`;
+}
+
+/* selection → highlight / note */
+function selInfo(){
+  const s = window.getSelection(); if (!s || s.isCollapsed || !s.rangeCount) return null;
+  const r = s.getRangeAt(0); const t = $('#r-text'); if (!t.contains(r.commonAncestorContainer)) return null;
+  const startEl = (r.startContainer.nodeType === 1 ? r.startContainer : r.startContainer.parentElement).closest('[data-p]'); if (!startEl || startEl.tagName !== 'P') return null;
+  const para = +startEl.dataset.p; const text = R.content.chapters[R.ch].blocks[para].x;
+  const pre = document.createRange(); pre.setStart(startEl, 0); pre.setEnd(r.startContainer, r.startOffset); let start = pre.toString().length;
+  let end; if (startEl.contains(r.endContainer)) { const pe = document.createRange(); pe.setStart(startEl, 0); pe.setEnd(r.endContainer, r.endOffset); end = pe.toString().length; } else end = text.length;
+  while (start < end && /\s/.test(text[start])) start++; while (end > start && /\s/.test(text[end-1])) end--;
+  if (end - start < 1) return null;
+  return {para, start, end, quote:text.slice(start, end), rect:r.getBoundingClientRect()};
+}
+function showSel(){ const info = selInfo(); const box = $('#r-sel'); if (!info) { hideSel(); return; } R.sel = info; box.hidden = false;
+  const w = box.offsetWidth, h = box.offsetHeight; let x = info.rect.left + info.rect.width/2 - w/2; x = Math.max(8, Math.min(window.innerWidth - w - 8, x));
+  let y = info.rect.bottom + 12; if (y + h > window.innerHeight - 150) y = Math.max(8, info.rect.top - h - 12);
+  box.style.left = x + 'px'; box.style.top = y + 'px'; }
+function hideSel(){ $('#r-sel').hidden = true; R.sel = null; }
+let selT; document.addEventListener('selectionchange', () => { if ($('#reader').hidden) return; clearTimeout(selT); selT = setTimeout(showSel, 260); });
+
+function newNote(fields){ const g = groupOf(R.book.groupId);
+  const n = {id:uid(), bookId:R.book.id, groupId:g ? g.id : null, authorId:'me', ch:R.ch, para:-1, start:-1, end:-1, quote:'', text:'', color:'y',
+    vis: g ? S.profile.defaultVis : 'me', viewers:[], createdAt:Date.now(), replies:[], likes:[], ...fields}; return n; }
+function noteSheet(n, isNew){
+  const g = groupOf(n.groupId); const others = g ? g.members.filter(m => m.id !== 'me') : [];
+  const opts = [['me','Moi seul','Personne d\'autre ne la voit.'],['chosen','Membres choisis','Seulement les personnes cochées.'],['leads','Animateurs','Le créateur et les animateurs du groupe.'],['group','Tout le groupe', g ? `Les ${g.members.length} membres de « ${g.name} ».` : '']];
+  openSheet(`<h2>${isNew ? 'Nouvelle note' : 'Modifier la note'}</h2>
+    ${n.quote ? `<blockquote class="quote c-${n.color}" id="ns-quote" style="margin:0">${esc(n.quote)}</blockquote>` : `<p class="muted">Note sur ${R.book?.format === 'pdf' ? 'la page ' : 'le chapitre '}${n.ch + 1}</p>`}
+    <label class="field"><span>Votre note</span><textarea class="input" id="ns-text" rows="4" placeholder="Ce que vous avez compris, une question, une réaction…">${esc(n.text)}</textarea></label>
+    <div class="field"><span>Couleur</span><div class="colors" id="ns-colors">${['y','g','b','r'].map(c => `<button type="button" class="c-${c}" data-c="${c}" aria-pressed="${n.color===c}" aria-label="${{y:'Jaune',g:'Vert',b:'Bleu',r:'Rose'}[c]}"></button>`).join('')}</div></div>
+    <div class="field"><span>Qui peut voir cette note ?</span>
+      ${!g ? '<small>Ce livre est personnel : la note reste privée. Partagez le livre dans un groupe pour pouvoir partager vos notes.</small>' : ''}
+      <div class="vis-opts">${opts.map(([k,l,d]) => `<label class="${!g && k!=='me' ? 'off' : ''}"><input type="radio" name="ns-vis" value="${k}" ${n.vis===k?'checked':''} ${!g && k!=='me' ? 'disabled' : ''}><span><b>${l}</b><small>${esc(d)}</small></span></label>`).join('')}</div>
+      <div class="mpick" id="ns-pick" ${n.vis==='chosen' ? '' : 'hidden'}>${others.map(m => `<label><input type="checkbox" value="${m.id}" ${(n.viewers||[]).includes(m.id)?'checked':''}>${avatar(m,'sm')}${esc(m.name)}</label>`).join('')}</div>
+    </div>
+    <div class="acts">${!isNew ? '<button class="btn danger small" id="ns-del" style="margin-right:auto">Supprimer</button>' : ''}<button class="btn ghost" data-act="sheet-close">Annuler</button><button class="btn" id="ns-save">Enregistrer</button></div>`,
+  root => {
+    let color = n.color;
+    root.querySelector('#ns-colors').addEventListener('click', e => { const b = e.target.closest('[data-c]'); if (!b) return; color = b.dataset.c; $$('#ns-colors button', root).forEach(x => x.setAttribute('aria-pressed', x === b)); const q = root.querySelector('#ns-quote'); if (q) q.className = 'quote c-' + color; });
+    root.addEventListener('change', e => { if (e.target.name === 'ns-vis') root.querySelector('#ns-pick').hidden = e.target.value !== 'chosen'; });
+    const del = root.querySelector('#ns-del'); if (del) del.addEventListener('click', () => { if (!del.dataset.armed) { del.dataset.armed = 1; del.textContent = 'Confirmer la suppression'; return; }
+      S.notes = S.notes.filter(x => x.id !== n.id); save(); closeSheet(); afterNoteChange(n); toast('Note supprimée'); API.deleteNote(n.id).catch(e => fail(e, "La suppression n'a pas été enregistrée sur le serveur.")); });
+    root.querySelector('#ns-save').addEventListener('click', () => {
+      n.text = root.querySelector('#ns-text').value.trim(); n.color = color; n.vis = (root.querySelector('input[name="ns-vis"]:checked') || {}).value || 'me';
+      n.viewers = n.vis === 'chosen' ? $$('#ns-pick input:checked', root).map(x => x.value) : [];
+      if (n.vis === 'chosen' && !n.viewers.length) { toast('Cochez au moins un membre'); return; }
+      if (isNew) S.notes.push(n); save(); closeSheet(); afterNoteChange(n); toast(isNew ? `Note enregistrée · ${VIS[n.vis]}` : 'Note mise à jour');
+      API.saveNote(n, isNew).catch(e => fail(e, "La note n'a pas pu être envoyée au serveur. Réessayez quand vous serez connecté."));
+    });
+    setTimeout(() => root.querySelector('#ns-text').focus(), 50);
+  });
+}
+function afterNoteChange(n){ if (!$('#reader').hidden && R.book && n.bookId === R.book.id) { if (n.ch === R.ch && n.para >= 0) refreshPara(n.para); renderNotesPanel(); } else render(); }
+
+/* ================= text-to-speech playback ================= */
+/* SPEECH-TEXT START */
+const NU = ['zéro','un','deux','trois','quatre','cinq','six','sept','huit','neuf','dix','onze','douze','treize','quatorze','quinze','seize'];
+const NT = {2:'vingt', 3:'trente', 4:'quarante', 5:'cinquante', 6:'soixante'};
+const MONTHS = ['janvier','février','mars','avril','mai','juin','juillet','août','septembre','octobre','novembre','décembre'];
+const UNITS = {km:'kilomètres', kg:'kilos', cm:'centimètres', mm:'millimètres', ml:'millilitres', min:'minutes', m:'mètres', g:'grammes', l:'litres'};
+function n99(n){ if (n < 17) return NU[n]; if (n < 20) return 'dix-' + NU[n - 10];
+  if (n < 70) { const t = Math.floor(n / 10), u = n % 10; return NT[t] + (u === 0 ? '' : u === 1 ? ' et un' : '-' + NU[u]); }
+  if (n < 80) return n === 71 ? 'soixante et onze' : 'soixante-' + n99(n - 60);
+  return n === 80 ? 'quatre-vingts' : 'quatre-vingt-' + n99(n - 80); }
+function n999(n){ const h = Math.floor(n / 100), r = n % 100; if (!h) return n99(r); const c = h === 1 ? 'cent' : NU[h] + ' cent'; return r ? c + ' ' + n99(r) : (h > 1 ? c + 's' : c); }
+function nw(n){
+  if (!Number.isFinite(n)) return '';
+  if (n < 1000) return n999(n);
+  if (n < 1e6) { const m = Math.floor(n / 1000), r = n % 1000; return (m === 1 ? 'mille' : n999(m).replace(/s$/, '') + ' mille') + (r ? ' ' + n999(r) : ''); }
+  if (n < 1e9) { const m = Math.floor(n / 1e6), r = n % 1e6; return nw(m) + ' million' + (m > 1 ? 's' : '') + (r ? ' ' + nw(r) : ''); }
+  if (n < 1e12) { const m = Math.floor(n / 1e9), r = n % 1e9; return nw(m) + ' milliard' + (m > 1 ? 's' : '') + (r ? ' ' + nw(r) : ''); }
+  return String(n).split('').map(d => NU[+d]).join(' ');
+}
+const digits = s => s.split('').map(d => NU[+d]).join(' ');
+function nord(n, fem){ if (n === 1) return fem ? 'première' : 'premier'; let w = nw(n);
+  if (/(cents|vingts)$/.test(w)) w = w.slice(0, -1); if (/e$/.test(w)) w = w.slice(0, -1);
+  if (/cinq$/.test(w)) w += 'u'; if (/neuf$/.test(w)) w = w.slice(0, -1) + 'v'; return w + 'ième'; }
+function roman(s){ if (!s || !/^M{0,3}(CM|CD|D?C{0,3})(XC|XL|L?X{0,3})(IX|IV|V?I{0,3})$/.test(s)) return null;
+  const V = {I:1, V:5, X:10, L:50, C:100, D:500, M:1000}; let t = 0; for (let i = 0; i < s.length; i++) { const a = V[s[i]], b = V[s[i + 1]] || 0; t += a < b ? -a : a; } return t; }
+const hours = h => (h === 1 ? 'une heure' : h === 0 ? 'zéro heure' : nw(h) + ' heures');
+const decimal = (a, b) => nw(+a) + ' virgule ' + (b[0] === '0' ? digits(b) : nw(+b));
+const NOT_BOOK = new Set(['À','A','Le','La','Les','De','Du','Des','Vers','Dès','Depuis','Entre','Et','Ou','Il','Elle','On','Nous','Vous','Ils','Elles','Page','Pages','Chapitre','Note','Notes','Rendez-vous','Heure','Horaire','Début','Fin','Ouverture']);
+const L = 'A-Za-zÀ-ÖØ-öø-ÿ';
+const NW = `(?![${L}0-9])`; // "end of word" that also works after accented letters
+const ABBRS = [
+  [/\bav\.\s?J\.-C\./g, 'avant Jésus-Christ'], [/\bapr\.\s?J\.-C\./g, 'après Jésus-Christ'], [/\bJ\.-C\./g, 'Jésus-Christ'],
+  [/\bMM\.(?=\s)/g, 'Messieurs'], [/\bM\.(?=\s+[A-ZÀ-Ý])/g, 'Monsieur'], [/\bMmes\b/g, 'Mesdames'], [/\bMme\b/g, 'Madame'], [/\bMlle\b/g, 'Mademoiselle'],
+  [/\bDr\b\.?/g, 'Docteur'], [/\bPr\b\.?(?=\s+[A-ZÀ-Ý])/g, 'Professeur'], [/\bMgr\b\.?/g, 'Monseigneur'],
+  [/\bSte\b\.?(?=\s+[A-ZÀ-Ý])/g, 'Sainte'], [/\bSt\b\.?(?=\s+[A-ZÀ-Ý])/g, 'Saint'],
+  [/\bpp\.\s?(?=\d)/g, 'pages '], [/\bp\.\s?(?=\d)/g, 'page '], [/\bchap\.\s?/gi, 'chapitre '], [/\bvol\.\s?/g, 'volume '],
+  [/\bvv\.\s?(?=\d)/g, 'versets '], [/\bv\.\s?(?=\d)/g, 'verset '], [/\bcf\.\s?/gi, 'voir '], [/\betc\./g, 'et cetera'], [/\benv\.\s?/g, 'environ '],
+  [/\bc\.-à-d\./g, "c'est-à-dire"], [/\bex\.\s?/g, 'exemple '], [/\bn[°º]\s?/gi, 'numéro '], [/§\s?/g, 'paragraphe '], [/\s&\s/g, ' et '], [/\s\+\s/g, ' plus '], [/\s=\s/g, ' égale '],
+];
+function speechText(src){
+  let t = ' ' + src + ' ';
+  t = t.replace(/[   ]/g, ' ').replace(/\.{3}/g, '…').replace(/[«»“”"*_#]/g, ' ').replace(/\[\d+\]|[¹²³⁴⁵⁶⁷⁸⁹⁰]+/g, '');
+  if (S.profile.verses === 'skip') t = t.replace(/(^|[\s(])\d{1,3}(?=[A-ZÀ-Ý«])/g, '$1');
+  for (const [re, rep] of ABBRS) t = t.replace(re, rep);
+  // Roman numerals: "chapitre IV", "Louis XIV", "XXe siècle"
+  t = t.replace(/\b(chapitre|partie|tome|livre|acte|scène|section|titre|annexe|psaume|leçon|volume|semaine)\s+([IVXLCDM]+)(?![A-Za-z])/gi, (m, k, r) => { const n = roman(r); return n ? k + ' ' + nw(n) : m; });
+  t = t.replace(/\b(Louis|Henri|Charles|Jean-Paul|Benoît|Pie|Napoléon|Léon|Grégoire|Philippe|François|Élisabeth|Elizabeth|Jean)\s+([IVX]+)(?![A-Za-z])/g, (m, k, r) => { const n = roman(r); return n ? k + ' ' + (n === 1 ? 'premier' : nw(n)) : m; });
+  // "XXe", "IVe siècle"; a single letter ("Le", "De", "Ce") only counts before siècle/millénaire/arrondissement/République
+  t = t.replace(new RegExp(`\\b([IVXLCDM]+)(er|e|ème|ième|eme)${NW}(?=(\\s+(siècle|millénaire|arrondissement|République|dynastie))?)`, 'g'), (m, r, suf, ctx) => {
+    if (r.length < 2 && !ctx) return m; const n = roman(r); return n ? nord(n) : m; });
+  // Ordinals: 1er, 1re, 2e, 3ème
+  t = t.replace(new RegExp(`\\b1(?:er|ers)${NW}`, 'g'), 'premier').replace(new RegExp(`\\b1(?:re|ère|res|ères)${NW}`, 'g'), 'première');
+  t = t.replace(new RegExp(`\\b(\\d+)(?:e|è|ème|ième|eme|ieme)(s?)${NW}`, 'g'), (m, d, s) => nord(+d) + (s ? 's' : ''));
+  // Dates 16/10/2026
+  t = t.replace(/\b(\d{1,2})[\/.-](\d{1,2})[\/.-](\d{4}|\d{2})\b/g, (m, d, mo, y) => { if (+mo < 1 || +mo > 12 || +d < 1 || +d > 31) return m;
+    return (+d === 1 ? 'premier' : nw(+d)) + ' ' + MONTHS[+mo - 1] + ' ' + nw(y.length === 2 ? 2000 + +y : +y); });
+  // Bible references (Jean 3:16-18, Ps 23.1) and clock times (19:30)
+  t = t.replace(new RegExp(`([A-ZÀ-Ý][${L}]*\\.?\\s)?(\\d{1,3})\\s?([:.])\\s?(\\d{1,3})(?:\\s?[-–]\\s?(\\d{1,3}))?(?!\\d|,\\d)`, 'g'), (m, book, a, sep, b, c) => {
+    const isBook = book && !NOT_BOOK.has(book.trim().replace(/\.$/, ''));
+    if (!isBook && sep === '.') return m;
+    if (!isBook && !c && +a < 24 && b.length === 2 && +b < 60) return (book || '') + hours(+a) + (+b ? ' ' + nw(+b) : '');
+    if (isBook && /^Ps(aumes?)?\.?$/i.test(book.trim())) return 'Psaume ' + nw(+a) + ', verset' + (c ? 's ' : ' ') + nw(+b) + (c ? ' à ' + nw(+c) : '');
+    return (book || '') + 'chapitre ' + nw(+a) + ', verset' + (c ? 's ' : ' ') + nw(+b) + (c ? ' à ' + nw(+c) : '');
+  });
+  // Ranges 10-12 (before times so "10-12 h" becomes "dix à douze heures")
+  t = t.replace(/(\d+)\s?[–-]\s?(\d+)/g, '$1 à $2');
+  // Day before a month name: "05 mai" → "cinq mai"
+  t = t.replace(/\b0(\d)(?=\s+(janvier|février|mars|avril|mai|juin|juillet|août|septembre|octobre|novembre|décembre))/gi, '$1');
+  // Times 19h30, 19 h
+  t = t.replace(new RegExp(`\\b(\\d{1,2})\\s?h\\s?(\\d{2})${NW}`, 'g'), (m, h, mi) => hours(+h) + (+mi ? ' ' + nw(+mi) : ''));
+  t = t.replace(new RegExp(`\\b(\\d{1,2})\\s?h${NW}`, 'g'), (m, h) => hours(+h));
+  // Thousands written 5 000 or 5.000
+  t = t.replace(/\b\d{1,3}(?:[ .]\d{3})+(?!\d|,\d)/g, m => m.replace(/[ .]/g, ''));
+  // Percent, money, units
+  t = t.replace(/(\d)\s?%/g, '$1 pour cent');
+  t = t.replace(new RegExp(`(\\d)\\s?(?:F\\s?CFA|FCFA|CFA|XOF|F)${NW}`, 'g'), '$1 francs CFA');
+  t = t.replace(/(\d)\s?€/g, '$1 euros').replace(/€\s?(\d+)/g, '$1 euros').replace(/(\d)\s?\$/g, '$1 dollars').replace(/\$\s?(\d+)/g, '$1 dollars');
+  t = t.replace(new RegExp(`(\\d)\\s?(km|kg|cm|mm|ml|min|m|g|l)${NW}`, 'g'), (m, d, u) => d + ' ' + UNITS[u]);
+  // Decimals 2,5 / 2.5
+  t = t.replace(/(\d+)[,.](\d+)/g, (m, a, b) => decimal(a, b));
+  // Leading zeros: 05 → zéro cinq
+  t = t.replace(/\b0\d+\b/g, m => digits(m));
+  // Digits glued to letters: 16Car → 16 Car, page12 → page 12
+  t = t.replace(new RegExp(`(\\d)([${L}])`, 'g'), '$1 $2').replace(new RegExp(`([${L}])(\\d)`, 'g'), '$1 $2');
+  // Every remaining number in words
+  t = t.replace(/\d+/g, d => d.length > 12 ? digits(d) : nw(+d));
+  // Feminine agreement: vingt et une pages, une heure
+  t = t.replace(/\b(et )?un (?=(heures?|pages?|fois|semaines?|années?|minutes?|secondes?|personnes?|femmes?|filles?|choses?|lettres?|paroles?|prières?|églises?|villes?|journées?|nuits?|lignes?|leçons?|questions?|notes?|places?|sœurs?|mères?)\b)/g, '$1une ');
+  return t.replace(/\s+([,;:.!?…])/g, '$1').replace(/\s+/g, ' ').trim();
+}
+/* SPEECH-TEXT END */
+
+/* Breaks follow the punctuation: each chunk ends on a sentence or clause mark, and the gap after it depends on that mark. */
+const PAUSE = {'.':430, '!':480, '?':480, '…':700, ';':330, ':':300, '—':260, ',':170, para:750, head:950};
+const ABBR_TITLE = new Set(['m','mm','mme','mmes','mlle','dr','pr','st','ste','me','mgr']);
+const ABBR = new Set(['p','pp','chap','vol','cf','env','av','apr','n','v','vv','éd','ed','fig','art','ch','etc','j.-c','c.-à-d','ex','tél','tel']);
+function chunksOfText(t, marked){
+  const out = []; let start = 0; let m;
+  const re = /([.!?…]+)["»”')\]]*(?=\s|$)|[;:](?=\s)|\s[—–]\s|,(?=\s)/g;
+  const push = (e, pause) => { let s = start; while (s < e && /\s/.test(t[s])) s++; let z = e; while (z > s && /\s/.test(t[z - 1])) z--; if (z > s) out.push({s, e:z, pause}); start = e; };
+  while ((m = re.exec(t))) {
+    const mark = m[1] ? m[1].slice(-1).replace('.', m[1].length > 1 ? '…' : '.') : m[0].trim()[0];
+    const end = m.index + m[0].length;
+    if (mark === '.') {
+      const tokO = (t.slice(start, m.index).match(/(\S+)$/) || ['', ''])[1].replace(/^[«"(\[]/, ''); const tok = tokO.toLowerCase();
+      const next = t.slice(end).trimStart()[0] || '';
+      if (ABBR_TITLE.has(tok)) continue;
+      if (/^[A-ZÀ-Ý]$/.test(tokO)) continue;                       // initial: "J. Dupont"
+      if (ABBR.has(tok) && !/[A-ZÀ-Ý]/.test(next)) continue;      // "p. 12", "etc. et"
+      if (/^\d+$/.test(tok) && /[a-zà-ÿ]/.test(next)) continue;   // "le 3. suivant" is rare: keep the sentence together
+    }
+    const len = m.index - start;
+    if (mark === ',' && !(marked && len >= 22) && len < 190) continue;
+    if ((mark === '—' || mark === '–') && len < 12) continue;
+    push(end, PAUSE[mark === '–' ? '—' : mark] || 200);
+  }
+  push(t.length, 0);
+  // Safety: engines cut very long utterances, so split anything still over 260 characters at a space.
+  const res = [];
+  for (const c of out) { let s = c.s; while (c.e - s > 260) { const cut = t.lastIndexOf(' ', s + 220); const e = cut > s + 60 ? cut : s + 220; res.push({s, e, pause:PAUSE[',']}); s = e + 1; } res.push({s, e:c.e, pause:c.pause}); }
+  return res;
+}
+function sentencesOf(ch){
+  const out = []; const chap = R.content.chapters[ch]; if (!chap) return out;
+  const title = chapterTitle(ch); if (!R.content.scanned && !/^Page \d+$/.test(title)) out.push({ch, p:-1, s:0, e:title.length, pause:PAUSE.head});
+  chap.blocks.forEach((bk, p) => { const parts = chunksOfText(bk.x, S.profile.commas === 'marked');
+    parts.forEach((c, k) => out.push({ch, p, s:c.s, e:c.e, pause: k === parts.length - 1 ? Math.max(c.pause, bk.t === 'h' ? PAUSE.head : PAUSE.para) : c.pause})); });
+  return out;
+}
+function itemText(it){ return it.p < 0 ? chapterTitle(it.ch) : R.content.chapters[it.ch].blocks[it.p].x.slice(it.s, it.e); }
+function firstVisibleSentence(){
+  const sc = $('#r-scroll'); if (sc.scrollTop < 30) return 0; const top = sc.getBoundingClientRect().top; let para = 0;
+  for (const el of $$('#r-text [data-p]')) { if (el.getBoundingClientRect().bottom > top + 40) { para = +el.dataset.p; break; } }
+  const i = TTS.queue.findIndex(x => x.p >= para); return i < 0 ? 0 : i;
+}
+function updatePlayBtn(){ $('#tts-play').innerHTML = TTS.playing ? ic.pause : ic.play; $('#tts-play').setAttribute('aria-label', TTS.playing ? 'Pause' : 'Écouter'); }
+function updateGenderBtns(){ $('#g-f').setAttribute('aria-pressed', S.profile.voiceGender === 'f'); $('#g-m').setAttribute('aria-pressed', S.profile.voiceGender === 'm'); }
+function setSpeak(item){ const prev = R.speak; R.speak = item; if (prev && prev.ch === R.ch && prev.p >= 0) refreshPara(prev.p);
+  const h = $('#r-text .r-ch'); if (h) h.classList.toggle('speak', !!item && item.p < 0 && item.ch === R.ch);
+  if (item && item.ch === R.ch && item.p >= 0) { refreshPara(item.p); const el = $('#r-text .speak'); if (el) { const r = el.getBoundingClientRect(), sr = $('#r-scroll').getBoundingClientRect(); if (r.top < sr.top + 40 || r.bottom > sr.bottom - 40) el.scrollIntoView({block:'center', behavior:'smooth'}); } } }
+function startTTS(from){
+  if (!TTS.ok) { toast("La lecture vocale n'est pas disponible sur ce navigateur"); return; }
+  if (R.mode === 'page') { R.mode = 'text'; renderChapter(0); }
+  if (R.content.scanned) { toast('Ce PDF ne contient pas de texte lisible à voix haute'); return; }
+  TTS.queue = sentencesOf(R.ch); if (!TTS.queue.length) { if (R.ch < R.content.chapters.length - 1) { gotoChapter(R.ch + 1, true).then(() => startTTS(0)); } return; }
+  TTS.qi = from ?? firstVisibleSentence(); TTS.playing = true; updatePlayBtn(); hideSel(); speakCurrent(true);
+}
+function makeUtterance(text){ const u = new SpeechSynthesisUtterance(text); const {v, pitch} = pickVoice(S.profile.voiceGender);
+  if (v) { u.voice = v; u.lang = v.lang; } else u.lang = 'fr-FR'; u.rate = S.profile.rate; u.pitch = pitch; return u; }
+function speakCurrent(cancel = true){
+  const my = ++TTS.token; clearTimeout(TTS.gapT);
+  if (cancel) { try { speechSynthesis.cancel(); } catch(e){} }
+  if (TTS.timerEnd && Date.now() > TTS.timerEnd) { stopTTS(); TTS.timerMin = 0; TTS.timerEnd = 0; $('#tts-timer').textContent = '⏱ Off'; $('#tts-timer').classList.remove('on'); toast('Minuterie terminée'); return; }
+  const item = TTS.queue[TTS.qi];
+  if (!item) { if (R.ch < R.content.chapters.length - 1) { gotoChapter(R.ch + 1, true).then(() => { if (TTS.playing && my === TTS.token) { TTS.queue = sentencesOf(R.ch); TTS.qi = 0; speakCurrent(false); } }); } else { stopTTS(); toast('Fin du livre'); } return; }
+  setSpeak(item);
+  const text = speechText(itemText(item));
+  const next = () => { if (my !== TTS.token || !TTS.playing) return; TTS.qi++;
+    const gap = Math.round((item.pause || 0) * (S.profile.pauseScale || 1) / Math.max(0.6, S.profile.rate));
+    TTS.gapT = setTimeout(() => { if (my === TTS.token && TTS.playing) speakCurrent(false); }, gap); };
+  if (!/[\p{L}\p{N}]/u.test(text)) { next(); return; }
+  const u = makeUtterance(text);
+  u.onend = next;
+  u.onerror = e => { if (e.error === 'interrupted' || e.error === 'canceled') return; next(); };
+  speechSynthesis.speak(u);
+}
+function stopTTS(){ TTS.playing = false; TTS.token++; clearTimeout(TTS.gapT); try { if (TTS.ok) speechSynthesis.cancel(); } catch(e){}
+  if (R.speak) { const p = R.speak; R.speak = null; if (R.content && p.ch === R.ch) { if (p.p >= 0) refreshPara(p.p); const h = $('#r-text .r-ch'); if (h) h.classList.remove('speak'); } } updatePlayBtn(); }
+function pauseTTS(){ TTS.playing = false; TTS.token++; clearTimeout(TTS.gapT); try { speechSynthesis.cancel(); } catch(e){} updatePlayBtn(); }
+
+/* ================= import PDF / EPUB ================= */
+function thumb(src){ return new Promise(res => { const draw = (img, w, h) => { const W = 300, H = Math.round(W * h / w); const c = document.createElement('canvas'); c.width = W; c.height = H; c.getContext('2d').drawImage(img, 0, 0, W, H); res(c.toDataURL('image/jpeg', .8)); };
+  if (src instanceof HTMLCanvasElement) return draw(src, src.width, src.height);
+  const url = URL.createObjectURL(src); const im = new Image(); im.onload = () => { draw(im, im.naturalWidth, im.naturalHeight); URL.revokeObjectURL(url); }; im.onerror = () => res(null); im.src = url; }); }
+async function parsePdf(file, onProg){
+  if (!window.pdfjsLib) throw new Error("Le lecteur PDF n'a pas pu se charger. Vérifiez votre connexion puis réessayez.");
+  pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+  const buf = await file.arrayBuffer(); const pdf = await pdfjsLib.getDocument({data: new Uint8Array(buf.slice(0))}).promise;
+  const meta = await pdf.getMetadata().catch(() => null); const chapters = []; let chars = 0;
+  for (let i = 1; i <= pdf.numPages; i++) {
+    const page = await pdf.getPage(i); const tc = await page.getTextContent(); const lines = []; let cur = '', lastY = null;
+    for (const it of tc.items) { if (!('str' in it)) continue; const y = it.transform[5];
+      if (lastY !== null && Math.abs(y - lastY) > 2 && cur.trim()) { lines.push({t:cur, y:lastY}); cur = ''; }
+      cur += it.str; lastY = y; if (it.hasEOL) { if (cur.trim()) lines.push({t:cur, y}); cur = ''; lastY = null; } }
+    if (cur.trim()) lines.push({t:cur, y:lastY});
+    const gaps = []; for (let k = 1; k < lines.length; k++) gaps.push(Math.abs(lines[k-1].y - lines[k].y));
+    const med = gaps.length ? gaps.slice().sort((a,b) => a-b)[Math.floor(gaps.length/2)] : 0; const avgLen = lines.reduce((a,l) => a + l.t.trim().length, 0) / (lines.length || 1);
+    const paras = []; let buf2 = '';
+    lines.forEach((l, k) => { const t = l.t.replace(/\s+/g,' ').trim(); if (!t) return;
+      const gap = k ? Math.abs(lines[k-1].y - l.y) : 0; const prev = k ? lines[k-1].t.trim() : '';
+      const brk = k && (gap > med * 1.5 + 1 || (/[.!?:»"]$/.test(prev) && prev.length < avgLen * .7));
+      if (brk && buf2) { paras.push(buf2); buf2 = ''; }
+      buf2 = !buf2 ? t : (buf2.endsWith('-') ? buf2.slice(0,-1) + t : buf2 + ' ' + t); });
+    if (buf2) paras.push(buf2);
+    chars += paras.join('').length; chapters.push({title:`Page ${i}`, blocks:paras.map(x => ({t:'p', x}))});
+    onProg(i / pdf.numPages, `Page ${i} sur ${pdf.numPages}`);
+  }
+  let cover = null; try { const p1 = await pdf.getPage(1); const vp = p1.getViewport({scale: 300 / p1.getViewport({scale:1}).width}); const c = document.createElement('canvas'); c.width = vp.width; c.height = vp.height; await p1.render({canvasContext:c.getContext('2d'), viewport:vp}).promise; cover = await thumb(c); } catch(e){}
+  const title = (meta?.info?.Title || '').trim() || file.name.replace(/\.pdf$/i, '').replace(/[_-]+/g, ' ');
+  return {meta:{title, author:(meta?.info?.Author || '').trim(), format:'pdf', cover, chapters:chapters.length}, content:{chapters, file:buf, scanned: chars < 20 * pdf.numPages && chars < 400}};
+}
+async function parseEpub(file, onProg){
+  if (!window.JSZip) throw new Error("Le lecteur EPUB n'a pas pu se charger. Vérifiez votre connexion puis réessayez.");
+  const zip = await JSZip.loadAsync(file); const xml = s => new DOMParser().parseFromString(s, 'application/xml');
+  const cont = await zip.file('META-INF/container.xml')?.async('string'); if (!cont) throw new Error("Ce fichier EPUB est incomplet (container.xml manquant).");
+  const opfPath = xml(cont).querySelector('rootfile')?.getAttribute('full-path'); const opfStr = await zip.file(opfPath)?.async('string'); if (!opfStr) throw new Error("Ce fichier EPUB est illisible.");
+  const opf = xml(opfStr); const base = opfPath.includes('/') ? opfPath.slice(0, opfPath.lastIndexOf('/') + 1) : '';
+  const byTag = (el, name) => Array.from(el.getElementsByTagName('*')).filter(e => e.localName === name);
+  const title = byTag(opf, 'title')[0]?.textContent?.trim() || file.name.replace(/\.epub$/i,''); const author = byTag(opf, 'creator')[0]?.textContent?.trim() || '';
+  const manifest = {}; byTag(opf, 'item').forEach(it => manifest[it.getAttribute('id')] = {href: it.getAttribute('href'), type: it.getAttribute('media-type'), props: it.getAttribute('properties') || ''});
+  const resolve = h => { const parts = (base + decodeURIComponent(h)).split('/'); const out = []; parts.forEach(p => { if (p === '..') out.pop(); else if (p !== '.') out.push(p); }); return out.join('/'); };
+  const spine = byTag(opf, 'itemref').map(r => manifest[r.getAttribute('idref')]).filter(Boolean);
+  const chapters = [];
+  for (let i = 0; i < spine.length; i++) {
+    const it = spine[i]; const f = zip.file(resolve(it.href)); if (!f) continue; const html = await f.async('string');
+    let doc = new DOMParser().parseFromString(html, 'application/xhtml+xml'); if (doc.getElementsByTagName('parsererror').length) doc = new DOMParser().parseFromString(html, 'text/html');
+    const body = doc.getElementsByTagName('body')[0] || doc.documentElement; const SEL = ['h1','h2','h3','h4','h5','h6','p','li','blockquote','pre','dd','dt'];
+    const els = Array.from(body.getElementsByTagName('*')).filter(e => SEL.includes(e.localName) && !Array.from(e.getElementsByTagName('*')).some(c => SEL.includes(c.localName)));
+    let blocks = els.map(e => ({t: /^h\d$/.test(e.localName) ? 'h' : 'p', x:(e.textContent || '').replace(/\s+/g,' ').trim()})).filter(b => b.x);
+    if (!blocks.length) blocks = (body.textContent || '').split(/\n\s*\n/).map(x => x.replace(/\s+/g,' ').trim()).filter(Boolean).map(x => ({t:'p', x}));
+    if (!blocks.length) continue;
+    let ctitle = ''; if (blocks[0].t === 'h') { ctitle = blocks[0].x; blocks = blocks.slice(1); } if (!blocks.length) blocks = [{t:'p', x:'—'}];
+    chapters.push({title: ctitle || (doc.getElementsByTagName('title')[0]?.textContent || '').trim() || `Chapitre ${chapters.length + 1}`, blocks});
+    onProg((i + 1) / spine.length, `Chapitre ${i + 1} sur ${spine.length}`);
+  }
+  if (!chapters.length) throw new Error("Aucun texte trouvé dans ce fichier EPUB.");
+  let cover = null; try {
+    const metaCover = byTag(opf, 'meta').find(m => m.getAttribute('name') === 'cover')?.getAttribute('content');
+    const ci = Object.values(manifest).find(m => m.props.includes('cover-image')) || manifest[metaCover] || Object.values(manifest).find(m => /cover/i.test(m.href) && /^image\//.test(m.type || ''));
+    if (ci) { const blob = await zip.file(resolve(ci.href))?.async('blob'); if (blob) cover = await thumb(blob); } } catch(e){}
+  return {meta:{title, author, format:'epub', cover, chapters:chapters.length}, content:{chapters}};
+}
+async function importFiles(files){
+  for (const file of files) {
+    const isPdf = /\.pdf$/i.test(file.name) || file.type === 'application/pdf'; const isEpub = /\.epub$/i.test(file.name) || file.type === 'application/epub+zip';
+    if (!isPdf && !isEpub) { toast(`« ${file.name} » n'est ni un PDF ni un EPUB`); continue; }
+    openSheet(`<h2>Import de « ${esc(file.name)} »</h2><div class="progress"><i id="imp-bar"></i></div><p class="muted" id="imp-msg">Lecture du fichier…</p>`);
+    try {
+      const res = await (isPdf ? parsePdf : parseEpub)(file, (f, m) => { const b = $('#imp-bar'); if (b) b.style.width = (f*100).toFixed(0) + '%'; const t = $('#imp-msg'); if (t) t.textContent = m; });
+      const id = uid(); await DB.set('content:' + id, res.content); contentCache.set(id, res.content);
+      const b = {id, ...res.meta, ownerId:'me', groupId:null, addedAt:Date.now(), desc:''}; await placeBookSheet(b, true);
+    } catch(e){ openSheet(`<h2>Import impossible</h2><p>${esc(e.message || 'Le fichier est peut-être protégé (DRM) ou endommagé.')}</p><p class="muted">Les EPUB protégés par DRM ne peuvent pas être ouverts. Essayez un fichier sans protection.</p><div class="acts"><button class="btn" data-act="sheet-close">Fermer</button></div>`); return; }
+  }
+}
+function placeBookSheet(b, isNew){
+  return new Promise(resolve => {
+    openSheet(`<h2>${isNew ? 'Où ranger ce livre ?' : 'Partager dans un groupe'}</h2>
+      <div style="display:flex;gap:14px;align-items:center">${coverHTML(b).replace('class="cover', 'style="width:64px;flex:none" class="cover')}<div><b style="font-size:16px">${esc(b.title)}</b><p class="muted">${esc(b.author || 'Auteur inconnu')} · ${b.chapters} ${b.format === 'pdf' ? 'pages' : 'chapitres'}</p></div></div>
+      <div class="vis-opts"><label><input type="radio" name="pl" value="" ${!b.groupId?'checked':''}><span><b>Mes livres</b><small>Visible par vous seul.</small></span></label>
+      ${S.groups.map(g => `<label><input type="radio" name="pl" value="${g.id}" ${b.groupId===g.id?'checked':''}><span><b>${esc(g.name)}</b><small>Les ${g.members.length} membres pourront le lire et partager leurs notes.</small></span></label>`).join('')}</div>
+      <label style="display:flex;gap:10px;align-items:flex-start;font-size:13.5px" id="pl-rights-l" ${b.groupId ? '' : 'hidden'}><input type="checkbox" id="pl-rights" ${b.groupId?'checked':''}> <span>Je détiens les droits sur ce livre, ou il est libre de droits (domaine public, texte de l'auteur, support interne).</span></label>
+      <div class="acts"><button class="btn" id="pl-ok">${isNew ? 'Ajouter le livre' : 'Enregistrer'}</button></div>`,
+    root => {
+      root.addEventListener('change', () => { const v = root.querySelector('input[name="pl"]:checked').value; root.querySelector('#pl-rights-l').hidden = !v; });
+      root.querySelector('#pl-ok').addEventListener('click', () => { const v = root.querySelector('input[name="pl"]:checked').value;
+        if (v && !root.querySelector('#pl-rights').checked) { toast('Confirmez les droits pour partager ce livre'); return; }
+        b.groupId = v || null; const g = groupOf(b.groupId); if (g && !g.bookId) g.bookId = b.id;
+        S.notes.forEach(n => { if (n.bookId === b.id && n.authorId === 'me') { n.groupId = b.groupId; if (!b.groupId) n.vis = 'me'; } });
+        if (isNew) S.books.push(b); save(); closeSheet(); S.view = {name:'book', id:b.id}; render();
+        if (isNew) { toast('Envoi du livre au serveur…'); API.createBook(b).then(() => toast(b.groupId ? 'Livre ajouté et partagé avec le groupe' : 'Livre ajouté')).catch(e => fail(e, "Le livre n'a pas pu être envoyé. Vérifiez la connexion puis importez-le à nouveau.")); }
+        else API.moveBook(b).then(() => toast('Livre mis à jour')).catch(e => fail(e));
+        resolve(); });
+    }, () => { if (isNew && !S.books.includes(b)) { b.ownerId = 'me'; S.books.push(b); save(); render(); API.createBook(b).then(() => toast('Livre ajouté')).catch(e => fail(e)); } resolve(); });
+  });
+}
+
+/* ================= sheet ================= */
+let sheetOnClose = null;
+function openSheet(html, mount, onClose){ const root = $('#sheet-root'); sheetOnClose = onClose || null;
+  root.innerHTML = `<div class="sheet-scrim" data-scrim><div class="sheet" role="dialog" aria-modal="true">${html}</div></div>`;
+  if (mount) mount(root.querySelector('.sheet')); }
+function closeSheet(){ const cb = sheetOnClose; sheetOnClose = null; $('#sheet-root').innerHTML = ''; if (cb) cb(); }
+
+/* ================= events ================= */
+document.addEventListener('click', async e => {
+  if (e.target.matches('[data-scrim]')) { closeSheet(); return; }
+  const mk = e.target.closest('#r-text mark[data-n]');
+  if (mk && !(window.getSelection()?.toString())) { R.notesOpen = true; R.panelScope = 'ch'; renderNotesPanel(); const card = $(`#r-notes [data-note="${mk.dataset.n}"]`); if (card) { card.scrollIntoView({block:'nearest'}); card.style.boxShadow = 'inset 0 0 0 2px var(--green)'; } return; }
+  const el = e.target.closest('[data-act]'); if (!el) return;
+  const a = el.dataset.act, id = el.dataset.id;
+  switch (a) {
+    case 'nav': if (!$('#reader').hidden) closeReader(); go(el.dataset.v); break;
+    case 'open-book': go('book', id); break;
+    case 'open-group': go('group', id); break;
+    case 'read': openReader(id); break;
+    case 'listen': if (TTS.ok) { try { speechSynthesis.cancel(); speechSynthesis.speak(new SpeechSynthesisUtterance(' ')); } catch(_){} } openReader(id, {listen:true}); break;
+    case 'book-notes': openReader(id, {notes:true}); break;
+    case 'import': $('#file-input').click(); break;
+    case 'filter': S.filter = el.dataset.f; $$('.chips [data-act="filter"]').forEach(b => b.setAttribute('aria-pressed', b === el)); $('#grid').innerHTML = gridHTML(); break;
+    case 'note-filter': S.noteFilter = el.dataset.f; render(); break;
+    case 'move-book': placeBookSheet(bookOf(id), false); break;
+    case 'del-book': if (!el.dataset.armed) { el.dataset.armed = 1; el.textContent = 'Confirmer : supprimer le livre et mes notes'; return; }
+      S.books = S.books.filter(b => b.id !== id); S.notes = S.notes.filter(n => !(n.bookId === id && n.authorId === 'me')); delete S.progress[id]; S.groups.forEach(g => { if (g.bookId === id) g.bookId = S.books.find(b => b.groupId === g.id)?.id || null; });
+      DB.del('content:' + id); contentCache.delete(id); save(); toast('Livre supprimé'); go('home'); API.deleteBook(id).catch(e => fail(e)); break;
+    case 'new-group': openSheet(`<h2>Créer un groupe</h2><label class="field"><span>Nom du groupe</span><input class="input" id="ng-name" placeholder="Ex. : Étude du jeudi"></label>
+        <label class="field"><span>Description</span><input class="input" id="ng-desc" placeholder="Ex. : rencontre le jeudi à 18 h"></label><div class="acts"><button class="btn ghost" data-act="sheet-close">Annuler</button><button class="btn" id="ng-ok">Créer</button></div>`,
+      root => { root.querySelector('#ng-ok').addEventListener('click', async ev => { const name = root.querySelector('#ng-name').value.trim(); if (!name) { toast('Donnez un nom au groupe'); return; }
+        ev.target.disabled = true;
+        try { const g = await API.createGroup(name, root.querySelector('#ng-desc').value.trim()); await loadAll(); closeSheet(); go('group', g.id); toast('Groupe créé. Partagez le lien d\'invitation.'); }
+        catch(e){ ev.target.disabled = false; fail(e); } }); setTimeout(() => root.querySelector('#ng-name').focus(), 50); }); break;
+    case 'join-group': openSheet(`<h2>Rejoindre un groupe</h2><label class="field"><span>Code d'invitation</span><input class="input code" id="jg-code" placeholder="ABC123" maxlength="8" autocomplete="off"></label><p class="muted" id="jg-msg" style="font-size:13.5px"></p><div class="acts"><button class="btn ghost" data-act="sheet-close">Fermer</button><button class="btn" id="jg-ok">Rejoindre</button></div>`,
+      root => root.querySelector('#jg-ok').addEventListener('click', async ev => { const c = root.querySelector('#jg-code').value.trim().toUpperCase(); const msg = root.querySelector('#jg-msg');
+        if (!c) { msg.textContent = 'Entrez le code reçu.'; return; }
+        const g = S.groups.find(x => x.code === c); if (g) { msg.textContent = `Vous faites déjà partie de « ${g.name} ».`; return; }
+        ev.target.disabled = true; msg.textContent = 'Vérification du code…';
+        try { const gid = await API.joinGroup(c); if (!gid) { msg.textContent = "Ce code ne correspond à aucun groupe. Vérifiez-le auprès de la personne qui vous a invité."; ev.target.disabled = false; return; }
+          await loadAll(); closeSheet(); go('group', gid); toast(`Bienvenue dans « ${groupOf(gid)?.name || 'le groupe'} »`); }
+        catch(e){ ev.target.disabled = false; msg.textContent = ''; fail(e); } })); break;
+    case 'copy-invite': { const g = groupOf(id); copy(`Rejoins mon groupe de lecture « ${g.name} » sur Lisons Ensemble : ${APP_URL}?code=${g.code} (code d'invitation : ${g.code})`); break; }
+    case 'export-notes': { const mine = S.notes.filter(n => n.authorId === 'me'); const txt = mine.map(n => { const b = bookOf(n.bookId); return `${b ? b.title : ''} · ${b?.format==='pdf'?'p.':'chap.'} ${n.ch+1} · ${VIS[n.vis]}\n${n.quote ? '« ' + n.quote + ' »\n' : ''}${n.text}`; }).join('\n\n———\n\n') || 'Aucune note pour le moment.';
+      openSheet(`<h2>Mes notes</h2><textarea class="input" id="exp-txt" rows="12" readonly>${esc(txt)}</textarea><div class="acts"><button class="btn ghost" data-act="sheet-close">Fermer</button><button class="btn" id="exp-copy">Copier le texte</button></div>`,
+        root => root.querySelector('#exp-copy').addEventListener('click', () => { copy(txt); root.querySelector('#exp-txt').select(); })); break; }
+    case 'sheet-close': closeSheet(); break;
+    case 'like': { const n = S.notes.find(x => x.id === id); n.likes = n.likes || []; const on = !n.likes.includes('me'); API.like(id, on).catch(e => fail(e)); on ? n.likes.push('me') : n.likes.splice(n.likes.indexOf('me'), 1); save(); afterNoteChange(n); break; }
+    case 'reply-open': { const f = el.closest('.note').querySelector('.replyform'); f.hidden = !f.hidden; if (!f.hidden) f.querySelector('input').focus(); break; }
+    case 'edit-note': { const n = S.notes.find(x => x.id === id); if ($('#reader').hidden) R.book = bookOf(n.bookId); noteSheet(n, false); break; }
+    case 'goto-note': { const n = S.notes.find(x => x.id === id); if (!$('#reader').hidden && R.book?.id === n.bookId) { if (R.ch !== n.ch) await gotoChapter(n.ch); if (window.innerWidth < 960) { R.notesOpen = false; renderNotesPanel(); } if (n.para >= 0) flashPara(n.para); }
+      else openReader(n.bookId, {ch:n.ch, para: n.para >= 0 ? n.para : null}); break; }
+    case 'pvis': S.profile.defaultVis = el.dataset.v; save(); render(); break;
+    case 'prt': S.profile.rt = el.dataset.v; save(); render(); break;
+    case 'pgender': S.profile.voiceGender = el.dataset.v; save(); render(); break;
+    case 'test-voice': speakTest(el.dataset.v); break;
+    case 'test-sample': speakSample(); break;
+    case 'pscale': case 'pcomma': case 'pverse': {
+      const key = {pscale:'pauseScale', pcomma:'commas', pverse:'verses'}[a]; S.profile[key] = a === 'pscale' ? +el.dataset.v : el.dataset.v; save();
+      $$(`[data-act="${a}"]`).forEach(b => b.setAttribute('aria-pressed', b.dataset.v === el.dataset.v));
+      const sp = $('#pf-spoken'); if (sp) sp.textContent = speechText($('#pf-sample').value);
+      if (TTS.playing && !$('#reader').hidden) { const cur = TTS.queue[TTS.qi]; TTS.queue = sentencesOf(R.ch); const i = cur ? TTS.queue.findIndex(x => x.p === cur.p && x.e > cur.s) : 0; TTS.qi = Math.max(0, i); speakCurrent(true); }
+      break; }
+    case 'logout': if (!el.dataset.armed) { el.dataset.armed = 1; el.textContent = 'Confirmer la déconnexion'; return; } logout(); break;
+    case 'auth-tab': setAuthMode(el.dataset.v); break;
+    /* reader */
+    case 'r-close': closeReader(); break;
+    case 'r-prev': gotoChapter(R.ch - 1); break;
+    case 'r-next': gotoChapter(R.ch + 1); break;
+    case 'r-notes': R.notesOpen = !R.notesOpen; renderNotesPanel(); break;
+    case 'panel-scope': R.panelScope = el.dataset.v; renderNotesPanel(); break;
+    case 'r-mode': if (R.content.scanned) { toast('Ce PDF ne contient que des images de pages'); break; } stopTTS(); R.mode = R.mode === 'page' ? 'text' : 'page'; renderChapter(0); break;
+    case 'r-toc': openSheet(`<h2>${R.book.format === 'pdf' ? 'Pages' : 'Table des matières'}</h2><div class="toc">${R.content.chapters.map((c, i) => `<button data-act="toc-go" data-i="${i}" aria-current="${i===R.ch}"><span>${esc(chapterTitle(i))}</span><span class="muted num">${i+1}</span></button>`).join('')}</div>`, root => { const cur = root.querySelector('[aria-current="true"]'); if (cur) cur.scrollIntoView({block:'center'}); }); break;
+    case 'toc-go': closeSheet(); gotoChapter(+el.dataset.i); break;
+    case 'r-aa': openSheet(`<h2>Affichage</h2>
+        <div class="field"><span>Taille du texte</span><div style="display:flex;gap:10px;align-items:center"><button class="btn ghost small" data-act="rs" data-d="-1">A−</button><span class="num" id="rs-v">${S.profile.rs} px</span><button class="btn ghost small" data-act="rs" data-d="1">A+</button></div></div>
+        <div class="field"><span>Police</span><div class="seg"><button data-act="rf" data-v="serif" aria-pressed="${S.profile.rf==='serif'}">Livre</button><button data-act="rf" data-v="sans" aria-pressed="${S.profile.rf==='sans'}">Moderne</button></div></div>
+        <div class="field"><span>Thème</span><div class="seg">${[['auto','Auto'],['light','Clair'],['sepia','Sépia'],['night','Nuit']].map(([k,l]) => `<button data-act="rt" data-v="${k}" aria-pressed="${S.profile.rt===k}">${l}</button>`).join('')}</div></div>
+        <span class="label" style="margin-top:6px">Voix</span>${voiceSettingsHTML()}
+        <div class="acts"><button class="btn" data-act="sheet-close">Terminé</button></div>`); break;
+    case 'rs': S.profile.rs = Math.max(14, Math.min(30, S.profile.rs + (+el.dataset.d))); $('#rs-v').textContent = S.profile.rs + ' px'; $('#r-text').style.setProperty('--rs', S.profile.rs + 'px'); save(); break;
+    case 'rf': S.profile.rf = el.dataset.v; $$('[data-act="rf"]').forEach(b => b.setAttribute('aria-pressed', b === el)); $('#r-text').classList.toggle('sans', S.profile.rf === 'sans'); save(); break;
+    case 'rt': S.profile.rt = el.dataset.v; $$('[data-act="rt"]').forEach(b => b.setAttribute('aria-pressed', b === el)); $('#reader').dataset.rt = S.profile.rt === 'auto' ? '' : S.profile.rt; save(); break;
+    case 'page-note': noteSheet(newNote({}), true); break;
+    case 'sel-hl': { const s = R.sel; if (!s) break; const n = newNote({para:s.para, start:s.start, end:s.end, quote:s.quote, color:el.dataset.c, vis:'me'}); S.notes.push(n); save(); API.saveNote(n, true).catch(e => fail(e)); window.getSelection().removeAllRanges(); hideSel(); refreshPara(s.para); renderNotesPanel(); toast('Passage surligné (visible par vous seul)'); break; }
+    case 'sel-note': { const s = R.sel; if (!s) break; const n = newNote({para:s.para, start:s.start, end:s.end, quote:s.quote}); window.getSelection().removeAllRanges(); hideSel(); noteSheet(n, true); break; }
+    case 'sel-listen': { const s = R.sel; if (!s) break; window.getSelection().removeAllRanges(); hideSel(); TTS.queue = sentencesOf(R.ch); const i = TTS.queue.findIndex(x => x.p === s.para && x.e > s.start); startTTS(i < 0 ? 0 : i); break; }
+    case 'tts-play': if (TTS.playing) pauseTTS(); else startTTS(R.speak ? TTS.qi : undefined); break;
+    case 'tts-back': if (TTS.queue.length) { TTS.qi = Math.max(0, TTS.qi - 1); if (TTS.playing) speakCurrent(); else setSpeak(TTS.queue[TTS.qi]); } break;
+    case 'tts-fwd': if (TTS.queue.length) { TTS.qi = Math.min(TTS.queue.length, TTS.qi + 1); if (TTS.playing) speakCurrent(); else if (TTS.queue[TTS.qi]) setSpeak(TTS.queue[TTS.qi]); } break;
+    case 'tts-g': S.profile.voiceGender = el.dataset.g; save(); updateGenderBtns(); if (TTS.playing) speakCurrent(); break;
+    case 'tts-rate': { const steps = [0.75, 1, 1.25, 1.5, 1.75, 2]; const i = steps.indexOf(S.profile.rate); S.profile.rate = steps[(i + 1) % steps.length]; el.textContent = S.profile.rate + '×'; save(); if (TTS.playing) speakCurrent(); break; }
+    case 'tts-timer': { const steps = [0, 15, 30, 60]; TTS.timerMin = steps[(steps.indexOf(TTS.timerMin) + 1) % steps.length]; TTS.timerEnd = TTS.timerMin ? Date.now() + TTS.timerMin * 60000 : 0; el.textContent = TTS.timerMin ? `⏱ ${TTS.timerMin} min` : '⏱ Off'; el.classList.toggle('on', !!TTS.timerMin); break; }
+  }
+});
+document.addEventListener('submit', e => { const f = e.target.closest('.replyform'); if (!f) return; e.preventDefault(); const inp = f.querySelector('input'); const t = inp.value.trim(); if (!t) return;
+  const n = S.notes.find(x => x.id === f.dataset.id); n.replies = n.replies || []; n.replies.push({authorId:'me', text:t, at:Date.now()}); save(); API.reply(n.id, t).catch(e => fail(e, "La réponse n'a pas pu être envoyée.")); afterNoteChange(n); toast('Réponse envoyée'); });
+document.addEventListener('input', e => {
+  const t = e.target;
+  if (t.id === 'q') { S.q = t.value; $('#grid').innerHTML = gridHTML(); return; }
+  const a = t.dataset.actInput; if (!a) return;
+  if (a === 'pname') { S.profile.name = t.value; save(); renderNav(); if (t.value.trim()) API.profileName(); }
+  if (a === 'rate') { S.profile.rate = +t.value; $('#rate-v').textContent = S.profile.rate + '×'; save(); }
+  if (a === 'sample') { $('#pf-spoken').textContent = speechText(t.value); }
+  if (a === 'cal') { const g = groupOf(t.dataset.id); g.calendar = t.value; save(); API.calendar(g); }
+});
+document.addEventListener('change', e => {
+  const t = e.target; if (t.id === 'file-input') { const files = Array.from(t.files || []); t.value = ''; if (files.length) importFiles(files); return; }
+  const a = t.dataset.actChange; if (!a) return;
+  if (a === 'vf') { S.profile.voiceF = t.value; save(); } if (a === 'vm') { S.profile.voiceM = t.value; save(); }
+  if (a === 'gbook') { groupOf(t.dataset.id).bookId = t.value; save(); render(); API.groupBook(t.dataset.id, t.value).catch(e => fail(e)); }
+});
+document.addEventListener('keydown', e => { if (e.key === 'Escape') { if ($('#sheet-root').innerHTML) closeSheet(); else if (!$('#r-sel').hidden) hideSel(); } });
+$('#r-scroll').addEventListener('scroll', () => { if (!R.content) return; updateProg(); saveProgress(); if (!$('#r-sel').hidden) hideSel(); }, {passive:true});
+document.addEventListener('dragover', e => { if ($('#reader').hidden) e.preventDefault(); });
+document.addEventListener('drop', e => { if (!$('#reader').hidden) return; e.preventDefault(); const files = Array.from(e.dataTransfer?.files || []); if (files.length) importFiles(files); });
+
+/* ================= boot ================= */
+$('#auth-form').addEventListener('submit', submitAuth);
+(async function boot(){
+  if (TTS.ok) { loadVoices(); try { speechSynthesis.addEventListener('voiceschanged', loadVoices); } catch(e){ speechSynthesis.onvoiceschanged = loadVoices; } }
+  updatePlayBtn();
+  try { const p = JSON.parse(localStorage.getItem('le-prefs') || 'null'); if (p) S.profile = {...S.profile, ...p}; } catch(e){}
+  const code = new URLSearchParams(location.search).get('code'); if (code) { try { sessionStorage.setItem('le-code', code.trim().toUpperCase()); } catch(e){} }
+  if ('serviceWorker' in navigator && location.protocol === 'https:' && !/claude|anthropic/.test(location.hostname)) { navigator.serviceWorker.register('sw.js').catch(() => {}); }
+  if (!sb) { showAuth("Le service n'a pas pu se charger. Vérifiez votre connexion Internet puis rechargez la page."); return; }
+  sb.auth.onAuthStateChange((ev, session) => { if (session && (ev === 'SIGNED_IN' || ev === 'INITIAL_SESSION')) startApp(session); if (ev === 'SIGNED_OUT' && ME) { ME = null; showAuth(); } });
+  const {data} = await sb.auth.getSession(); if (data.session) startApp(data.session); else showAuth();
+})();
+</script>
+
+</body>
+</html>
