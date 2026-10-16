@@ -75,7 +75,7 @@ svg.i{width:20px;height:20px;flex:none;stroke:currentColor;fill:none;stroke-widt
 .side{display:none}
 .topnav{display:none}
 .main{min-width:0}
-.tabbar{position:fixed;left:0;right:0;bottom:0;z-index:20;display:grid;grid-template-columns:repeat(4,1fr);background:var(--surface);border-top:1px solid var(--line);
+.tabbar{position:fixed;left:0;right:0;bottom:0;z-index:20;display:grid;grid-template-columns:repeat(5,1fr);background:var(--surface);border-top:1px solid var(--line);
   padding:6px max(8px,env(safe-area-inset-right,0px)) calc(6px + env(safe-area-inset-bottom,0px)) max(8px,env(safe-area-inset-left,0px))}
 .tabbar button{border:0;background:none;display:flex;flex-direction:column;align-items:center;gap:2px;font-size:11.5px;color:var(--ink-2);padding:6px 0;border-radius:12px}
 .tabbar button[aria-current="page"]{color:var(--green);font-weight:600}
@@ -369,6 +369,19 @@ svg.i{width:20px;height:20px;flex:none;stroke:currentColor;fill:none;stroke-widt
 .progress i{display:block;height:100%;background:var(--green);width:0;transition:width .2s}
 .toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(92px + env(safe-area-inset-bottom,0px));background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:12px;z-index:90;font-size:14px;max-width:calc(100% - 32px)}
 
+/* ---------- listening mode (dark screen that stays awake) ---------- */
+#listen{position:fixed;inset:0;z-index:50;background:#000;color:#8A7F76;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;text-align:center;
+  padding:calc(24px + env(safe-area-inset-top,0px)) max(24px,env(safe-area-inset-right,0px)) calc(24px + env(safe-area-inset-bottom,0px)) max(24px,env(safe-area-inset-left,0px))}
+#listen .ls-label{font-size:12px;letter-spacing:.14em;text-transform:uppercase}
+#listen .ls-book{font-size:15px;font-weight:600;color:#B5A99E}
+#listen .ls-text{font-family:var(--f-read);font-size:19px;line-height:1.6;max-width:30ch;color:#CFC4B9;min-height:5em}
+#listen .ls-ctrl{display:flex;align-items:center;gap:22px}
+#listen .ls-btn{width:54px;height:54px;border-radius:50%;border:1px solid #3A322C;background:none;color:#CFC4B9;display:grid;place-items:center}
+#listen .ls-btn.big{width:84px;height:84px;background:#2B211C;border-color:#5A4A3F}
+#listen .ls-btn.big svg{width:30px;height:30px}
+#listen .ls-hint{font-size:13px;max-width:34ch}
+#listen .ls-exit{border:0;background:none;color:#B5A99E;text-decoration:underline;font-size:14px;padding:8px}
+
 /* ---------- sign in ---------- */
 #auth{position:fixed;inset:0;z-index:30;overflow:auto;background:var(--espresso);color:var(--on-photo)}
 .auth-bg{position:fixed;inset:0;width:100%;height:100%;object-fit:cover;object-position:62% 30%}
@@ -389,6 +402,111 @@ svg.i{width:20px;height:20px;flex:none;stroke:currentColor;fill:none;stroke-widt
   .auth-intro{max-width:520px;padding-bottom:12px}
   .auth-intro h1{font-size:56px}
 }
+
+/* ---------- Bible ---------- */
+.cover.bible{background:var(--espresso);color:var(--mustard)}
+.cover.bible::after{display:none}
+.cover.bible::before{content:"";position:absolute;inset:7cqw;border:1px solid var(--mustard);border-radius:3px;opacity:.7}
+.cover.bible .cin{justify-content:center;align-items:center;text-align:center;gap:6cqw}
+.cover.bible .ct{color:var(--mustard);font-size:clamp(9px,15cqw,26px)}
+.cover.bible .ca{color:var(--mustard);opacity:.75}
+.cover.bible .cross{width:12cqw;height:20cqw;position:relative}
+.cover.bible .cross::before,.cover.bible .cross::after{content:"";position:absolute;background:var(--mustard)}
+.cover.bible .cross::before{left:42%;width:16%;top:0;bottom:0}
+.cover.bible .cross::after{top:26%;height:12%;left:0;right:0}
+.vn{font-family:var(--f-ui);font-size:.68em;font-weight:700;color:var(--green);vertical-align:super;margin:0 .25em 0 .1em}
+.r-text.bible p{margin:0 0 .4em}
+.r-text p[data-v]::before{content:attr(data-v);font-family:var(--f-ui);font-size:.62em;font-weight:700;color:var(--green);vertical-align:super;margin-right:.35em}
+.btabs{margin-top:18px}
+.bbody{margin:6px 0 34px}
+.today{display:grid;gap:14px;margin-top:16px}
+@media (min-width:760px){.today{grid-template-columns:1.2fr 1fr}.today.compact{margin-bottom:6px}}
+.bcard{border:0;text-align:left;border-radius:22px;padding:20px;display:flex;flex-direction:column;gap:10px;background:var(--surface);color:var(--ink);box-shadow:inset 0 0 0 1px var(--line)}
+.bcard h3{font-size:19px;font-weight:600}
+.bcard p{font-size:14px;color:var(--ink-2)}
+.bcard .acts{display:flex;gap:8px;flex-wrap:wrap;margin-top:4px}
+.bcard .bar{background:var(--line);height:6px;margin:0}
+.bcard .bar i{background:var(--green)}
+.bcard.votd{background:var(--espresso);color:var(--on-photo);box-shadow:none}
+.bcard.votd .label{color:var(--mustard)}
+.bcard.votd .vtext{margin:0;font-family:var(--f-read);font-size:19px;line-height:1.55}
+.bcard.votd .vtext .vn{color:var(--mustard)}
+.bcard.votd .vref{color:var(--mustard);font-weight:600;font-size:14px}
+.bcard.votd .btn.ghost{background:rgba(255,255,255,.12);color:var(--on-photo);box-shadow:none}
+.bcard.c-rust{box-shadow:inset 4px 0 0 var(--rust),inset 0 0 0 1px var(--line)}
+.bcard.c-denim{box-shadow:inset 4px 0 0 var(--denim),inset 0 0 0 1px var(--line)}
+.bcard.c-teal{box-shadow:inset 4px 0 0 var(--teal),inset 0 0 0 1px var(--line)}
+.bcard.c-mustard{box-shadow:inset 4px 0 0 var(--mustard),inset 0 0 0 1px var(--line)}
+.steps-mini{display:flex;gap:8px;flex-wrap:wrap}
+.steps-mini span{display:inline-flex;align-items:center;gap:8px;background:var(--surface);border-radius:999px;padding:6px 14px 6px 6px;font-weight:500;font-size:14px;box-shadow:inset 0 0 0 1px var(--line)}
+.steps-mini b{width:24px;height:24px;border-radius:50%;display:grid;place-items:center;background:var(--mustard);color:var(--espresso);font-size:12.5px}
+.bookgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px}
+.bookgrid button{border:0;background:var(--surface);border-radius:14px;padding:12px 14px;text-align:left;display:flex;justify-content:space-between;align-items:baseline;gap:8px;box-shadow:inset 0 0 0 1px var(--line)}
+.bookgrid button:hover{box-shadow:inset 0 0 0 1.5px var(--green)}
+.bookgrid b{font-weight:600;font-size:14.5px;min-width:0;overflow-wrap:anywhere}
+.bookgrid span{font-size:12px;color:var(--ink-2);flex:none}
+.chgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(48px,1fr));gap:8px;max-height:56vh;overflow:auto;padding:2px}
+.chgrid button{border:0;height:46px;border-radius:12px;background:var(--surface-2);font-weight:600;font-variant-numeric:tabular-nums;box-shadow:inset 0 0 0 1px var(--line)}
+.chgrid button:hover{background:var(--green-soft)}
+.chgrid button[aria-current="true"]{background:var(--green);color:var(--on-green)}
+.plangrid{display:grid;gap:16px;margin-top:6px}
+@media (min-width:720px){.plangrid{grid-template-columns:repeat(auto-fill,minmax(300px,1fr))}}
+.plan{border:0;padding:0;text-align:left;background:var(--surface);border-radius:22px;overflow:hidden;display:flex;flex-direction:column;box-shadow:inset 0 0 0 1px var(--line)}
+.plan:hover{box-shadow:inset 0 0 0 1.5px var(--green)}
+.pph{height:130px;position:relative;background:var(--espresso)}
+.pph img{width:100%;height:100%;object-fit:cover;display:block}
+.pph .chip{position:absolute;left:14px;bottom:12px}
+.plan.c-rust .pph .chip{background:var(--rust);color:var(--on-photo)}.plan.c-denim .pph .chip{background:var(--denim);color:var(--on-photo)}
+.plan.c-teal .pph .chip{background:var(--teal);color:var(--on-photo)}.plan.c-mustard .pph .chip{background:var(--mustard);color:var(--espresso)}
+.pin{padding:16px 18px 18px;display:flex;flex-direction:column;gap:8px}
+.pin h3{font-size:18px;font-weight:600}
+.pin p{font-size:14px;color:var(--ink-2)}
+.pin .bar{background:var(--line);margin:4px 0 0}.pin .bar i{background:var(--green)}
+.themegrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:12px;margin-top:6px}
+.theme{border:0;padding:0;position:relative;border-radius:20px;overflow:hidden;aspect-ratio:4/5;max-width:100%;background:var(--espresso);color:var(--on-photo);text-align:left}
+.theme img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;transition:transform .5s}
+.theme:hover img{transform:scale(1.05)}
+.theme .tt{position:absolute;left:8px;right:8px;bottom:8px;border-radius:14px;padding:10px 12px;display:flex;flex-direction:column}
+.theme .tt b{font-size:15px;font-weight:600;line-height:1.2}.theme .tt small{font-size:12px;opacity:.9}
+.theme.c-rust .tt{background:var(--rust)}.theme.c-denim .tt{background:var(--denim)}.theme.c-teal .tt{background:var(--teal)}.theme.c-mustard .tt{background:var(--mustard);color:var(--espresso)}
+.passages{display:grid;gap:14px;margin:18px 0 34px;max-width:780px}
+.psg{background:var(--surface);border-radius:20px;padding:18px;display:flex;flex-direction:column;gap:10px;box-shadow:inset 0 0 0 1px var(--line)}
+.psg header b{font-weight:600;font-size:15px}
+.psg.c-rust header b{color:var(--rust)}.psg.c-denim header b{color:var(--denim)}.psg.c-teal header b{color:var(--teal)}.psg.c-mustard header b{color:var(--sand-ink)}
+.ptext{font-family:var(--f-read);font-size:17px;line-height:1.65}
+.psg footer{display:flex;gap:8px;flex-wrap:wrap}
+.medcard{display:flex;flex-direction:column;gap:12px;margin-top:6px}
+.medcard h2{font-size:22px;font-weight:600}
+.medsteps{margin:4px 0 0;padding:0;list-style:none;counter-reset:st;display:grid;gap:12px}
+@media (min-width:760px){.medsteps{grid-template-columns:1fr 1fr}}
+.medsteps li{counter-increment:st;display:grid;grid-template-columns:34px 1fr;column-gap:12px;row-gap:2px}
+.medsteps li::before{content:counter(st);grid-row:span 2;width:34px;height:34px;border-radius:50%;display:grid;place-items:center;background:var(--mustard);color:var(--espresso);font-weight:700}
+.medsteps b{font-weight:600}.medsteps span{font-size:14px;color:var(--ink-2)}
+.medpick{display:grid;gap:12px}
+@media (min-width:760px){.medpick{grid-template-columns:repeat(3,1fr)}}
+.medpick .bcard b{font-size:17px;font-weight:600}
+.refform .btn{align-self:flex-start}
+.days{list-style:none;margin:16px 0 34px;padding:0;display:grid;gap:8px;max-width:760px}
+.days li{display:flex;align-items:center;gap:12px;background:var(--surface);border-radius:16px;padding:10px 12px;box-shadow:inset 0 0 0 1px var(--line)}
+.days li.next{box-shadow:inset 0 0 0 2px var(--green)}
+.days li.done .dl{color:var(--ink-2)}
+.dchk{width:32px;height:32px;border-radius:50%;border:2px solid var(--line);background:none;flex:none;font-weight:700;color:var(--on-green)}
+.days li.done .dchk{background:var(--green);border-color:var(--green)}
+.dl{flex:1;min-width:0;display:flex;flex-direction:column;font-size:14.5px}
+.dl b{font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-2);font-weight:600}
+.medflow{padding-block:18px 34px}
+.medhead{display:flex;align-items:center;gap:12px}
+.medhead h1{font-size:24px;font-weight:600}
+.medgrid{display:grid;gap:16px;margin-top:16px}
+@media (min-width:900px){.medgrid{grid-template-columns:1fr 1fr;align-items:start}.mpassage{position:sticky;top:20px}}
+.mpassage{display:flex;flex-direction:column;gap:12px;max-height:70vh;overflow:auto}
+.mstep{display:flex;flex-direction:column;gap:12px}
+.mstep h2{font-size:24px;font-weight:600}
+.mstep>p{font-size:15.5px;line-height:1.55}
+.mstep .acts{display:flex;gap:8px;justify-content:flex-end;flex-wrap:wrap}
+.stepdots{display:flex;gap:6px}
+.stepdots span{height:6px;flex:1;border-radius:6px;background:var(--line)}
+.stepdots span.past{background:var(--mustard)}.stepdots span.on{background:var(--green)}
 
 /* ---------- reader ---------- */
 #reader{position:fixed;inset:0;z-index:40;background:var(--paper);color:var(--paper-ink);display:flex;flex-direction:column;
@@ -527,9 +645,22 @@ svg.i{width:20px;height:20px;flex:none;stroke:currentColor;fill:none;stroke-widt
       <div class="grp">
         <button class="pill" data-act="tts-rate" id="tts-rate" aria-label="Vitesse">1×</button>
         <button class="pill hide-s" data-act="tts-timer" id="tts-timer" aria-label="Minuterie">⏱ Off</button>
+        <button class="pill" data-act="listen-mode" aria-label="Mode écoute, écran sombre">☾</button>
       </div>
     </div>
   </footer>
+</div>
+<div id="listen" hidden>
+  <p class="ls-label">Mode écoute</p>
+  <p class="ls-book" id="ls-book"></p>
+  <p class="ls-text" id="ls-text"></p>
+  <div class="ls-ctrl">
+    <button class="ls-btn" data-act="tts-back" aria-label="Phrase précédente"><svg class="i" viewBox="0 0 24 24"><path d="M19 20L9 12l10-8zM5 19V5"/></svg></button>
+    <button class="ls-btn big" data-act="tts-play" id="ls-play" aria-label="Pause"></button>
+    <button class="ls-btn" data-act="tts-fwd" aria-label="Phrase suivante"><svg class="i" viewBox="0 0 24 24"><path d="M5 4l10 8-10 8zM19 5v14"/></svg></button>
+  </div>
+  <p class="ls-hint" id="ls-hint">L'écran reste allumé mais très sombre pour économiser la batterie. Posez le téléphone, la lecture continue.</p>
+  <button class="ls-exit" data-act="listen-exit">Revenir au texte</button>
 </div>
 <div class="r-sel" id="r-sel" hidden>
   <div class="colors" id="sel-colors">
@@ -561,6 +692,7 @@ const AVC = ['#C4552B','#3E6A9A','#1F7A72','#B7841A','#7B4A8F','#A8322E','#5E7A2
 const PHOTOS = ['img/rayons.jpg','img/jeune.jpg','img/allonge.jpg','img/etude.jpg','img/fauteuil.jpg'];
 const groupPhoto = g => g.photo || ({g1:'img/rayons.jpg', g2:'img/jeune.jpg'})[g.id] || PHOTOS[hash(g.id) % PHOTOS.length];
 const ic = {
+  bible:'<svg class="i" viewBox="0 0 24 24"><path d="M5 4.5A2.5 2.5 0 0 1 7.5 2H19v17H7.5A2.5 2.5 0 0 0 5 21.5z"/><path d="M5 21.5A2.5 2.5 0 0 1 7.5 19H19v3H7.5"/><path d="M12 6v8M9 9h6"/></svg>',
   books:'<svg class="i" viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20V3H6.5A2.5 2.5 0 0 0 4 5.5z"/><path d="M4 19.5A2.5 2.5 0 0 0 6.5 22H20v-5"/></svg>',
   group:'<svg class="i" viewBox="0 0 24 24"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20a6.5 6.5 0 0 1 13 0"/><circle cx="17.5" cy="9" r="2.5"/><path d="M16 14.2a5 5 0 0 1 6 4.8"/></svg>',
   note:'<svg class="i" viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>',
@@ -601,11 +733,11 @@ const DB = (() => {
 /* ================= state ================= */
 const S = {
   profile:{id:'me', name:'', voiceGender:'f', voiceF:'', voiceM:'', rate:1, defaultVis:'me', rs:19, rf:'serif', rt:'auto', pauseScale:1, commas:'natural', verses:'read'},
-  books:[], groups:[], notes:[], progress:{},
+  books:[], groups:[], notes:[], progress:{}, plans:{}, meds:[], bibleTab:'today', med:null,
   view:{name:'home'}, filter:'all', q:'', noteFilter:'all'
 };
 let saveT;
-function save(){ clearTimeout(saveT); saveT = setTimeout(() => { try { localStorage.setItem('le-prefs', JSON.stringify(S.profile)); } catch(e){} if (ME) DB.set('state:' + ME, {books:S.books, groups:S.groups, notes:S.notes, progress:S.progress}); }, 250); }
+function save(){ clearTimeout(saveT); saveT = setTimeout(() => { try { localStorage.setItem('le-prefs', JSON.stringify(S.profile)); } catch(e){} if (ME) DB.set('state:' + ME, {books:S.books, groups:S.groups, notes:S.notes, progress:S.progress, plans:S.plans, meds:S.meds}); }, 250); }
 /* ================= server (Supabase) ================= */
 const SB_URL = 'https://xclvxmnjwmvpwooowbdt.supabase.co';
 const SB_KEY = 'sb_publishable_PRxVdJmHtxjIMC18Dz6v_A_mEdXnfrJ';
@@ -624,6 +756,7 @@ async function loadAll(){
     q(sb.from('le_profiles').select('id,name,color')), q(sb.from('le_groups').select('*')), q(sb.from('le_members').select('group_id,user_id,role')),
     q(sb.from('le_books').select('id,owner_id,group_id,title,author,format,cover,photo,chapters,descr,scanned,created_at')), q(sb.from('le_progress').select('*')),
     q(sb.from('le_notes').select('*')), q(sb.from('le_note_viewers').select('*')), q(sb.from('le_replies').select('*').order('created_at')), q(sb.from('le_likes').select('*'))]);
+  const [bnotes, plansRows, meds] = await Promise.all([q(sb.from('le_bible_notes').select('*')), q(sb.from('le_reading_plans').select('*')), q(sb.from('le_meditations').select('*'))]);
   const prof = id => profiles.find(p => p.id === id) || {name:'Membre'};
   const progOf = u => Object.fromEntries(progress.filter(p => p.user_id === u).map(p => [p.book_id, p.pct]));
   const mine = profiles.find(p => p.id === ME); if (mine) S.profile.name = mine.name;
@@ -637,19 +770,25 @@ async function loadAll(){
     viewers:viewers.filter(v => v.note_id === n.id).map(v => toL(v.user_id)), createdAt:Date.parse(n.created_at),
     replies:replies.filter(r => r.note_id === n.id).map(r => ({authorId:toL(r.author_id), text:r.body, at:Date.parse(r.created_at)})),
     likes:likes.filter(l => l.note_id === n.id).map(l => toL(l.user_id))}));
+  S.notes.push(...bnotes.map(n => ({id:n.id, bookId:'bible', groupId:null, authorId:'me', ch:n.ch, para:n.para, start:n.start_pos, end:n.end_pos, quote:n.quote || '', text:n.body || '', color:n.color, vis:'me', viewers:[], createdAt:Date.parse(n.created_at), replies:[], likes:[]})));
+  S.plans = {}; plansRows.forEach(r => { if (r.plan_id === '__position') { const [ch, pos] = r.done; S.progress.bible = {ch:ch || 0, pos:(pos || 0) / 1000, pct:Math.min(1, ((ch || 0) + (pos || 0) / 1000) / 1189), at:Date.parse(r.updated_at)}; } else S.plans[r.plan_id] = {start:r.started_on, done:r.done || []}; });
+  S.meds = meds.map(m => ({id:m.id, ref:m.ref, answers:m.answers || {}, at:Date.parse(m.created_at)}));
   save();
 }
 const API = {
   async saveNote(n, isNew){
+    if (n.bookId === 'bible') { const row = {ch:n.ch, para:n.para, start_pos:n.start, end_pos:n.end, quote:n.quote || '', body:n.text || '', color:n.color, updated_at:new Date().toISOString()};
+      return isNew ? q(sb.from('le_bible_notes').insert({id:n.id, ...row})) : q(sb.from('le_bible_notes').update(row).eq('id', n.id)); }
     const row = {book_id:n.bookId, group_id:n.groupId, ch:n.ch, para:n.para, start_pos:n.start, end_pos:n.end, quote:n.quote || '', body:n.text || '', color:n.color, vis:n.groupId ? n.vis : 'me', updated_at:new Date().toISOString()};
     if (isNew) await q(sb.from('le_notes').insert({id:n.id, ...row})); else await q(sb.from('le_notes').update(row).eq('id', n.id));
     if (!isNew) await q(sb.from('le_note_viewers').delete().eq('note_id', n.id));
     if (n.vis === 'chosen' && (n.viewers || []).length) await q(sb.from('le_note_viewers').insert(n.viewers.map(u => ({note_id:n.id, user_id:toR(u)}))));
   },
-  deleteNote: id => q(sb.from('le_notes').delete().eq('id', id)),
+  deleteNote: (id, bookId) => q(sb.from(bookId === 'bible' ? 'le_bible_notes' : 'le_notes').delete().eq('id', id)),
   like: (id, on) => on ? q(sb.from('le_likes').insert({note_id:id, user_id:ME})) : q(sb.from('le_likes').delete().eq('note_id', id).eq('user_id', ME)),
   reply: (id, text) => q(sb.from('le_replies').insert({note_id:id, body:text})),
   progress(bookId){ const p = S.progress[bookId]; if (!p || !ME) return;
+    if (bookId === 'bible') { later('prog:bible', () => q(sb.from('le_reading_plans').upsert({user_id:ME, plan_id:'__position', done:[p.ch, Math.round(p.pos * 1000)], updated_at:new Date().toISOString()})), 1500); return; }
     later('prog:' + bookId, () => q(sb.from('le_progress').upsert({user_id:ME, book_id:bookId, ch:p.ch, pos:p.pos, pct:p.pct, updated_at:new Date().toISOString()})), 1500); },
   async createBook(b){
     const c = contentCache.get(b.id) || await DB.get('content:' + b.id); if (!c) throw new Error('Contenu introuvable');
@@ -665,6 +804,8 @@ const API = {
     const g = groupOf(b.groupId); if (g && g.bookId === b.id && isLead(g)) await q(sb.from('le_groups').update({book_id:b.id}).eq('id', g.id));
   },
   async deleteBook(id){ await sb.storage.from('le-books').remove([`${id}/content.json`, `${id}/file.pdf`]); await q(sb.from('le_books').delete().eq('id', id)); },
+  plan(id){ const st = S.plans[id]; return st ? q(sb.from('le_reading_plans').upsert({user_id:ME, plan_id:id, started_on:st.start, done:st.done, updated_at:new Date().toISOString()})) : q(sb.from('le_reading_plans').delete().eq('plan_id', id).eq('user_id', ME)); },
+  saveMed: m => q(sb.from('le_meditations').insert({id:m.id, ref:m.ref, answers:m.answers})),
   createGroup: (name, descr) => q(sb.rpc('le_create_group', {p_name:name, p_descr:descr})),
   joinGroup: code => q(sb.rpc('le_join_group', {p_code:code})),
   calendar(g){ later('cal:' + g.id, () => q(sb.from('le_groups').update({calendar:g.calendar}).eq('id', g.id))); },
@@ -726,10 +867,12 @@ async function startApp(session){
   ME = session.user.id; MY_EMAIL = session.user.email || '';
   $('#auth').hidden = true; $('#shell').hidden = false;
   const cached = await DB.get('state:' + ME);
+  try { await bibleIndex(); } catch(e){}
   if (cached) { Object.assign(S, cached); render(); }
   try {
     const nm = (session.user.user_metadata?.name || S.profile.name || MY_EMAIL.split('@')[0] || 'Lecteur').slice(0, 60);
     await q(sb.from('le_profiles').upsert({id:ME, name:nm}, {onConflict:'id', ignoreDuplicates:true}));
+    try { await bibleIndex(); } catch(e){}
     await loadAll(); await ensureSample();
     const code = takeCode();
     if (code) { try { sessionStorage.removeItem('le-code'); } catch(e){}
@@ -745,7 +888,7 @@ async function logout(){ stopTTS(); try { if (rtChan) { await sb.removeChannel(r
 
 const me = () => ({id:'me', name:S.profile.name || 'Moi', color:'#C4552B'});
 const groupOf = id => S.groups.find(g => g.id === id);
-const bookOf = id => S.books.find(b => b.id === id);
+const bookOf = id => id === 'bible' ? BIBLE_BOOK : S.books.find(b => b.id === id);
 const myRole = g => (g?.members.find(m => m.id === 'me') || {}).role || '';
 const isLead = g => ['Créateur','Animateur'].includes(myRole(g));
 const pct = id => (S.progress[id]?.pct) || 0;
@@ -762,6 +905,7 @@ function canSee(n){
 function avatar(p, cls = ''){ const n = p.name || '?'; const ini = n.split(/\s+/).map(w => w[0]).slice(0,2).join('').toUpperCase();
   return `<span class="av ${cls}" style="background:${p.color || AVC[hash(n) % AVC.length]}" title="${esc(n)}" aria-hidden="true">${esc(ini)}</span>`; }
 function coverHTML(b, extra = ''){
+  if (b.format === 'bible') return `<div class="cover gen bible ${extra}"><div class="cin"><span class="cross" aria-hidden="true"></span><span class="ct">La Sainte Bible</span><span class="ca">Louis Segond 1910</span></div></div>`;
   const fmt = b.format === 'sample' ? '' : `<span class="fmt">${b.format === 'pdf' ? 'PDF' : 'EPUB'}</span>`;
   if (b.photo) return `<div class="cover gen photo ${extra}"><img src="${b.photo}" alt="" loading="lazy"><div class="cin"><span class="ct">${esc(b.title)}</span><span class="ca">${esc(b.author || '')}</span></div></div>`;
   if (b.cover) return `<div class="cover ${extra}">${fmt}<img src="${b.cover}" alt=""></div>`;
@@ -790,29 +934,245 @@ const SAMPLE = {
 };
 
 /* ================= navigation ================= */
-const NAV = [['home','Bibliothèque',ic.books],['groups','Groupes',ic.group],['notes','Notes',ic.note],['profile','Profil',ic.user]];
+
+/* ================= Bible (Louis Segond 1910, built in) ================= */
+const BIBLE_BOOK = {id:'bible', ownerId:'me', title:'La Sainte Bible', author:'Louis Segond 1910', format:'bible', chapters:1189, groupId:null, addedAt:0,
+  desc:"La Bible complète, toujours disponible dans l'application, même hors connexion après une première ouverture. Lisez, surlignez, écoutez et méditez."};
+const BIBLE = {index:null, start:[], books:{}, content:null};
+async function bibleIndex(){
+  if (BIBLE.index) return BIBLE.index;
+  let ix = await DB.get('bible:index');
+  if (!ix) { const r = await fetch('bible/index.json'); if (!r.ok) throw new Error('bible'); ix = await r.json(); DB.set('bible:index', ix); }
+  BIBLE.index = ix; let s = 0; BIBLE.start = ix.books.map(b => { const v = s; s += b.c; return v; }); return ix;
+}
+async function bibleBook(b){
+  if (BIBLE.books[b]) return BIBLE.books[b];
+  let d = await DB.get('bible:b' + b);
+  if (!d) { const r = await fetch(`bible/${String(b + 1).padStart(2, '0')}.json`); if (!r.ok) throw new Error('bible'); d = await r.json(); DB.set('bible:b' + b, d); }
+  return BIBLE.books[b] = d;
+}
+const gIndex = (b, c) => BIBLE.start[b] + c - 1;
+function fromIndex(g){ let b = 0; while (b < 65 && BIBLE.start[b + 1] <= g) b++; return {b, c:g - BIBLE.start[b] + 1}; }
+const bookName = b => BIBLE.index ? BIBLE.index.books[b].n : '';
+const chapName = (b, c) => b === 18 ? `Psaume ${c}` : `${bookName(b)} ${c}`;
+async function bibleContent(){
+  if (BIBLE.content) return BIBLE.content; await bibleIndex();
+  const chapters = []; BIBLE.index.books.forEach((bk, b) => { for (let c = 1; c <= bk.c; c++) chapters.push({title:chapName(b, c), b, c, blocks:null}); });
+  return BIBLE.content = {bible:true, chapters};
+}
+async function ensureBibleChapter(content, i){
+  const ch = content.chapters[i]; if (!ch || ch.blocks) return;
+  const d = await bibleBook(ch.b);
+  d.c.forEach((verses, k) => { const t = content.chapters[BIBLE.start[ch.b] + k]; if (t && !t.blocks) t.blocks = verses.map((x, j) => ({t:'p', x, v:j + 1})); });
+}
+const nrm = s => String(s).normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().replace(/[.\s]+/g, ' ').trim();
+function parseRef(str){
+  if (!BIBLE.index) return null;
+  const m = String(str).trim().match(/^(.+?)\s*(\d+)(?:\s*[:.,]\s*(\d+)(?:\s*[-–]\s*(\d+))?)?$/); if (!m) return null;
+  const key = nrm(m[1]); const books = BIBLE.index.books;
+  let b = books.findIndex(x => nrm(x.n) === key || nrm(x.s) === key);
+  if (b < 0) b = books.findIndex(x => nrm(x.n).startsWith(key) && key.length >= 2);
+  if (b < 0 && /^psaume$/.test(key)) b = 18;
+  if (b < 0) return null; const c = +m[2]; if (c < 1 || c > books[b].c) return null;
+  const v1 = m[3] ? +m[3] : null, v2 = m[4] ? +m[4] : v1; return {b, c, v1, v2};
+}
+const refLabel = r => r.v1 ? `${chapName(r.b, r.c)}:${r.v1}${r.v2 && r.v2 !== r.v1 ? '-' + r.v2 : ''}` : chapName(r.b, r.c);
+function bibleRef(ch, para){ if (!BIBLE.index) return `chap. ${ch + 1}`; const {b, c} = fromIndex(ch); return para >= 0 ? `${chapName(b, c)}:${para + 1}` : chapName(b, c); }
+async function passageVerses(r){ const d = await bibleBook(r.b); const vs = d.c[r.c - 1] || []; const a = r.v1 || 1, z = r.v2 || vs.length; return vs.slice(a - 1, z).map((x, i) => ({n:a + i, x})); }
+async function hydratePassages(root = document){
+  for (const el of $$('[data-passage]', root)) { if (el.dataset.done) continue; el.dataset.done = 1;
+    const r = parseRef(el.dataset.passage); if (!r) continue;
+    try { const vs = await passageVerses(r); const lim = +el.dataset.limit || 0;
+      el.innerHTML = (lim ? vs.slice(0, lim) : vs).map(v => `<span class="vn">${v.n}</span>${esc(v.x)} `).join('') + (lim && vs.length > lim ? '…' : ''); }
+    catch(e){ el.textContent = 'Texte disponible une fois connecté à Internet.'; } }
+}
+function openRef(r, o = {}){
+  if (!r) return; const ch = gIndex(r.b, r.c);
+  let stopAt = null;
+  if (o.until) stopAt = {ch:gIndex(o.until.b, o.until.c), para:o.until.v2 ? o.until.v2 - 1 : 9999};
+  else if (r.v2) stopAt = {ch, para:r.v2 - 1};
+  openReader('bible', {ch, para:r.v1 ? r.v1 - 1 : null, range:r.v1 ? [r.v1 - 1, (r.v2 || r.v1) - 1] : null, listen:o.listen, stopAt});
+}
+
+/* Reading plans, themes, verse of the day */
+const THEMES = [
+  {id:'paix', name:'La paix intérieure', color:'denim', photo:'img/canape.jpg', intro:"Quand l'inquiétude prend trop de place, ces textes ramènent au repos que Dieu donne.",
+   refs:['Jean 14:27','Philippiens 4:6-7','Ésaïe 26:3-4','Psaumes 4:8','Matthieu 11:28-30','Colossiens 3:15']},
+  {id:'peur', name:'Peur et confiance', color:'teal', photo:'img/allonge.jpg', intro:"Pour les jours où la peur parle fort : Dieu est présent et il garde.",
+   refs:['Ésaïe 41:10','Psaumes 23:1-6','Psaumes 27:1-3','Josué 1:9','2 Timothée 1:7','Psaumes 56:3-4']},
+  {id:'pardon', name:'Le pardon', color:'rust', photo:'img/rayons.jpg', intro:"Recevoir le pardon de Dieu et apprendre à pardonner à son tour.",
+   refs:['Psaumes 103:8-12','1 Jean 1:9','Matthieu 6:12-15','Matthieu 18:21-22','Éphésiens 4:31-32','Colossiens 3:13']},
+  {id:'priere', name:'La prière', color:'mustard', photo:'img/fauteuil.jpg', intro:"Jésus enseigne à prier simplement, avec confiance et persévérance.",
+   refs:['Matthieu 6:5-13','Luc 11:9-13','Philippiens 4:6','1 Thessaloniciens 5:16-18','Jacques 5:16','Jean 15:7']},
+  {id:'amour', name:"L'amour de Dieu", color:'rust', photo:'img/lecture.jpg', intro:"Un amour qui précède tout et que rien ne peut briser.",
+   refs:['Jean 3:16','Romains 8:38-39','1 Jean 4:7-12','1 Corinthiens 13:1-13','Jean 15:12-13']},
+  {id:'foi', name:'Grandir dans la foi', color:'denim', photo:'img/etude.jpg', intro:"Ce qu'est la foi, d'où elle vient et comment elle se vit.",
+   refs:['Hébreux 11:1-6','Romains 10:17','Éphésiens 2:8-10','Marc 11:22-24','Jacques 2:14-17']},
+  {id:'epreuve', name:"L'espérance dans l'épreuve", color:'teal', photo:'img/bibliotheque.jpg', intro:"La souffrance n'a pas le dernier mot : Dieu fait concourir toutes choses au bien.",
+   refs:['Romains 5:3-5','Romains 8:28','Jacques 1:2-4','2 Corinthiens 4:16-18','Lamentations 3:22-23','1 Pierre 5:7']},
+  {id:'sagesse', name:'Sagesse et décisions', color:'mustard', photo:'img/jeune.jpg', intro:"Avant de choisir, demander la sagesse que Dieu donne généreusement.",
+   refs:['Proverbes 3:5-6','Jacques 1:5','Psaumes 32:8','Proverbes 16:3','Psaumes 119:105']},
+  {id:'gratitude', name:'La reconnaissance', color:'rust', photo:'img/canape.jpg', intro:"Dire merci change le regard sur la journée.",
+   refs:['Psaumes 100:1-5','Psaumes 103:1-5','1 Thessaloniciens 5:18','Colossiens 3:16-17','Luc 17:11-19']},
+  {id:'force', name:'Force et courage', color:'denim', photo:'img/allonge.jpg', intro:"Quand les forces manquent, Dieu renouvelle celles de ceux qui espèrent en lui.",
+   refs:['Ésaïe 40:29-31','Philippiens 4:13','2 Corinthiens 12:9-10','Néhémie 8:10','Josué 1:9']},
+  {id:'famille', name:'La famille', color:'teal', photo:'img/rayons.jpg', intro:"Construire un foyer sur la Parole et le respect mutuel.",
+   refs:['Deutéronome 6:4-9','Josué 24:15','Psaumes 127:1-3','Colossiens 3:18-21','Éphésiens 6:1-4']},
+  {id:'service', name:'Servir et travailler', color:'mustard', photo:'img/fauteuil.jpg', intro:"Travailler et servir comme pour le Seigneur.",
+   refs:['Colossiens 3:23-24','Marc 10:42-45','1 Pierre 4:10-11','Galates 6:9-10','Matthieu 25:34-40']},
+  {id:'identite', name:'Mon identité en Christ', color:'rust', photo:'img/jeune.jpg', intro:"Qui je suis aux yeux de Dieu, au-delà de ce que disent les autres.",
+   refs:['Psaumes 139:13-16','Jean 1:12','2 Corinthiens 5:17','Galates 2:20','Éphésiens 2:10','1 Pierre 2:9']},
+  {id:'esprit', name:'Le Saint-Esprit', color:'denim', photo:'img/etude.jpg', intro:"Le Consolateur promis, sa présence et son fruit dans nos vies.",
+   refs:['Jean 14:16-17','Jean 14:26','Actes 1:8','Romains 8:26-27','Galates 5:22-23']},
+];
+const FOUNDATIONS = ['Genèse 1','Genèse 3','Exode 20:1-17','Psaumes 23','Ésaïe 53','Jean 1:1-18','Jean 3:1-21','Matthieu 5:1-16','Luc 15:11-32','Jean 19:16-30','Jean 20:1-29','Actes 2:1-41','Romains 8','Apocalypse 21:1-7'];
+const VOTD = ['Jean 3:16','Psaumes 23:1','Ésaïe 41:10','Philippiens 4:13','Proverbes 3:5-6','Romains 8:28','Jérémie 29:11','Matthieu 11:28','Psaumes 46:1','Josué 1:9','Jean 14:27','2 Corinthiens 5:17','Lamentations 3:22-23','Psaumes 119:105','Matthieu 6:33','Romains 12:2','Galates 5:22-23','Éphésiens 2:8','Hébreux 11:1','1 Pierre 5:7','Psaumes 37:5','Ésaïe 40:31','Jean 15:5','Romains 15:13','Psaumes 121:1-2','Michée 6:8','Colossiens 3:23','Jacques 1:5','1 Jean 4:19','Psaumes 27:1','Sophonie 3:17'];
+
+function seqDays(chs, days){ const out = []; for (let d = 0; d < days; d++) { const a = Math.floor(d * chs.length / days), z = Math.floor((d + 1) * chs.length / days); out.push(chs.slice(a, z)); } return out; }
+const chList = (b0, b1) => { const out = []; for (let b = b0; b <= b1; b++) for (let c = 1; c <= BIBLE.index.books[b].c; c++) out.push({b, c, v1:null, v2:null}); return out; };
+let PLANS_CACHE = null;
+function plans(){
+  if (PLANS_CACHE || !BIBLE.index) return PLANS_CACHE || [];
+  const jn = chList(42, 42), pr = chList(19, 19), ps = chList(18, 18), nt = chList(39, 65), all = chList(0, 65);
+  return PLANS_CACHE = [
+    {id:'jean21', name:"L'Évangile de Jean", len:'21 jours', color:'rust', photo:'img/lecture.jpg', desc:"Un chapitre par jour pour rencontrer Jésus à travers le témoignage de Jean. Idéal pour commencer.", days:jn.map(x => [x])},
+    {id:'fondements', name:'Les fondements de la foi', len:'14 jours', color:'denim', photo:'img/etude.jpg', desc:"Quatorze grands textes, de la création à la résurrection et à la promesse de toutes choses nouvelles.", days:FOUNDATIONS.map(s => [parseRef(s)])},
+    {id:'proverbes31', name:'Un Proverbe par jour', len:'31 jours', color:'mustard', photo:'img/fauteuil.jpg', desc:"Un chapitre des Proverbes chaque jour du mois : de la sagesse pratique pour la vie, le travail et les relations.", days:pr.map(x => [x])},
+    {id:'psaumes30', name:'Les Psaumes en 30 jours', len:'30 jours', color:'teal', photo:'img/canape.jpg', desc:"Cinq psaumes par jour pour apprendre à prier avec la louange, la plainte et la confiance.", days:seqDays(ps, 30)},
+    {id:'nt90', name:'Le Nouveau Testament', len:'90 jours', color:'rust', photo:'img/jeune.jpg', desc:"Les 260 chapitres du Nouveau Testament, environ trois par jour, en trois mois.", days:seqDays(nt, 90)},
+    {id:'bible365', name:'La Bible en un an', len:'365 jours', color:'denim', photo:'img/bibliotheque.jpg', desc:"Toute la Bible dans l'ordre, environ trois à quatre chapitres par jour.", days:seqDays(all, 365)},
+  ];
+}
+const planOf = id => plans().find(p => p.id === id);
+function dayLabel(refs){
+  if (!refs.length) return ''; if (refs.length === 1) return refLabel(refs[0]);
+  const parts = []; let i = 0;
+  while (i < refs.length) { let j = i; while (j + 1 < refs.length && refs[j + 1].b === refs[i].b) j++;
+    parts.push(i === j ? chapName(refs[i].b, refs[i].c) : (refs[i].b === 18 ? `Psaumes ${refs[i].c}–${refs[j].c}` : `${bookName(refs[i].b)} ${refs[i].c}–${refs[j].c}`)); i = j + 1; }
+  return parts.join(' · ');
+}
+function planState(id){ return S.plans[id] || null; }
+function planNextDay(p){ const st = planState(p.id); if (!st) return 0; for (let d = 0; d < p.days.length; d++) if (!st.done.includes(d)) return d; return -1; }
+function votd(){ const d = new Date(); const day = Math.floor((Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()) - Date.UTC(d.getFullYear(), 0, 0)) / 864e5); return VOTD[day % VOTD.length]; }
+
+/* Guided meditation: 6 simple steps */
+const MED_STEPS = [
+  {k:'pose', t:'Se poser', d:"Prenez une minute de silence. Respirez calmement et demandez à Dieu de vous parler par sa Parole, comme le jeune Samuel : « Parle, car ton serviteur écoute. »", timer:60},
+  {k:'lire', t:'Lire', d:"Lisez le passage lentement, deux fois. Vous pouvez aussi l'écouter. Quel mot ou quelle phrase retient votre attention ?", q:'Le mot ou la phrase qui me touche'},
+  {k:'comprendre', t:'Comprendre', d:"Qui parle, à qui, dans quelle situation ? Que dit ce texte de Dieu, de Jésus, de l'être humain ?", q:'Ce que dit le texte'},
+  {k:'appliquer', t:'Appliquer', d:"Que me dit ce texte aujourd'hui ? Une promesse à recevoir, un exemple à suivre, une attitude à changer ? Choisissez une action concrète pour la journée.", q:"Ce que je vais vivre aujourd'hui"},
+  {k:'prier', t:'Prier', d:"Parlez à Dieu de ce que vous avez reçu : remerciez-le, confiez-lui ce qui est difficile et demandez son aide pour l'action choisie.", q:'Ma prière'},
+  {k:'retenir', t:'Retenir', d:"Choisissez une phrase du passage à garder en tête toute la journée. Relisez-la le soir avant de dormir.", q:'La phrase que je garde'},
+];
+const BTABS = [['today',"Aujourd'hui"],['books','Livres'],['plans','Plans'],['themes','Thèmes'],['meditate','Méditer'],['journal','Journal']];
+function bibleTabs(){ return `<div class="chips btabs" role="tablist">${BTABS.map(([k, l]) => `<button data-act="btab" data-v="${k}" aria-pressed="${S.bibleTab === k}">${l}</button>`).join('')}</div>`; }
+function todayCards(compact){
+  const v = votd(); const active = plans().filter(p => planState(p.id));
+  const planCards = active.map(p => { const d = planNextDay(p); const st = planState(p.id); const pc = Math.round(st.done.length / p.days.length * 100);
+    return d < 0 ? `<div class="bcard c-${p.color}"><span class="label">${esc(p.name)}</span><h3>Plan terminé</h3><p>Bravo ! Vous avez lu les ${p.days.length} jours.</p></div>`
+      : `<div class="bcard c-${p.color}"><span class="label">${esc(p.name)} · jour ${d + 1}/${p.days.length}</span><h3>${esc(dayLabel(p.days[d]))}</h3>
+        <div class="bar"><i style="width:${pc}%"></i></div><p class="num">${pc} % du plan</p>
+        <div class="acts"><button class="btn small" data-act="plan-read" data-id="${p.id}" data-d="${d}">${ic.book} Lire</button><button class="btn small ghost" data-act="plan-listen" data-id="${p.id}" data-d="${d}">${ic.play} Écouter</button><button class="btn small ghost" data-act="plan-done" data-id="${p.id}" data-d="${d}">✓ Lu</button></div></div>`; }).join('');
+  return `<div class="today${compact ? ' compact' : ''}">
+    <div class="bcard votd"><span class="label">Verset du jour</span><blockquote class="vtext" data-passage="${esc(v)}"></blockquote><p class="vref">${esc(v)}</p>
+      <div class="acts"><button class="btn small" data-act="ref-read" data-ref="${esc(v)}">${ic.book} Lire le chapitre</button><button class="btn small ghost" data-act="med-start" data-ref="${esc(v)}">Méditer</button></div></div>
+    ${planCards || `<div class="bcard c-denim"><span class="label">Plan de lecture</span><h3>Choisissez un plan</h3><p>Un rythme simple, jour après jour : l'Évangile de Jean en 21 jours, les Psaumes, la Bible en un an…</p><div class="acts"><button class="btn small" data-act="btab-go" data-v="plans">Voir les plans</button></div></div>`}
+  </div>`;
+}
+function viewBible(){
+  if (!BIBLE.index) { bibleIndex().then(() => { if (S.view.name === 'bible') render(); }).catch(() => {}); return `<div class="pad"><p class="empty" style="margin-top:24px">Chargement de la Bible…</p></div>`; }
+  const pr = S.progress.bible; const cur = pr ? bibleRef(pr.ch, -1) : 'Genèse 1';
+  const t = S.bibleTab || 'today'; let body = '';
+  if (t === 'today') body = todayCards(false) + `<div class="sec-h"><h2>Méditer en 6 temps</h2><button class="btn ghost small" data-act="btab-go" data-v="meditate">Découvrir la méthode</button></div>
+      <div class="steps-mini">${MED_STEPS.map((s, i) => `<span><b class="num">${i + 1}</b>${s.t}</span>`).join('')}</div>`;
+  if (t === 'books') body = ['AT','NT'].map(T => `<div class="sec-h"><h2>${T === 'AT' ? 'Ancien Testament' : 'Nouveau Testament'}</h2><span class="muted num">${BIBLE.index.books.filter(b => b.t === T).length} livres</span></div>
+      <div class="bookgrid">${BIBLE.index.books.map((b, i) => b.t === T ? `<button data-act="bible-book" data-b="${i}"><b>${esc(b.n)}</b><span class="num">${b.c} ch.</span></button>` : '').join('')}</div>`).join('');
+  if (t === 'plans') body = `<div class="plangrid">${plans().map(p => { const st = planState(p.id); const pc = st ? Math.round(st.done.length / p.days.length * 100) : 0;
+      return `<button class="plan c-${p.color}" data-act="open-plan" data-id="${p.id}"><div class="pph"><img src="${p.photo}" alt="" loading="lazy"><span class="chip">${p.len}</span></div>
+        <div class="pin"><h3>${esc(p.name)}</h3><p>${esc(p.desc)}</p>${st ? `<div class="bar"><i style="width:${pc}%"></i></div><span class="muted num" style="font-size:13px">En cours · ${pc} %</span>` : '<span class="muted" style="font-size:13px">Commencer</span>'}</div></button>`; }).join('')}</div>`;
+  if (t === 'themes') body = `<div class="themegrid">${THEMES.map(th => `<button class="theme c-${th.color}" data-act="open-theme" data-id="${th.id}"><img src="${th.photo}" alt="" loading="lazy"><span class="tt"><b>${esc(th.name)}</b><small>${th.refs.length} passages</small></span></button>`).join('')}</div>`;
+  if (t === 'meditate') body = `<div class="card medcard"><span class="label">Méthode</span><h2>Méditer en 6 temps</h2><p class="muted">Une méthode simple pour laisser un passage biblique nourrir votre journée. Comptez 10 à 15 minutes. Vos réponses sont enregistrées dans votre journal personnel, visible par vous seul.</p>
+      <ol class="medsteps">${MED_STEPS.map(s => `<li><b>${s.t}</b><span>${esc(s.d)}</span></li>`).join('')}</ol></div>
+      <div class="sec-h"><h2>Choisir un passage</h2></div>
+      <div class="medpick">
+        <button class="bcard votd" data-act="med-start" data-ref="${esc(votd())}"><span class="label">Verset du jour</span><b>${esc(votd())}</b></button>
+        ${plans().filter(p => planState(p.id) && planNextDay(p) >= 0).map(p => { const d = planNextDay(p); const r0 = p.days[d][0]; return `<button class="bcard c-${p.color}" data-act="med-start" data-ref="${esc(refLabel(r0))}"><span class="label">${esc(p.name)}</span><b>${esc(refLabel(r0))}</b></button>`; }).join('')}
+        <form class="bcard refform" id="med-form"><span class="label">Un autre passage</span><input class="input" id="med-ref" placeholder="Ex. : Jean 15:1-11 ou Psaume 23" autocomplete="off"><button class="btn small">Méditer ce passage</button></form>
+      </div>`;
+  if (t === 'journal') body = S.meds.length ? `<div class="notes-list" style="max-width:760px">${S.meds.slice().sort((a, b) => b.at - a.at).map(m => `<article class="note"><header><b>${esc(m.ref)}</b><time>${when(m.at)}</time></header>
+      ${MED_STEPS.filter(s => s.q && m.answers[s.k]).map(s => `<p class="txt"><span class="label" style="display:block;margin-bottom:2px">${s.t}</span>${esc(m.answers[s.k])}</p>`).join('')}
+      <footer><button data-act="ref-read" data-ref="${esc(m.ref)}">${ic.goto} Relire le passage</button></footer></article>`).join('')}</div>`
+    : `<p class="empty">Votre journal est vide. Faites une première méditation : vos réponses apparaîtront ici.</p>`;
+  return `<div class="pad"><div class="pbanner bible-banner"><img src="img/livre.jpg" alt="" style="object-position:50% 45%"><div class="pb-in"><div><h1>La Bible</h1><p>Louis Segond 1910 · 66 livres. Lisez, écoutez, suivez un plan et méditez.</p></div>
+      <div class="acts"><button class="btn" data-act="read" data-id="bible">${ic.book} ${pr ? 'Reprendre · ' + esc(cur) : 'Ouvrir la Bible'}</button><button class="btn ghost" data-act="btab-go" data-v="meditate">Méditer</button></div></div></div>
+    ${bibleTabs()}<div class="bbody">${body}</div></div>`;
+}
+function viewPlan(id){
+  const p = planOf(id); if (!p) { S.view = {name:'bible'}; return viewBible(); }
+  const st = planState(id); const next = planNextDay(p);
+  return `<div class="pad"><div class="pbanner"><img src="${p.photo}" alt=""><button class="iconbtn pb-back" data-act="nav" data-v="bible" aria-label="Retour à la Bible">${ic.back}</button>
+    <div class="pb-in"><div><h1>${esc(p.name)}</h1><p>${esc(p.desc)} · ${p.len}</p></div>
+    <div class="acts">${st ? `<button class="btn ghost" data-act="plan-stop" data-id="${id}">${S._armStop === id ? 'Confirmer l\'arrêt du plan' : 'Arrêter le plan'}</button>` : `<button class="btn" data-act="plan-start" data-id="${id}">Commencer aujourd'hui</button>`}</div></div></div>
+    ${st ? `<p class="muted num" style="margin:16px 0 0">Commencé le ${new Date(st.start + 'T12:00:00').toLocaleDateString('fr-FR', {day:'numeric', month:'long'})} · ${st.done.length}/${p.days.length} jours lus</p>` : ''}
+    <ol class="days">${p.days.map((refs, d) => { const done = st && st.done.includes(d);
+      return `<li class="${done ? 'done' : ''}${st && d === next ? ' next' : ''}"><button class="dchk" data-act="${st ? 'plan-toggle' : 'plan-start'}" data-id="${id}" data-d="${d}" aria-pressed="${!!done}" aria-label="Jour ${d + 1} lu">${done ? '✓' : ''}</button>
+        <span class="dl"><b>Jour ${d + 1}</b>${esc(dayLabel(refs))}</span><button class="btn small ghost" data-act="plan-read" data-id="${id}" data-d="${d}">Lire</button></li>`; }).join('')}</ol></div>`;
+}
+function viewTheme(id){
+  const th = THEMES.find(x => x.id === id); if (!th) { S.view = {name:'bible'}; return viewBible(); }
+  return `<div class="pad"><div class="pbanner"><img src="${th.photo}" alt=""><button class="iconbtn pb-back" data-act="nav" data-v="bible" aria-label="Retour à la Bible">${ic.back}</button>
+    <div class="pb-in"><div><h1>${esc(th.name)}</h1><p>${esc(th.intro)}</p></div></div></div>
+    <div class="passages">${th.refs.map(r => `<article class="psg c-${th.color}"><header><b>${esc(r)}</b></header><p class="ptext" data-passage="${esc(r)}">…</p>
+      <footer><button class="btn small" data-act="ref-listen" data-ref="${esc(r)}">${ic.play} Écouter</button><button class="btn small ghost" data-act="ref-read" data-ref="${esc(r)}">${ic.book} Dans la Bible</button><button class="btn small ghost" data-act="med-start" data-ref="${esc(r)}">Méditer</button></footer></article>`).join('')}</div></div>`;
+}
+function viewMeditate(){
+  const M = S.med; if (!M) { S.view = {name:'bible'}; return viewBible(); }
+  const s = MED_STEPS[M.step], last = M.step === MED_STEPS.length - 1;
+  return `<div class="pad medflow"><div class="medhead"><button class="iconbtn" data-act="med-quit" aria-label="Quitter la méditation">${ic.back}</button><div><span class="label">Méditation</span><h1>${esc(M.ref)}</h1></div></div>
+    <div class="medgrid"><article class="card mpassage"><div class="ptext" data-passage="${esc(M.ref)}">…</div>
+      <div class="acts"><button class="btn small ghost" data-act="med-listen">${ic.play} Écouter le passage</button></div></article>
+    <div class="card mstep"><div class="stepdots">${MED_STEPS.map((x, i) => `<span class="${i === M.step ? 'on' : i < M.step ? 'past' : ''}"></span>`).join('')}</div>
+      <span class="label">Étape ${M.step + 1} sur ${MED_STEPS.length}</span><h2>${s.t}</h2><p>${esc(s.d)}</p>
+      ${s.timer ? `<button class="btn ghost small" data-act="med-timer" id="med-timer">Démarrer 1 minute de silence</button>` : ''}
+      ${s.q ? `<label class="field"><span>${s.q}</span><textarea class="input" id="med-ans" rows="4" data-act-input="med-ans">${esc(M.answers[s.k] || '')}</textarea></label>` : ''}
+      <div class="acts">${M.step ? '<button class="btn ghost" data-act="med-prev">Précédent</button>' : ''}${last ? '<button class="btn" data-act="med-save">Enregistrer dans mon journal</button>' : '<button class="btn" data-act="med-next">Suivant</button>'}</div></div></div></div>`;
+}
+function bibleNavSheet(){
+  const cur = R.content && R.content.bible ? R.content.chapters[R.ch] : {b:0};
+  const sel = S._navBook ?? cur.b;
+  openSheet(`<h2>Aller à…</h2><label class="field"><span>Livre</span><select class="input" id="bn-book">${BIBLE.index.books.map((b, i) => `<option value="${i}" ${i === sel ? 'selected' : ''}>${esc(b.n)}</option>`).join('')}</select></label>
+    <div class="chgrid" id="bn-ch"></div>`, root => {
+      const fill = () => { const b = +root.querySelector('#bn-book').value; root.querySelector('#bn-ch').innerHTML = Array.from({length:BIBLE.index.books[b].c}, (_, k) => `<button data-act="bn-go" data-g="${gIndex(b, k + 1)}" aria-current="${R.content?.bible && gIndex(b, k + 1) === R.ch}">${k + 1}</button>`).join(''); };
+      root.querySelector('#bn-book').addEventListener('change', fill); fill(); });
+}
+function chapterSheet(b){
+  openSheet(`<h2>${esc(bookName(b))}</h2><div class="chgrid">${Array.from({length:BIBLE.index.books[b].c}, (_, k) => `<button data-act="bn-open" data-g="${gIndex(b, k + 1)}">${k + 1}</button>`).join('')}</div>`);
+}
+
+const NAV = [['bible','Bible',ic.bible],['home','Bibliothèque',ic.books],['groups','Groupes',ic.group],['notes','Notes',ic.note],['profile','Profil',ic.user]];
 function go(name, id){ S.view = {name, id}; render(); window.scrollTo(0,0); $('#main').scrollTop = 0; }
 function renderNav(){
-  const cur = S.view.name === 'book' ? 'home' : S.view.name === 'group' ? 'groups' : S.view.name;
+  const cur = S.view.name === 'book' ? 'home' : S.view.name === 'group' ? 'groups' : ['plan','theme','meditate'].includes(S.view.name) ? 'bible' : S.view.name;
   $('#tabbar').innerHTML = NAV.map(([v,l,i]) => `<button data-act="nav" data-v="${v}" ${cur===v?'aria-current="page"':''}>${i}<span>${l}</span></button>`).join('');
-  $('#sidenav').innerHTML = NAV.slice(0,3).map(([v,l,i]) => `<button data-act="nav" data-v="${v}" ${cur===v?'aria-current="page"':''}><span class="dot">${i}</span>${l}</button>`).join('')
+  $('#sidenav').innerHTML = NAV.slice(0,4).map(([v,l,i]) => `<button data-act="nav" data-v="${v}" ${cur===v?'aria-current="page"':''}><span class="dot">${i}</span>${l}</button>`).join('')
     + `<button data-act="nav" data-v="profile" ${cur==='profile'?'aria-current="page"':''}><span class="dot"><svg class="i" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg></span>Réglages</button>`;
   const sa = $('#side-av'); sa.innerHTML = esc((S.profile.name||'M').slice(0,1).toUpperCase()); sa.style.background = '#C4552B';
   const g = S.groups[0];
   const mem = g ? g.members.slice(0,3).map(m => avatar(m.id==='me'?me():m,'sm')).join('') : '';
-  $('#topnav').innerHTML = `<div class="links">${NAV.slice(0,3).map(([v,l]) => `<button data-act="nav" data-v="${v}" ${cur===v?'aria-current="page"':''}>${l}</button>`).join('')}</div>
+  $('#topnav').innerHTML = `<div class="links">${NAV.slice(0,4).map(([v,l]) => `<button data-act="nav" data-v="${v}" ${cur===v?'aria-current="page"':''}>${l}</button>`).join('')}</div>
     ${g ? `<button class="btn ghost small" data-act="open-group" data-id="${g.id}" style="gap:10px"><span class="avs">${mem}</span><span class="num">${g.members.length} membres</span></button>` : ''}`;
 }
 function render(){
   renderNav();
   const v = S.view.name;
-  const html = v === 'home' ? viewHome() : v === 'book' ? viewBook(S.view.id) : v === 'groups' ? viewGroups() : v === 'group' ? viewGroup(S.view.id) : v === 'notes' ? viewNotes() : viewProfile();
+  const html = v === 'bible' || (v === 'book' && S.view.id === 'bible') ? viewBible() : v === 'plan' ? viewPlan(S.view.id) : v === 'theme' ? viewTheme(S.view.id) : v === 'meditate' ? viewMeditate() : v === 'home' ? viewHome() : v === 'book' ? viewBook(S.view.id) : v === 'groups' ? viewGroups() : v === 'group' ? viewGroup(S.view.id) : v === 'notes' ? viewNotes() : viewProfile();
   $('#view').innerHTML = html;
   if (v === 'profile') fillVoiceSelects();
+  hydratePassages($('#view'));
 }
 
 /* ================= views ================= */
-function currentBook(){ const withP = S.books.filter(b => pct(b.id) > 0 && pct(b.id) < .999); withP.sort((a,b) => (S.progress[b.id].at||0) - (S.progress[a.id].at||0)); return withP[0] || S.books[0]; }
+function currentBook(){ const withP = [BIBLE_BOOK, ...S.books].filter(b => pct(b.id) > 0 && pct(b.id) < .999); withP.sort((a,b) => (S.progress[b.id].at||0) - (S.progress[a.id].at||0)); return withP[0] || S.books[0] || BIBLE_BOOK; }
 function bookTile(b){ const p = pct(b.id);
   return `<button class="tile" data-act="open-book" data-id="${b.id}">${coverHTML(b)}<b>${esc(b.title)}</b><span>${esc(b.author || '—')}</span>${p>0?`<div class="tbar"><i style="width:${Math.round(p*100)}%"></i></div>`:''}</button>`; }
 function gridHTML(){
@@ -822,6 +1182,8 @@ function gridHTML(){
   else if (S.filter === 'mine') list = list.filter(b => !b.groupId);
   else if (S.filter.startsWith('g:')) list = list.filter(b => b.groupId === S.filter.slice(2));
   list.sort((a,b) => b.addedAt - a.addedAt);
+  const bq = !q || 'la sainte bible louis segond'.includes(q);
+  if (bq && (S.filter === 'all' || S.filter === 'mine' || (S.filter === 'reading' && pct('bible') > 0))) list.unshift(BIBLE_BOOK);
   return list.map(bookTile).join('') + `<button class="tile add" data-act="import"><div class="cover">${ic.plus}</div><b>Importer</b><span>PDF ou EPUB</span></button>`;
 }
 function continueCard(b){
@@ -864,6 +1226,7 @@ function viewHome(){
       <label class="search">${ic.search}<span class="sr">Rechercher</span><input id="q" type="search" placeholder="Chercher un titre ou un auteur" value="${esc(S.q)}" autocomplete="off"></label>
     </div></section>
     <div class="pad">
+      ${BIBLE.index ? `<div class="sec-h"><h2>Aujourd'hui avec la Bible</h2><button class="btn ghost small" data-act="nav" data-v="bible">Ouvrir la Bible</button></div>` + todayCards(true) : ''}
       <div class="dash">${cur ? continueCard(cur) : ''}${goalCard()}</div>
       <div class="moments">
         <button class="moment m-1" data-act="${cur ? 'listen' : 'import'}" data-id="${cur ? cur.id : ''}"><img src="img/fauteuil.jpg" alt="" loading="lazy"><div class="mt"><span><b>Écouter</b><small>Voix féminine ou masculine</small></span>${ic.play}</div></button>
@@ -944,7 +1307,7 @@ function viewGroup(id){
 function noteCard(n, o = {}){
   const g = groupOf(n.groupId), a = memberById(n.authorId, g), b = bookOf(n.bookId), mine = n.authorId === 'me';
   const liked = (n.likes || []).includes('me');
-  const where = b ? (b.format === 'pdf' ? `p. ${n.ch + 1}` : `chap. ${n.ch + 1}`) : '';
+  const where = b ? (b.format === 'bible' ? bibleRef(n.ch, n.para) : b.format === 'pdf' ? `p. ${n.ch + 1}` : `chap. ${n.ch + 1}`) : '';
   return `<article class="note" data-note="${n.id}"><header>${avatar(a,'sm')}<b>${esc(mine ? 'Vous' : a.name)}</b><span class="vis ${n.vis}">${VIS[n.vis]}${n.vis==='chosen' && mine ? ' (' + (n.viewers||[]).length + ')' : ''}</span><time>${when(n.createdAt)}</time></header>
     ${o.book && b ? `<span class="src">${esc(b.title)} · ${where}</span>` : ''}
     ${n.quote ? `<blockquote class="quote c-${n.color}" style="margin:0">${esc(n.quote)}</blockquote>` : ''}
@@ -1052,13 +1415,13 @@ function speakSample(){ if (!TTS.ok) return toast("La synthèse vocale n'est pas
 /* ================= reader ================= */
 const R = {book:null, content:null, ch:0, mode:'text', pdf:null, sel:null, notesOpen:false, speak:null};
 const contentCache = new Map();
-async function getContent(id){ if (contentCache.has(id)) return contentCache.get(id); let c = await DB.get('content:' + id);
+async function getContent(id){ if (id === 'bible') { try { return await bibleContent(); } catch(e){ return null; } } if (contentCache.has(id)) return contentCache.get(id); let c = await DB.get('content:' + id);
   if (!c) { try { toast('Téléchargement du livre…'); c = await fetchContent(id); DB.set('content:' + id, c); } catch(e){ c = null; } }
   if (c) contentCache.set(id, c); return c; }
 async function openReader(id, o = {}){
   const b = bookOf(id); if (!b) return; const c = await getContent(id);
   if (!c) return toast("Impossible d'ouvrir ce livre : vérifiez votre connexion Internet puis réessayez.");
-  R.book = b; R.content = c; R.pdf = null; R.notesOpen = !!o.notes;
+  R.book = b; R.content = c; R.pdf = null; R.notesOpen = !!o.notes; R.stopAt = o.stopAt || null;
   const pr = S.progress[id] || {ch:0, pos:0};
   R.ch = Math.min(o.ch ?? pr.ch ?? 0, c.chapters.length - 1);
   R.mode = (b.format === 'pdf' && c.scanned) ? 'page' : 'text';
@@ -1067,22 +1430,24 @@ async function openReader(id, o = {}){
   $('#r-book').textContent = b.title; $('#r-modebtn').hidden = b.format !== 'pdf';
   updateGenderBtns(); $('#tts-rate').textContent = S.profile.rate + '×';
   await renderChapter(o.para != null ? null : (o.ch == null ? pr.pos : 0));
-  if (o.para != null) flashPara(o.para);
+  if (o.range) flashRange(o.range[0], o.range[1]); else if (o.para != null) flashPara(o.para);
+  if (o.listen && o.para != null) { TTS.queue = sentencesOf(R.ch); const i = TTS.queue.findIndex(x => x.p >= o.para); startTTS(i < 0 ? 0 : i); renderNotesPanel(); return; }
   renderNotesPanel();
   if (o.listen) startTTS();
 }
-function closeReader(){ stopTTS(); hideSel(); $('#reader').hidden = true; document.body.style.overflow = ''; saveProgress(true); render(); }
+function closeReader(){ R.stopAt = null; $('#listen').hidden = true; stopTTS(); hideSel(); $('#reader').hidden = true; document.body.style.overflow = ''; saveProgress(true); render(); }
 function chapterTitle(i){ const ch = R.content.chapters[i]; return ch?.title || (R.book.format === 'pdf' ? `Page ${i+1}` : `Chapitre ${i+1}`); }
 async function renderChapter(pos){
-  const chs = R.content.chapters, ch = chs[R.ch];
-  $('#r-chap').textContent = `${chapterTitle(R.ch)} · ${R.ch + 1}/${chs.length}`;
-  const t = $('#r-text'); t.className = 'r-text' + (S.profile.rf === 'sans' ? ' sans' : ''); t.style.setProperty('--rs', S.profile.rs + 'px');
+  if (R.content.bible) { try { await ensureBibleChapter(R.content, R.ch); } catch(e){ toast('Ce livre de la Bible se télécharge à la première ouverture. Vérifiez votre connexion.'); } }
+  const chs = R.content.chapters, ch = chs[R.ch]; if (!ch.blocks) ch.blocks = [];
+  $('#r-chap').textContent = R.content.bible ? `${chapterTitle(R.ch)} · Louis Segond 1910` : `${chapterTitle(R.ch)} · ${R.ch + 1}/${chs.length}`;
+  const t = $('#r-text'); t.className = 'r-text' + (S.profile.rf === 'sans' ? ' sans' : '') + (R.content.bible ? ' bible' : ''); t.style.setProperty('--rs', S.profile.rs + 'px');
   const info = $('#r-info');
   if (R.content.scanned) { info.hidden = false; info.innerHTML = '<p>Ce PDF semble scanné (images sans texte). La lecture vocale et le surlignage ne sont pas possibles sur ce fichier. Vous pouvez ajouter des notes sur la page.</p>'; }
   else info.hidden = true;
   if (R.mode === 'page') { t.hidden = true; $('#r-pages').hidden = false; await renderPdfPage(); }
   else { $('#r-pages').hidden = true; t.hidden = false;
-    t.innerHTML = `<h2 class="r-ch">${esc(chapterTitle(R.ch))}</h2>` + (ch.blocks.length ? ch.blocks.map((bk, i) => bk.t === 'h' ? `<h3 data-p="${i}">${esc(bk.x)}</h3>` : `<p data-p="${i}">${paraInner(i)}</p>`).join('') : '<p class="muted">Cette page ne contient pas de texte.</p>'); }
+    t.innerHTML = `<h2 class="r-ch">${esc(chapterTitle(R.ch))}</h2>` + (ch.blocks.length ? ch.blocks.map((bk, i) => bk.t === 'h' ? `<h3 data-p="${i}">${esc(bk.x)}</h3>` : `<p data-p="${i}"${bk.v ? ` data-v="${bk.v}"` : ''}>${paraInner(i)}</p>`).join('') : '<p class="muted">Cette page ne contient pas de texte.</p>'); }
   $('#r-modebtn').setAttribute('aria-pressed', R.mode === 'page');
   const sc = $('#r-scroll'); requestAnimationFrame(() => { sc.scrollTop = pos ? pos * (sc.scrollHeight - sc.clientHeight) : 0; updateProg(); });
 }
@@ -1102,6 +1467,7 @@ function paraInner(i){
   return out;
 }
 function refreshPara(i){ const el = $(`#r-text [data-p="${i}"]`); if (el && el.tagName === 'P') el.innerHTML = paraInner(i); }
+function flashRange(a, z){ for (let i = a; i <= z; i++) { const el = $(`#r-text [data-p="${i}"]`); if (el) { el.classList.remove('flash'); void el.offsetWidth; el.classList.add('flash'); } } const f = $(`#r-text [data-p="${a}"]`); if (f) f.scrollIntoView({block:'center'}); }
 function flashPara(i){ const el = $(`#r-text [data-p="${i}"]`); if (!el) return; el.scrollIntoView({block:'center'}); el.classList.remove('flash'); void el.offsetWidth; el.classList.add('flash'); }
 function updateProg(){
   const sc = $('#r-scroll'); const pos = sc.scrollHeight > sc.clientHeight ? sc.scrollTop / (sc.scrollHeight - sc.clientHeight) : 1;
@@ -1110,7 +1476,7 @@ function updateProg(){
   S.progress[R.book.id] = {ch:R.ch, pos, pct: Math.max(p, R.ch === n - 1 && pos > .97 ? 1 : p), at:Date.now()};
 }
 let progT; function saveProgress(now){ clearTimeout(progT); if (R.book) API.progress(R.book.id); if (now) save(); else progT = setTimeout(save, 800); }
-async function gotoChapter(i, keepAudio){ if (!R.content || i < 0 || i >= R.content.chapters.length) return; if (!keepAudio) stopTTS(); hideSel(); R.ch = i; await renderChapter(0); updateProg(); saveProgress(); renderNotesPanel(); }
+async function gotoChapter(i, keepAudio){ if (!R.content || i < 0 || i >= R.content.chapters.length) return; if (!keepAudio) { stopTTS(); R.stopAt = null; } hideSel(); R.ch = i; await renderChapter(0); updateProg(); saveProgress(); renderNotesPanel(); }
 
 /* PDF page mode */
 async function getPdf(){ if (R.pdf) return R.pdf; if (!window.pdfjsLib) throw new Error('pdf.js');
@@ -1179,7 +1545,7 @@ function noteSheet(n, isNew){
     root.querySelector('#ns-colors').addEventListener('click', e => { const b = e.target.closest('[data-c]'); if (!b) return; color = b.dataset.c; $$('#ns-colors button', root).forEach(x => x.setAttribute('aria-pressed', x === b)); const q = root.querySelector('#ns-quote'); if (q) q.className = 'quote c-' + color; });
     root.addEventListener('change', e => { if (e.target.name === 'ns-vis') root.querySelector('#ns-pick').hidden = e.target.value !== 'chosen'; });
     const del = root.querySelector('#ns-del'); if (del) del.addEventListener('click', () => { if (!del.dataset.armed) { del.dataset.armed = 1; del.textContent = 'Confirmer la suppression'; return; }
-      S.notes = S.notes.filter(x => x.id !== n.id); save(); closeSheet(); afterNoteChange(n); toast('Note supprimée'); API.deleteNote(n.id).catch(e => fail(e, "La suppression n'a pas été enregistrée sur le serveur.")); });
+      S.notes = S.notes.filter(x => x.id !== n.id); save(); closeSheet(); afterNoteChange(n); toast('Note supprimée'); API.deleteNote(n.id, n.bookId).catch(e => fail(e, "La suppression n'a pas été enregistrée sur le serveur.")); });
     root.querySelector('#ns-save').addEventListener('click', () => {
       n.text = root.querySelector('#ns-text').value.trim(); n.color = color; n.vis = (root.querySelector('input[name="ns-vis"]:checked') || {}).value || 'me';
       n.viewers = n.vis === 'chosen' ? $$('#ns-pick input:checked', root).map(x => x.value) : [];
@@ -1276,6 +1642,8 @@ function speechText(src){
   t = t.replace(/\b0\d+\b/g, m => digits(m));
   // Digits glued to letters: 16Car → 16 Car, page12 → page 12
   t = t.replace(new RegExp(`(\\d)([${L}])`, 'g'), '$1 $2').replace(new RegExp(`([${L}])(\\d)`, 'g'), '$1 $2');
+  // Numbered Bible books: 1 Jean → Premier Jean, 2 Rois → Deuxième Rois
+  t = t.replace(/\b([123]) (Samuel|Rois|Chroniques|Corinthiens|Thessaloniciens|Timothée|Pierre|Jean)\b/g, (m, n, b) => ['Premier','Deuxième','Troisième'][+n - 1] + ' ' + b);
   // Every remaining number in words
   t = t.replace(/\d+/g, d => d.length > 12 ? digits(d) : nw(+d));
   // Feminine agreement: vingt et une pages, une heure
@@ -1318,10 +1686,11 @@ function sentencesOf(ch){
   const out = []; const chap = R.content.chapters[ch]; if (!chap) return out;
   const title = chapterTitle(ch); if (!R.content.scanned && !/^Page \d+$/.test(title)) out.push({ch, p:-1, s:0, e:title.length, pause:PAUSE.head});
   chap.blocks.forEach((bk, p) => { const parts = chunksOfText(bk.x, S.profile.commas === 'marked');
-    parts.forEach((c, k) => out.push({ch, p, s:c.s, e:c.e, pause: k === parts.length - 1 ? Math.max(c.pause, bk.t === 'h' ? PAUSE.head : PAUSE.para) : c.pause})); });
+    parts.forEach((c, k) => out.push({ch, p, s:c.s, e:c.e, pause: k === parts.length - 1 ? Math.max(c.pause, bk.t === 'h' ? PAUSE.head : R.content.bible ? PAUSE['.'] : PAUSE.para) : c.pause})); });
   return out;
 }
-function itemText(it){ return it.p < 0 ? chapterTitle(it.ch) : R.content.chapters[it.ch].blocks[it.p].x.slice(it.s, it.e); }
+function spokenTitle(i){ const c = R.content.chapters[i]; if (R.content.bible && c) return c.b === 18 ? `Psaume ${c.c}` : `${bookName(c.b)}, chapitre ${c.c}`; return chapterTitle(i); }
+function itemText(it){ return it.p < 0 ? spokenTitle(it.ch) : R.content.chapters[it.ch].blocks[it.p].x.slice(it.s, it.e); }
 function firstVisibleSentence(){
   const sc = $('#r-scroll'); if (sc.scrollTop < 30) return 0; const top = sc.getBoundingClientRect().top; let para = 0;
   for (const el of $$('#r-text [data-p]')) { if (el.getBoundingClientRect().bottom > top + 40) { para = +el.dataset.p; break; } }
@@ -1332,12 +1701,52 @@ function updateGenderBtns(){ $('#g-f').setAttribute('aria-pressed', S.profile.vo
 function setSpeak(item){ const prev = R.speak; R.speak = item; if (prev && prev.ch === R.ch && prev.p >= 0) refreshPara(prev.p);
   const h = $('#r-text .r-ch'); if (h) h.classList.toggle('speak', !!item && item.p < 0 && item.ch === R.ch);
   if (item && item.ch === R.ch && item.p >= 0) { refreshPara(item.p); const el = $('#r-text .speak'); if (el) { const r = el.getBoundingClientRect(), sr = $('#r-scroll').getBoundingClientRect(); if (r.top < sr.top + 40 || r.bottom > sr.bottom - 40) el.scrollIntoView({block:'center', behavior:'smooth'}); } } }
+
+/* Keep reading when the phone would go to sleep: the browser stops speech once the screen turns off,
+   so while listening we hold a screen wake lock, keep a silent media track playing (lets Android treat the page as media
+   and shows lock-screen controls), and resume from the current sentence if speech was cut anyway. */
+const SILENT_WAV = 'data:audio/wav;base64,UklGRqQ+AABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YYA+AACAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICA';
+const KEEP = {lock:null, audio:null, cutAt:0};
+async function keepAwake(on){
+  if (on) {
+    try { if ('wakeLock' in navigator && !KEEP.lock && document.visibilityState === 'visible') { KEEP.lock = await navigator.wakeLock.request('screen'); KEEP.lock.addEventListener('release', () => { KEEP.lock = null; }); } } catch(e){}
+    try { if (!KEEP.audio) { KEEP.audio = new Audio(SILENT_WAV); KEEP.audio.loop = true; KEEP.audio.volume = 0.05; KEEP.audio.setAttribute('playsinline', ''); } const pr = KEEP.audio.play(); if (pr) pr.catch(() => {}); } catch(e){}
+    if ('mediaSession' in navigator) { try {
+      navigator.mediaSession.playbackState = 'playing';
+      const h = {play:() => { if (!TTS.playing) startTTS(TTS.qi); }, pause:() => pauseTTS(), stop:() => stopTTS(),
+        previoustrack:() => { TTS.qi = Math.max(0, TTS.qi - 1); speakCurrent(true); }, nexttrack:() => { TTS.qi++; speakCurrent(true); }};
+      for (const [k, f] of Object.entries(h)) { try { navigator.mediaSession.setActionHandler(k, f); } catch(e){} }
+    } catch(e){} }
+  } else {
+    try { if (KEEP.lock) { await KEEP.lock.release(); KEEP.lock = null; } } catch(e){}
+    try { if (KEEP.audio) KEEP.audio.pause(); } catch(e){}
+    if ('mediaSession' in navigator) { try { navigator.mediaSession.playbackState = 'paused'; } catch(e){} }
+  }
+}
+function updateMediaInfo(item){
+  if (!('mediaSession' in navigator) || !R.book || !window.MediaMetadata) return;
+  try { navigator.mediaSession.metadata = new MediaMetadata({title: chapterTitle(item.ch), artist: R.book.title, album: 'Lisons Ensemble',
+    artwork: [{src: 'icons/icon-512.png', sizes: '512x512', type: 'image/png'}]}); } catch(e){}
+}
+function updateListenView(item){
+  const v = $('#listen'); if (!v || v.hidden) return;
+  $('#ls-book').textContent = R.book ? `${R.book.title} · ${chapterTitle(R.ch)}` : '';
+  if (item) $('#ls-text').textContent = itemText(item);
+  $('#ls-play').innerHTML = TTS.playing ? ic.pause : ic.play; $('#ls-play').setAttribute('aria-label', TTS.playing ? 'Pause' : 'Reprendre');
+}
+document.addEventListener('visibilitychange', () => {
+  if (document.visibilityState === 'hidden') { if (TTS.playing) KEEP.cutAt = Date.now(); return; }
+  if (!TTS.playing) return;
+  keepAwake(true);
+  // If the phone still cut the voice while hidden, start again from the sentence that was being read.
+  setTimeout(() => { if (TTS.playing && !speechSynthesis.speaking && !speechSynthesis.pending) speakCurrent(true); }, 400);
+});
 function startTTS(from){
   if (!TTS.ok) { toast("La lecture vocale n'est pas disponible sur ce navigateur"); return; }
   if (R.mode === 'page') { R.mode = 'text'; renderChapter(0); }
   if (R.content.scanned) { toast('Ce PDF ne contient pas de texte lisible à voix haute'); return; }
   TTS.queue = sentencesOf(R.ch); if (!TTS.queue.length) { if (R.ch < R.content.chapters.length - 1) { gotoChapter(R.ch + 1, true).then(() => startTTS(0)); } return; }
-  TTS.qi = from ?? firstVisibleSentence(); TTS.playing = true; updatePlayBtn(); hideSel(); speakCurrent(true);
+  TTS.qi = from ?? firstVisibleSentence(); TTS.playing = true; updatePlayBtn(); hideSel(); keepAwake(true); speakCurrent(true);
 }
 function makeUtterance(text){ const u = new SpeechSynthesisUtterance(text); const {v, pitch} = pickVoice(S.profile.voiceGender);
   if (v) { u.voice = v; u.lang = v.lang; } else u.lang = 'fr-FR'; u.rate = S.profile.rate; u.pitch = pitch; return u; }
@@ -1345,22 +1754,36 @@ function speakCurrent(cancel = true){
   const my = ++TTS.token; clearTimeout(TTS.gapT);
   if (cancel) { try { speechSynthesis.cancel(); } catch(e){} }
   if (TTS.timerEnd && Date.now() > TTS.timerEnd) { stopTTS(); TTS.timerMin = 0; TTS.timerEnd = 0; $('#tts-timer').textContent = '⏱ Off'; $('#tts-timer').classList.remove('on'); toast('Minuterie terminée'); return; }
+  TTS.inGap = false;
   const item = TTS.queue[TTS.qi];
+  if (item && R.stopAt && (item.ch > R.stopAt.ch || (item.ch === R.stopAt.ch && item.p > R.stopAt.para))) { R.stopAt = null; stopTTS(); toast('Fin du passage'); return; }
+  if (!item && R.stopAt && R.ch >= R.stopAt.ch) { R.stopAt = null; stopTTS(); toast('Fin de la lecture du jour'); return; }
   if (!item) { if (R.ch < R.content.chapters.length - 1) { gotoChapter(R.ch + 1, true).then(() => { if (TTS.playing && my === TTS.token) { TTS.queue = sentencesOf(R.ch); TTS.qi = 0; speakCurrent(false); } }); } else { stopTTS(); toast('Fin du livre'); } return; }
-  setSpeak(item);
+  setSpeak(item); updateMediaInfo(item); updateListenView(item);
   const text = speechText(itemText(item));
   const next = () => { if (my !== TTS.token || !TTS.playing) return; TTS.qi++;
     const gap = Math.round((item.pause || 0) * (S.profile.pauseScale || 1) / Math.max(0.6, S.profile.rate));
-    TTS.gapT = setTimeout(() => { if (my === TTS.token && TTS.playing) speakCurrent(false); }, gap); };
+    TTS.inGap = true; TTS.gapT = setTimeout(() => { if (my === TTS.token && TTS.playing) speakCurrent(false); }, gap); };
   if (!/[\p{L}\p{N}]/u.test(text)) { next(); return; }
   const u = makeUtterance(text);
-  u.onend = next;
+  u.onend = () => { if (document.visibilityState === 'hidden' && Date.now() - started < 400) return; next(); };
+  const started = Date.now();
   u.onerror = e => { if (e.error === 'interrupted' || e.error === 'canceled') return; next(); };
-  speechSynthesis.speak(u);
+  TTS.lastStart = Date.now(); speechSynthesis.speak(u);
 }
-function stopTTS(){ TTS.playing = false; TTS.token++; clearTimeout(TTS.gapT); try { if (TTS.ok) speechSynthesis.cancel(); } catch(e){}
+/* Watchdog: some phones silently drop the voice when the screen turns off. While listening, if nothing is being spoken
+   and we are not in a planned pause, start the current sentence again. */
+setInterval(() => { if (!TTS.ok || !TTS.playing || TTS.inGap) return;
+  try { if (speechSynthesis.paused) speechSynthesis.resume();
+    if (!speechSynthesis.speaking && !speechSynthesis.pending && Date.now() - (TTS.lastStart || 0) > 2500) speakCurrent(true); } catch(e){} }, 3000);
+function speakPassageText(text){ if (!TTS.ok) return toast("La synthèse vocale n'est pas disponible ici"); stopTTS();
+  const parts = chunksOfText(text, S.profile.commas === 'marked'); let i = 0; const my = ++TTS.token;
+  const step = () => { if (my !== TTS.token || i >= parts.length) return; const c = parts[i++]; const u = makeUtterance(speechText(text.slice(c.s, c.e)));
+    u.onend = () => { TTS.gapT = setTimeout(step, Math.round((c.pause || 300) * (S.profile.pauseScale || 1) / Math.max(.6, S.profile.rate))); }; speechSynthesis.speak(u); };
+  step(); }
+function stopTTS(){ TTS.playing = false; TTS.token++; clearTimeout(TTS.gapT); keepAwake(false); updateListenView(); try { if (TTS.ok) speechSynthesis.cancel(); } catch(e){}
   if (R.speak) { const p = R.speak; R.speak = null; if (R.content && p.ch === R.ch) { if (p.p >= 0) refreshPara(p.p); const h = $('#r-text .r-ch'); if (h) h.classList.remove('speak'); } } updatePlayBtn(); }
-function pauseTTS(){ TTS.playing = false; TTS.token++; clearTimeout(TTS.gapT); try { speechSynthesis.cancel(); } catch(e){} updatePlayBtn(); }
+function pauseTTS(){ TTS.playing = false; TTS.token++; clearTimeout(TTS.gapT); try { speechSynthesis.cancel(); } catch(e){} keepAwake(false); updatePlayBtn(); updateListenView(); }
 
 /* ================= import PDF / EPUB ================= */
 function thumb(src){ return new Promise(res => { const draw = (img, w, h) => { const W = 300, H = Math.round(W * h / w); const c = document.createElement('canvas'); c.width = W; c.height = H; c.getContext('2d').drawImage(img, 0, 0, W, H); res(c.toDataURL('image/jpeg', .8)); };
@@ -1474,7 +1897,30 @@ document.addEventListener('click', async e => {
   const a = el.dataset.act, id = el.dataset.id;
   switch (a) {
     case 'nav': if (!$('#reader').hidden) closeReader(); go(el.dataset.v); break;
-    case 'open-book': go('book', id); break;
+    case 'open-book': if (id === 'bible') go('bible'); else go('book', id); break;
+    case 'btab': case 'btab-go': S.bibleTab = el.dataset.v; if (S.view.name !== 'bible') go('bible'); else { render(); } break;
+    case 'bible-book': chapterSheet(+el.dataset.b); break;
+    case 'bn-open': closeSheet(); openReader('bible', {ch:+el.dataset.g}); break;
+    case 'bn-go': closeSheet(); gotoChapter(+el.dataset.g); break;
+    case 'open-plan': S._armStop = null; go('plan', id); break;
+    case 'open-theme': go('theme', id); break;
+    case 'plan-start': { const t = new Date(); S.plans[id] = {start:`${t.getFullYear()}-${String(t.getMonth() + 1).padStart(2, '0')}-${String(t.getDate()).padStart(2, '0')}`, done:[]}; save(); render(); toast('Plan commencé. Bonne lecture !'); API.plan(id).catch(e => fail(e)); break; }
+    case 'plan-stop': if (S._armStop !== id) { S._armStop = id; render(); break; } S._armStop = null; delete S.plans[id]; save(); go('bible'); toast('Plan arrêté'); API.plan(id).catch(e => fail(e)); break;
+    case 'plan-toggle': case 'plan-done': { const st = S.plans[id]; if (!st) break; const d = +el.dataset.d; const i = st.done.indexOf(d);
+      if (a === 'plan-done' || i < 0) { if (i < 0) st.done.push(d); toast(`Jour ${d + 1} marqué comme lu`); } else st.done.splice(i, 1);
+      save(); render(); API.plan(id).catch(e => fail(e)); break; }
+    case 'plan-read': case 'plan-listen': { const p = planOf(id); const refs = p.days[+el.dataset.d]; if (!refs || !refs.length) break;
+      if (a === 'plan-listen' && TTS.ok) { try { speechSynthesis.cancel(); speechSynthesis.speak(new SpeechSynthesisUtterance(' ')); } catch(_){} }
+      openRef(refs[0], {listen:a === 'plan-listen', until:refs[refs.length - 1]}); break; }
+    case 'ref-read': openRef(parseRef(el.dataset.ref)); break;
+    case 'ref-listen': if (TTS.ok) { try { speechSynthesis.cancel(); speechSynthesis.speak(new SpeechSynthesisUtterance(' ')); } catch(_){} } openRef(parseRef(el.dataset.ref), {listen:true}); break;
+    case 'med-start': { const r = parseRef(el.dataset.ref); if (!r) { toast('Passage introuvable'); break; } S.med = {ref:refLabel(r), step:0, answers:{}}; go('meditate'); break; }
+    case 'med-next': if (S.med.step < MED_STEPS.length - 1) { S.med.step++; render(); } break;
+    case 'med-prev': if (S.med.step > 0) { S.med.step--; render(); } break;
+    case 'med-quit': stopTTS(); S.med = null; S.bibleTab = 'meditate'; go('bible'); break;
+    case 'med-listen': { const r = parseRef(S.med.ref); const vs = await passageVerses(r); speakPassageText(vs.map(v => v.x).join(' ')); break; }
+    case 'med-timer': { let left = 60; el.disabled = true; const tick = () => { if (!document.body.contains(el)) return; if (left <= 0) { el.textContent = 'Minute de silence terminée'; return; } el.textContent = `Silence… ${left} s`; left--; setTimeout(tick, 1000); }; tick(); break; }
+    case 'med-save': { stopTTS(); const m = {id:uid(), ref:S.med.ref, answers:{...S.med.answers}, at:Date.now()}; S.meds.push(m); S.med = null; S.bibleTab = 'journal'; save(); go('bible'); toast('Méditation enregistrée dans votre journal'); API.saveMed(m).catch(e => fail(e, "La méditation est gardée sur ce téléphone mais n'a pas pu être envoyée au serveur.")); break; }
     case 'open-group': go('group', id); break;
     case 'read': openReader(id); break;
     case 'listen': if (TTS.ok) { try { speechSynthesis.cancel(); speechSynthesis.speak(new SpeechSynthesisUtterance(' ')); } catch(_){} } openReader(id, {listen:true}); break;
@@ -1530,7 +1976,7 @@ document.addEventListener('click', async e => {
     case 'r-notes': R.notesOpen = !R.notesOpen; renderNotesPanel(); break;
     case 'panel-scope': R.panelScope = el.dataset.v; renderNotesPanel(); break;
     case 'r-mode': if (R.content.scanned) { toast('Ce PDF ne contient que des images de pages'); break; } stopTTS(); R.mode = R.mode === 'page' ? 'text' : 'page'; renderChapter(0); break;
-    case 'r-toc': openSheet(`<h2>${R.book.format === 'pdf' ? 'Pages' : 'Table des matières'}</h2><div class="toc">${R.content.chapters.map((c, i) => `<button data-act="toc-go" data-i="${i}" aria-current="${i===R.ch}"><span>${esc(chapterTitle(i))}</span><span class="muted num">${i+1}</span></button>`).join('')}</div>`, root => { const cur = root.querySelector('[aria-current="true"]'); if (cur) cur.scrollIntoView({block:'center'}); }); break;
+    case 'r-toc': if (R.content?.bible) { bibleNavSheet(); break; } openSheet(`<h2>${R.book.format === 'pdf' ? 'Pages' : 'Table des matières'}</h2><div class="toc">${R.content.chapters.map((c, i) => `<button data-act="toc-go" data-i="${i}" aria-current="${i===R.ch}"><span>${esc(chapterTitle(i))}</span><span class="muted num">${i+1}</span></button>`).join('')}</div>`, root => { const cur = root.querySelector('[aria-current="true"]'); if (cur) cur.scrollIntoView({block:'center'}); }); break;
     case 'toc-go': closeSheet(); gotoChapter(+el.dataset.i); break;
     case 'r-aa': openSheet(`<h2>Affichage</h2>
         <div class="field"><span>Taille du texte</span><div style="display:flex;gap:10px;align-items:center"><button class="btn ghost small" data-act="rs" data-d="-1">A−</button><span class="num" id="rs-v">${S.profile.rs} px</span><button class="btn ghost small" data-act="rs" data-d="1">A+</button></div></div>
@@ -1545,7 +1991,9 @@ document.addEventListener('click', async e => {
     case 'sel-hl': { const s = R.sel; if (!s) break; const n = newNote({para:s.para, start:s.start, end:s.end, quote:s.quote, color:el.dataset.c, vis:'me'}); S.notes.push(n); save(); API.saveNote(n, true).catch(e => fail(e)); window.getSelection().removeAllRanges(); hideSel(); refreshPara(s.para); renderNotesPanel(); toast('Passage surligné (visible par vous seul)'); break; }
     case 'sel-note': { const s = R.sel; if (!s) break; const n = newNote({para:s.para, start:s.start, end:s.end, quote:s.quote}); window.getSelection().removeAllRanges(); hideSel(); noteSheet(n, true); break; }
     case 'sel-listen': { const s = R.sel; if (!s) break; window.getSelection().removeAllRanges(); hideSel(); TTS.queue = sentencesOf(R.ch); const i = TTS.queue.findIndex(x => x.p === s.para && x.e > s.start); startTTS(i < 0 ? 0 : i); break; }
-    case 'tts-play': if (TTS.playing) pauseTTS(); else startTTS(R.speak ? TTS.qi : undefined); break;
+    case 'tts-play': if (TTS.playing) pauseTTS(); else startTTS(R.speak ? TTS.qi : undefined); updateListenView(TTS.queue[TTS.qi]); break;
+    case 'listen-mode': $('#listen').hidden = false; if (!TTS.playing) startTTS(R.speak ? TTS.qi : undefined); else keepAwake(true); updateListenView(TTS.queue[TTS.qi]); break;
+    case 'listen-exit': $('#listen').hidden = true; break;
     case 'tts-back': if (TTS.queue.length) { TTS.qi = Math.max(0, TTS.qi - 1); if (TTS.playing) speakCurrent(); else setSpeak(TTS.queue[TTS.qi]); } break;
     case 'tts-fwd': if (TTS.queue.length) { TTS.qi = Math.min(TTS.queue.length, TTS.qi + 1); if (TTS.playing) speakCurrent(); else if (TTS.queue[TTS.qi]) setSpeak(TTS.queue[TTS.qi]); } break;
     case 'tts-g': S.profile.voiceGender = el.dataset.g; save(); updateGenderBtns(); if (TTS.playing) speakCurrent(); break;
@@ -1553,6 +2001,7 @@ document.addEventListener('click', async e => {
     case 'tts-timer': { const steps = [0, 15, 30, 60]; TTS.timerMin = steps[(steps.indexOf(TTS.timerMin) + 1) % steps.length]; TTS.timerEnd = TTS.timerMin ? Date.now() + TTS.timerMin * 60000 : 0; el.textContent = TTS.timerMin ? `⏱ ${TTS.timerMin} min` : '⏱ Off'; el.classList.toggle('on', !!TTS.timerMin); break; }
   }
 });
+document.addEventListener('submit', e => { if (e.target.id === 'med-form') { e.preventDefault(); const r = parseRef($('#med-ref').value); if (!r) { toast('Écrivez une référence, par exemple : Jean 15:1-11'); return; } S.med = {ref:refLabel(r), step:0, answers:{}}; go('meditate'); } });
 document.addEventListener('submit', e => { const f = e.target.closest('.replyform'); if (!f) return; e.preventDefault(); const inp = f.querySelector('input'); const t = inp.value.trim(); if (!t) return;
   const n = S.notes.find(x => x.id === f.dataset.id); n.replies = n.replies || []; n.replies.push({authorId:'me', text:t, at:Date.now()}); save(); API.reply(n.id, t).catch(e => fail(e, "La réponse n'a pas pu être envoyée.")); afterNoteChange(n); toast('Réponse envoyée'); });
 document.addEventListener('input', e => {
@@ -1561,6 +2010,7 @@ document.addEventListener('input', e => {
   const a = t.dataset.actInput; if (!a) return;
   if (a === 'pname') { S.profile.name = t.value; save(); renderNav(); if (t.value.trim()) API.profileName(); }
   if (a === 'rate') { S.profile.rate = +t.value; $('#rate-v').textContent = S.profile.rate + '×'; save(); }
+  if (a === 'med-ans' && S.med) { S.med.answers[MED_STEPS[S.med.step].k] = t.value; }
   if (a === 'sample') { $('#pf-spoken').textContent = speechText(t.value); }
   if (a === 'cal') { const g = groupOf(t.dataset.id); g.calendar = t.value; save(); API.calendar(g); }
 });
