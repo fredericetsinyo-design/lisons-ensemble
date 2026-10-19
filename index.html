@@ -881,7 +881,7 @@ async function submitAuth(e){
     }
     const {error} = await sb.auth.signInWithPassword({email, password:pass});
     if (error) throw new Error(/invalid login|credentials/i.test(error.message) ? 'E-mail ou mot de passe incorrect.' : error.message);
-  } catch(err){ authMsg(err.message === 'Failed to fetch' ? "Pas de connexion au serveur. Vérifiez Internet puis réessayez." : err.message); }
+  } catch(err){ authMsg(/failed to fetch|load failed|network|fetch/i.test(err.message || '') ? "Le serveur ne répond pas pour le moment. Vérifiez votre connexion Internet et réessayez dans quelques minutes." : err.message); }
   finally { btn.disabled = false; }
 }
 async function startApp(session){
