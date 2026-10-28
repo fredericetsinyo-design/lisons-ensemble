@@ -1,5 +1,5 @@
 // Lisons Ensemble: app shell cached for offline reading. Server data (Supabase) always goes to the network.
-const CACHE = 'lisons-ensemble-v3';
+const CACHE = 'lisons-ensemble-v4';
 const SHELL = ['./', 'index.html', 'manifest.webmanifest', 'icons/icon-192.png', 'icons/icon-512.png',
   'img/etude.jpg', 'img/rayons.jpg', 'img/bibliotheque.jpg', 'img/fauteuil.jpg', 'img/canape.jpg', 'img/lecture.jpg', 'img/livre.jpg', 'img/jeune.jpg', 'img/allonge.jpg'];
 self.addEventListener('install', e => { e.waitUntil(caches.open(CACHE).then(c => c.addAll(SHELL)).then(() => self.skipWaiting())); });

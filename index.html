@@ -509,6 +509,17 @@ svg.i{width:20px;height:20px;flex:none;stroke:currentColor;fill:none;stroke-widt
 .stepdots span{height:6px;flex:1;border-radius:6px;background:var(--line)}
 .stepdots span.past{background:var(--mustard)}.stepdots span.on{background:var(--green)}
 
+.vlist{display:flex;flex-direction:column;gap:6px;margin-top:6px;max-height:360px;overflow:auto}
+.vrow{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:8px 10px;border-radius:14px;background:var(--surface-2);box-shadow:inset 0 0 0 1px var(--line)}
+.vn2{min-width:0;display:flex;flex-direction:column}
+.vn2 b{font-weight:600;font-size:14px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.vn2 span{font-size:12px;color:var(--ink-2);display:flex;gap:6px;align-items:center;flex-wrap:wrap}
+.vact{display:flex;gap:4px;align-items:center;flex:none}
+.vact .iconbtn{width:34px;height:34px}
+.vact .iconbtn svg.i{width:16px;height:16px}
+.q{font-style:normal;font-weight:700;font-size:10.5px;letter-spacing:.04em;text-transform:uppercase;border-radius:6px;padding:2px 6px;background:var(--line);color:var(--ink-2)}
+.q.q2{background:var(--sand);color:var(--sand-ink)}.q.q3{background:var(--green);color:var(--on-green)}
+.vguide{background:var(--sand);color:var(--sand-ink);border-radius:14px;padding:12px 14px;font-size:13.5px;display:flex;flex-direction:column;gap:4px}
 /* ---------- reader ---------- */
 #reader{position:fixed;inset:0;z-index:40;background:var(--paper);color:var(--paper-ink);display:flex;flex-direction:column;
   padding-top:env(safe-area-inset-top,0px)}
@@ -852,7 +863,7 @@ async function refreshLive(){
   if (!$('#reader').hidden) { if (R.book && R.content) { R.content.chapters[R.ch]?.blocks.forEach((_, i) => refreshPara(i)); renderNotesPanel(); } return; }
   const ae = document.activeElement; if (ae && /INPUT|TEXTAREA|SELECT/.test(ae.tagName)) return; render();
 }
-document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible' && ME) later('rt', refreshLive, 300); });
+document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') loadVoices(); if (document.visibilityState === 'visible' && ME) later('rt', refreshLive, 300); });
 
 /* sign in / create account */
 let authMode = 'in';
@@ -1371,9 +1382,10 @@ function viewProfile(){
       <label class="field"><span>Voix féminine</span><select class="input" id="pf-vf" data-act-change="vf"></select></label>
       <label class="field"><span>Voix masculine</span><select class="input" id="pf-vm" data-act-change="vm"></select>
         <small id="voice-hint"></small></label>
+      <div class="field"><span>Voix disponibles sur cet appareil</span><small>Les voix « Naturelle » et « Améliorée » sonnent le plus humain. Écoutez-les et choisissez.</small><div class="vlist" id="vlist"></div></div>
+      <div class="vguide" id="vguide" hidden></div>
       <label class="field"><span>Vitesse : <span class="num" id="rate-v">${P.rate}×</span></span><input type="range" id="pf-rate" min="0.6" max="2" step="0.1" value="${P.rate}" data-act-input="rate"></label>
       <div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn small" data-act="test-voice" data-v="f">${ic.play} Tester la voix féminine</button><button class="btn small navy" data-act="test-voice" data-v="m">${ic.play} Tester la voix masculine</button></div>
-      <p class="muted" style="font-size:13px">Pour des voix plus naturelles sur Android : Paramètres › Accessibilité › Synthèse vocale › Google › installer les voix françaises (version haute qualité). Sur iPhone : Réglages › Accessibilité › Contenu énoncé › Voix › Français, puis téléchargez une voix « améliorée ».</p>
     </div>
     <div class="card form">
       <span class="label">Lecture naturelle</span>
@@ -1393,18 +1405,25 @@ function viewProfile(){
 
 /* ================= voices (Web Speech API) ================= */
 const TTS = {
-  ok: !!SS, voices: [], queue: [], qi: 0, playing: false, token: 0, timerMin: 0, timerEnd: 0,
+  ok: !!SS, bad: new Set(), retries: 0, voices: [], queue: [], qi: 0, playing: false, token: 0, timerMin: 0, timerEnd: 0,
 };
 const FEM = ['amelie','audrey','aurelie','marie','julie','hortense','denise','celine','lea','virginie','chantal','sylvie','eloise','vivienne','brigitte','charlotte','josephine','yvette','coralie','jacqueline','sophie','ariane','sarah','caroline','elsa','alice','manon','claire','female','femme','fra','frc'];
 const MAS = ['thomas','nicolas','daniel','paul','henri','claude','mathieu','remi','antoine','jacques','fabrice','guillaume','jean','alain','pierre','louis','gerard','yves','alexandre','maxime','remy','male','homme','frb','frd'];
 function vgender(v){ const n = ' ' + v.name.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/[^a-z0-9]+/g,' ') + ' ';
   if (FEM.some(w => n.includes(' ' + w + ' '))) return 'f'; if (MAS.some(w => n.includes(' ' + w + ' '))) return 'm';
   if (n.includes(' google ')) return 'f'; return '?'; }
-function vscore(v){ const n = v.name.toLowerCase(); let s = 0; if (/natural|neural|enhanced|premium|online|network|amélior|ameliore/.test(n)) s += 3; if (/google/.test(n)) s += 1; if ((v.lang||'').toLowerCase().replace('_','-') === 'fr-fr') s += 2; if (v.localService === false) s += 1; return s; }
+/* Voice quality: the newer "natural / neural / premium / enhanced" voices sound far more human than the basic ones. */
+function vquality(v){ const n = ((v.name || '') + ' ' + (v.voiceURI || '')).toLowerCase();
+  if (/natural|neural|wavenet|premium|studio/.test(n)) return 3;
+  if (/enhanced|amélior|ameliore|online|network|google/.test(n)) return 2;
+  if (/compact|eloquence|espeak|pico|svox/.test(n)) return 0;
+  return 1; }
+const QLABEL = ['Basique', 'Standard', 'Améliorée', 'Naturelle'];
+function vscore(v){ let s = vquality(v) * 10; if ((v.lang || '').toLowerCase().replace('_', '-') === 'fr-fr') s += 2; if (v.localService === false) s += 1; if (TTS.bad && TTS.bad.has(v.voiceURI)) s -= 100; return s; }
 function frVoices(){ const fr = TTS.voices.filter(v => (v.lang || '').toLowerCase().startsWith('fr')); return fr.length ? fr : TTS.voices; }
 function loadVoices(){ if (!TTS.ok) return; TTS.voices = SS.getVoices() || []; if (S.view.name === 'profile') fillVoiceSelects(); }
 function pickVoice(g){
-  const pref = g === 'f' ? S.profile.voiceF : S.profile.voiceM; const list = frVoices();
+  const pref = g === 'f' ? S.profile.voiceF : S.profile.voiceM; const list = frVoices().filter(v => !(TTS.bad && TTS.bad.has(v.voiceURI))).length ? frVoices().filter(v => !(TTS.bad && TTS.bad.has(v.voiceURI))) : frVoices();
   const chosen = pref && list.find(v => v.voiceURI === pref); if (chosen) return {v:chosen, pitch:1};
   const match = list.filter(v => vgender(v) === g).sort((a,b) => vscore(b) - vscore(a))[0]; if (match) return {v:match, pitch:1};
   const any = list.slice().sort((a,b) => vscore(b) - vscore(a))[0];
@@ -1416,6 +1435,21 @@ function fillVoiceSelects(){
   const opt = sel => `<option value="">Automatique</option>` + list.map(v => { const g = vgender(v); return `<option value="${esc(v.voiceURI)}" ${v.voiceURI===sel?'selected':''}>${esc(v.name)} · ${esc(v.lang)}${g==='f'?' · féminine':g==='m'?' · masculine':''}</option>`; }).join('');
   const f = $('#pf-vf'), m = $('#pf-vm'); if (!f) return; f.innerHTML = opt(P.voiceF); m.innerHTML = opt(P.voiceM);
   const nf = list.filter(v => vgender(v)==='f').length, nm = list.filter(v => vgender(v)==='m').length;
+  const sorted = list.slice().sort((a, b) => vscore(b) - vscore(a)); const vl = $('#vlist');
+  if (vl) vl.innerHTML = sorted.map(v => { const q = vquality(v), g = vgender(v); const nm = v.name.replace(/^Microsoft\s+/i, '').replace(/\s*Online\s*\(Natural\)/i, '').replace(/\s*-\s*(French|Français).*$/i, '');
+    const am = v.name.match(/^[a-z]{2}-[a-z]{2}-x-([a-z]{3})-(network|local)/i); const nm2 = am ? `Voix Google ${am[1].slice(-1).toUpperCase()}` : nm;
+    const fOn = P.voiceF === v.voiceURI, mOn = P.voiceM === v.voiceURI;
+    return `<div class="vrow"><div class="vn2"><b>${esc(nm2)}</b><span><i class="q q${q}">${QLABEL[q]}</i>${g === 'f' ? 'Féminine' : g === 'm' ? 'Masculine' : 'Genre inconnu'} · ${esc(v.lang)}${v.localService === false ? ' · en ligne' : ''}</span></div>
+      <div class="vact"><button class="iconbtn" data-act="vtry" data-uri="${esc(v.voiceURI)}" aria-label="Écouter ${esc(nm2)}">${ic.play}</button>
+      <button class="pill${fOn ? ' on' : ''}" data-act="vuse" data-g="f" data-uri="${esc(v.voiceURI)}">${fOn ? '✓ ' : ''}Femme</button><button class="pill${mOn ? ' on' : ''}" data-act="vuse" data-g="m" data-uri="${esc(v.voiceURI)}">${mOn ? '✓ ' : ''}Homme</button></div></div>`; }).join('') || '<p class="muted">Aucune voix française détectée.</p>';
+  const best = sorted.length ? Math.max(...sorted.map(vquality)) : 0; const gd = $('#vguide');
+  if (gd) { const ua = navigator.userAgent; const os = /android/i.test(ua) ? 'android' : /iphone|ipad/i.test(ua) ? 'ios' : /windows/i.test(ua) ? 'win' : /mac/i.test(ua) ? 'mac' : 'other';
+    const G = {android:"Sur Android : Paramètres › Accessibilité › Synthèse vocale › Moteur « Services vocaux Google » › ⚙ › Installer les données vocales › Français (France). Téléchargez une voix, puis revenez ici : elle apparaîtra dans la liste.",
+      ios:"Sur iPhone : Réglages › Accessibilité › Contenu énoncé › Voix › Français (France). Téléchargez « Amélie (Améliorée) », « Thomas (Améliorée) » ou une voix Premium, puis revenez ici.",
+      win:"Sur ordinateur Windows : ouvrez Lisons Ensemble dans Microsoft Edge. Edge propose gratuitement des voix naturelles très humaines (Denise, Henri, Vivienne, Remy…).",
+      mac:"Sur Mac : Réglages Système › Accessibilité › Contenu énoncé › Voix du système › Gérer les voix › Français. Téléchargez une voix « Améliorée » ou « Premium ».",
+      other:"Installez une voix française de haute qualité dans les réglages de synthèse vocale de votre appareil, puis revenez ici."};
+    gd.hidden = best >= 3; gd.innerHTML = `<b>${best >= 2 ? 'Pour une voix encore plus humaine' : 'Votre appareil n’a que des voix basiques'}</b><p>${G[os]}</p>`; }
   $('#voice-hint').textContent = !TTS.ok ? "Ce navigateur ne propose pas la synthèse vocale." : !list.length ? 'Aucune voix détectée pour le moment.' :
     `${list.length} voix française${list.length>1?'s':''} sur cet appareil (${nf} féminine${nf>1?'s':''}, ${nm} masculine${nm>1?'s':''} reconnue${nm>1?'s':''}). Si une voix est mal classée, choisissez-la ici.`;
 }
@@ -1426,6 +1460,8 @@ const SAMPLE_SPEECH = "Le 16/10/2026 à 19h30, 25 jeunes ont lu Jean 3:16-18 ; 7
 function voiceSettingsHTML(){ const P = S.profile;
   return `<div class="field"><span>Longueur des pauses</span><div class="seg" role="group">${[[0.6,'Courtes'],[1,'Normales'],[1.5,'Longues']].map(([k,l]) => `<button data-act="pscale" data-v="${k}" aria-pressed="${P.pauseScale===k}">${l}</button>`).join('')}</div>
       <small>Pause après chaque point, point-virgule, deux-points, points de suspension et fin de paragraphe.</small></div>
+    <div class="field"><span>Intonation</span><div class="seg" role="group"><button data-act="pexpr" data-v="on" aria-pressed="${P.expressive !== false}">Expressive</button><button data-act="pexpr" data-v="off" aria-pressed="${P.expressive === false}">Neutre</button></div>
+      <small>« Expressive » fait monter légèrement la voix sur les questions et les dialogues, et ralentit sur les titres.</small></div>
     <div class="field"><span>Virgules</span><div class="seg" role="group"><button data-act="pcomma" data-v="natural" aria-pressed="${P.commas==='natural'}">Respiration naturelle</button><button data-act="pcomma" data-v="marked" aria-pressed="${P.commas==='marked'}">Pause marquée</button></div>
       <small>« Pause marquée » ajoute un court silence à chaque virgule si votre voix les enchaîne trop vite.</small></div>
     <div class="field"><span>Numéros de versets collés au texte (ex. « 16Car Dieu… »)</span><div class="seg" role="group"><button data-act="pverse" data-v="read" aria-pressed="${P.verses==='read'}">Les lire</button><button data-act="pverse" data-v="skip" aria-pressed="${P.verses==='skip'}">Les ignorer</button></div></div>`; }
@@ -1696,6 +1732,8 @@ function chunksOfText(t, marked){
     }
     const len = m.index - start;
     if (mark === ',' && !(marked && len >= 22) && len < 190) continue;
+    // Natural mode keeps the whole sentence together so the voice builds its own melody; the engine pauses on ; and : by itself.
+    if ((mark === ';' || mark === ':') && !marked && len < 120) continue;
     if ((mark === '—' || mark === '–') && len < 12) continue;
     push(end, PAUSE[mark === '–' ? '—' : mark] || 200);
   }
@@ -1771,6 +1809,20 @@ function startTTS(from){
   TTS.queue = sentencesOf(R.ch); if (!TTS.queue.length) { if (R.ch < R.content.chapters.length - 1) { gotoChapter(R.ch + 1, true).then(() => startTTS(0)); } return; }
   TTS.qi = from ?? firstVisibleSentence(); TTS.playing = true; updatePlayBtn(); hideSel(); keepAwake(true); speakCurrent(true);
 }
+/* Expressive intonation: a slightly higher, slower question; livelier exclamations and dialogue; calmer titles and long sentences;
+   and a very small variation from one sentence to the next so the reading does not sound mechanical. */
+function prosody(item){
+  let r = 1, p = 1; if (S.profile.expressive === false || !item) return {r, p};
+  if (item.p < 0) return {r:0.9, p:1};
+  const raw = itemText(item).trim();
+  if (/\?["»”')\]]*$/.test(raw)) { p *= 1.06; r *= 0.97; }
+  else if (/!["»”')\]]*$/.test(raw)) p *= 1.04;
+  if (/^[«"“—–-]/.test(raw)) p *= 1.04;
+  if (raw.length > 170) r *= 0.96;
+  if (item.s === 0) r *= 0.98;
+  p *= 1 + ((((item.s * 7 + item.p * 13) % 5) + 5) % 5 - 2) * 0.008;
+  return {r, p};
+}
 function makeUtterance(text){ const u = new Utter(text); const {v, pitch} = pickVoice(S.profile.voiceGender);
   if (v) { u.voice = v; u.lang = v.lang; } else u.lang = 'fr-FR'; u.rate = S.profile.rate; u.pitch = pitch; return u; }
 function speakCurrent(cancel = true){
@@ -1788,10 +1840,14 @@ function speakCurrent(cancel = true){
     const gap = Math.round((item.pause || 0) * (S.profile.pauseScale || 1) / Math.max(0.6, S.profile.rate));
     TTS.inGap = true; TTS.gapT = setTimeout(() => { if (my === TTS.token && TTS.playing) speakCurrent(false); }, gap); };
   if (!/[\p{L}\p{N}]/u.test(text)) { next(); return; }
-  const u = makeUtterance(text);
-  u.onend = () => { if (document.visibilityState === 'hidden' && Date.now() - started < 400) return; next(); };
+  const u = makeUtterance(text); const pr = prosody(item);
+  u.rate = Math.min(2, Math.max(0.5, u.rate * pr.r)); u.pitch = Math.min(1.6, Math.max(0.5, u.pitch * pr.p));
+  u.onend = () => { TTS.retries = 0; if (document.visibilityState === 'hidden' && Date.now() - started < 400) return; next(); };
   const started = Date.now();
-  u.onerror = e => { if (e.error === 'interrupted' || e.error === 'canceled') return; next(); };
+  // A voice that fails (for example an online voice without network) is set aside and the same sentence is read again with the next best voice.
+  u.onerror = e => { if (e.error === 'interrupted' || e.error === 'canceled') return;
+    if (u.voice && u.voice.voiceURI && TTS.retries < 2) { TTS.bad.add(u.voice.voiceURI); TTS.retries++; if (my === TTS.token && TTS.playing) speakCurrent(true); return; }
+    TTS.retries = 0; next(); };
   TTS.lastStart = Date.now(); SS.speak(u);
 }
 /* Watchdog: some phones silently drop the voice when the screen turns off. While listening, if nothing is being spoken
@@ -1984,6 +2040,11 @@ document.addEventListener('click', async e => {
     case 'pgender': S.profile.voiceGender = el.dataset.v; save(); render(); break;
     case 'test-voice': speakTest(el.dataset.v); break;
     case 'test-sample': speakSample(); break;
+    case 'pexpr': S.profile.expressive = el.dataset.v === 'on'; save(); $$('[data-act="pexpr"]').forEach(b => b.setAttribute('aria-pressed', b === el)); break;
+    case 'vtry': { if (!TTS.ok) break; stopTTS(); const v = frVoices().find(x => x.voiceURI === el.dataset.uri); const u = new Utter("Bonjour. Voici comment je lis : « Je vous laisse la paix, je vous donne ma paix. » Est-ce que ma voix vous convient ?");
+      if (v) { u.voice = v; u.lang = v.lang; } u.rate = S.profile.rate; u.pitch = 1; SS.speak(u); break; }
+    case 'vuse': { const g = el.dataset.g; S.profile[g === 'f' ? 'voiceF' : 'voiceM'] = el.dataset.uri; S.profile.voiceGender = g; TTS.bad.delete(el.dataset.uri); save(); fillVoiceSelects();
+      $$('[data-act="pgender"]').forEach(b => b.setAttribute('aria-pressed', b.dataset.v === g)); toast(g === 'f' ? 'Voix féminine choisie' : 'Voix masculine choisie'); break; }
     case 'pscale': case 'pcomma': case 'pverse': {
       const key = {pscale:'pauseScale', pcomma:'commas', pverse:'verses'}[a]; S.profile[key] = a === 'pscale' ? +el.dataset.v : el.dataset.v; save();
       $$(`[data-act="${a}"]`).forEach(b => b.setAttribute('aria-pressed', b.dataset.v === el.dataset.v));
