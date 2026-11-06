@@ -1,0 +1,23 @@
+name: Voix Piper pour le web
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths: ['.github/workflows/voix-web.yml']
+permissions:
+  contents: write
+jobs:
+  voix:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: |
+          mkdir -p voices
+          for v in siwis tom; do for e in onnx onnx.json; do
+            curl -sSfL -o voices/fr_FR-$v-medium.$e "https://huggingface.co/rhasspy/piper-voices/resolve/main/fr/fr_FR/$v/medium/fr_FR-$v-medium.$e"
+          done; done
+          curl -sSfL -o voices/LICENCES-siwis.md "https://huggingface.co/rhasspy/piper-voices/resolve/main/fr/fr_FR/siwis/medium/MODEL_CARD" || true
+          curl -sSfL -o voices/LICENCES-tom.md "https://huggingface.co/rhasspy/piper-voices/resolve/main/fr/fr_FR/tom/medium/MODEL_CARD" || true
+          ls -la voices
+          git config user.name "github-actions" && git config user.email "actions@github.com"
+          git add voices && git commit -m "Voix Piper (Siwis, Tom) hébergées pour la lecture sur le téléphone" && git pull --rebase -q && git push || echo "rien"
