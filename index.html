@@ -1380,6 +1380,7 @@ function viewProfile(){
       <span class="label">Lecture vocale</span>
       ${hdSettingsHTML()}
       <div class="field"><span>Voix préférée</span><div class="seg" role="group"><button data-act="pgender" data-v="f" aria-pressed="${P.voiceGender==='f'}">Féminine</button><button data-act="pgender" data-v="m" aria-pressed="${P.voiceGender==='m'}">Masculine</button></div></div>
+      <span class="label" style="margin-top:6px">Voix du téléphone${ENG() === 'libre' ? ' · utilisées en secours' : ''}</span>
       <label class="field"><span>Voix féminine</span><select class="input" id="pf-vf" data-act-change="vf"></select></label>
       <label class="field"><span>Voix masculine</span><select class="input" id="pf-vm" data-act-change="vm"></select>
         <small id="voice-hint"></small></label>
