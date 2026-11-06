@@ -765,7 +765,7 @@ const DB = (() => {
 
 /* ================= state ================= */
 const S = {
-  profile:{id:'me', name:'', voiceGender:'f', voiceF:'', voiceM:'', rate:1, defaultVis:'me', rs:19, rf:'serif', rt:'auto', pauseScale:1, commas:'natural', verses:'read'},
+  profile:{id:'me', name:'', voiceGender:'f', voiceF:'', voiceM:'', rate:1, defaultVis:'me', rs:19, rf:'serif', rt:'auto', pauseScale:1, commas:'natural', verses:'read', engine:'libre'},
   books:[], groups:[], notes:[], progress:{}, plans:{}, meds:[], bibleTab:'today', med:null,
   view:{name:'home'}, filter:'all', q:'', noteFilter:'all'
 };
@@ -1811,7 +1811,10 @@ const HD_VOICES = {f:[['Aoede','Douce et posée'],['Leda','Claire et chaleureuse
                    m:[['Charon','Grave et calme'],['Orus','Chaleureuse'],['Puck','Vive'],['Fenrir','Profonde']]};
 const HD = {audio:null, urls:new Map(), off:false, offWhy:''};
 function hdAudio(){ if (!HD.audio) { HD.audio = new Audio(); HD.audio.preload = 'auto'; HD.audio.setAttribute('playsinline', ''); try { HD.audio.preservesPitch = true; } catch(e){} } return HD.audio; }
-const isHD = () => S.profile.engine !== 'device' && !!sb && !!ME && !HD.off;
+/* Engines: 'libre' (default, free: pre-recorded Bible audio + Piper voice on the phone for books), 'hd' (Google, needs a key), 'device'. */
+const ENG = () => { const e = S.profile.engine; return e === 'device' ? 'device' : (e === 'hd' && S.profile.engV2) ? 'hd' : 'libre'; };
+const hdOn = () => ENG() === 'hd' && !!sb && !!ME && !HD.off;
+const isHD = () => hdOn() || (ENG() === 'libre' && (baOn() || usePiper()));
 const hdVoice = () => (S.profile.voiceGender === 'm' ? (S.profile.hdM || 'Charon') : (S.profile.hdF || 'Aoede'));
 async function hdUrl(text, voice){
   const k = voice + '|' + text; if (HD.urls.has(k)) return HD.urls.get(k);
@@ -1824,13 +1827,13 @@ async function hdUrl(text, voice){
   HD.urls.set(k, p); p.catch(() => HD.urls.delete(k)); return p;
 }
 /* HD reads whole paragraphs (up to ~1400 characters) for a natural flow; a Bible verse is one unit. */
-function hdQueue(ch){
+function hdQueue(ch, max = 1400){
   const items = sentencesOf(ch), out = [];
   for (const it of items) { const last = out[out.length - 1];
-    if (last && it.p >= 0 && last.p === it.p && (it.e - last.s) <= 1400) { last.e = it.e; last.pause = it.pause; } else out.push({...it}); }
+    if (last && it.p >= 0 && last.p === it.p && (it.e - last.s) <= max) { last.e = it.e; last.pause = it.pause; } else out.push({...it}); }
   return out;
 }
-const queueOf = ch => isHD() ? hdQueue(ch) : sentencesOf(ch);
+const queueOf = ch => (hdOn() || baOn()) ? hdQueue(ch) : usePiper() ? hdQueue(ch, 420) : sentencesOf(ch);
 function hdFallback(e){
   HD.off = true; HD.offWhy = e && e.code || '';
   const msg = e && e.code === 'month' ? "Quota mensuel de voix HD atteint : lecture avec la voix du téléphone jusqu'au mois prochain."
@@ -1841,6 +1844,7 @@ function hdFallback(e){
   if (HD.offWhy !== 'month' && HD.offWhy !== 'not_configured') setTimeout(() => { HD.off = false; }, 10 * 60 * 1000);
 }
 async function hdSpeakCurrent(cancel = true){
+  if (baOn()) return baSpeakCurrent(cancel);
   const my = ++TTS.token; clearTimeout(TTS.gapT); const a = hdAudio();
   if (cancel) { try { a.pause(); } catch(e){} }
   if (TTS.timerEnd && Date.now() > TTS.timerEnd) { stopTTS(); TTS.timerMin = 0; TTS.timerEnd = 0; $('#tts-timer').textContent = '⏱ Off'; $('#tts-timer').classList.remove('on'); toast('Minuterie terminée'); return; }
@@ -1850,20 +1854,21 @@ async function hdSpeakCurrent(cancel = true){
   if (!item && R.stopAt && R.ch >= R.stopAt.ch) { R.stopAt = null; stopTTS(); toast('Fin de la lecture du jour'); return; }
   if (!item) { if (R.ch < R.content.chapters.length - 1) { gotoChapter(R.ch + 1, true).then(() => { if (TTS.playing && my === TTS.token) { TTS.queue = queueOf(R.ch); TTS.qi = 0; hdSpeakCurrent(false); } }); } else { stopTTS(); toast('Fin du livre'); } return; }
   setSpeak(item); updateMediaInfo(item); updateListenView(item);
-  const text = speechText(itemText(item)); const voice = hdVoice();
+  const pip = !hdOn(); const text = speechText(itemText(item)); const voice = pip ? piperVoice() : hdVoice();
+  const getUrl = (t, v) => pip ? piperUrl(t, v) : hdUrl(t, v);
   if (!/[\p{L}\p{N}]/u.test(text)) { TTS.qi++; return hdSpeakCurrent(false); }
   let url;
-  try { url = await hdUrl(text, voice); }
-  catch(e){ if (my !== TTS.token || !TTS.playing) return; hdFallback(e); const cur = TTS.queue[TTS.qi]; TTS.queue = queueOf(R.ch); const i = cur ? TTS.queue.findIndex(x => x.p === cur.p && x.e > cur.s) : 0; TTS.qi = Math.max(0, i); speakCurrent(true); return; }
+  try { url = await getUrl(text, voice); }
+  catch(e){ if (my !== TTS.token || !TTS.playing) return; pip ? piperFallback(e) : hdFallback(e); const cur = TTS.queue[TTS.qi]; TTS.queue = queueOf(R.ch); const i = cur ? TTS.queue.findIndex(x => x.p === cur.p && x.e > cur.s) : 0; TTS.qi = Math.max(0, i); speakCurrent(true); return; }
   if (my !== TTS.token || !TTS.playing) return;
   // Prepare the next passages while this one plays, so the reading flows without waiting.
-  for (let k = 1; k <= 3; k++) { const nx = TTS.queue[TTS.qi + k]; if (nx) hdUrl(speechText(itemText(nx)), voice).catch(() => {}); }
+  for (let k = 1; k <= (pip ? 2 : 3); k++) { const nx = TTS.queue[TTS.qi + k]; if (nx) getUrl(speechText(itemText(nx)), voice).catch(() => {}); }
   a.onended = () => { if (my !== TTS.token || !TTS.playing) return; TTS.qi++;
     const gap = document.visibilityState === 'hidden' ? 0 : Math.round((item.pause || 0) * 0.5 * (S.profile.pauseScale || 1) / Math.max(0.6, S.profile.rate));
     TTS.inGap = true; TTS.gapT = setTimeout(() => { if (my === TTS.token && TTS.playing) hdSpeakCurrent(false); }, gap); };
-  a.onerror = () => { if (my !== TTS.token || !TTS.playing) return; HD.urls.delete(voice + '|' + text); hdFallback({code:'network'}); speakCurrent(true); };
-  a.src = url; a.playbackRate = S.profile.rate;
-  try { await a.play(); } catch(e){ if (my === TTS.token && TTS.playing) { hdFallback({code:'network'}); speakCurrent(true); } }
+  a.onerror = () => { if (my !== TTS.token || !TTS.playing) return; if (pip) { piperFallback({code:'audio'}); } else { HD.urls.delete(voice + '|' + text); hdFallback({code:'network'}); } speakCurrent(true); };
+  a.ontimeupdate = null; a.dataset.src = ''; a.src = url; a.playbackRate = S.profile.rate;
+  try { await a.play(); } catch(e){ if (my === TTS.token && TTS.playing) { pip ? piperFallback({code:'audio'}) : hdFallback({code:'network'}); speakCurrent(true); } }
 }
 function hdUnlock(){ if (HD.unlocked || !isHD()) return; const a = hdAudio(); try { a.src = SILENT_WAV; const pr = a.play(); if (pr) pr.then(() => a.pause()).catch(() => {}); HD.unlocked = true; } catch(e){} }
 async function hdPreview(voice, btn){
@@ -1874,14 +1879,114 @@ async function hdPreview(voice, btn){
   catch(e){ toast(e.code === 'not_configured' ? "La voix HD n'est pas encore activée sur le serveur (clé Google manquante)." : e.code === 'month' ? 'Quota mensuel de voix HD atteint.' : 'Écoute impossible pour le moment.'); }
   finally { if (btn) btn.disabled = false; }
 }
-function hdSettingsHTML(){ const P = S.profile; const eng = P.engine === 'device' ? 'device' : 'hd';
+function hdSettingsHTML(){ const P = S.profile; const eng = ENG(); if (eng === 'libre') return libreSettingsHTML();
   const row = (g, [id, d]) => { const on = (g === 'f' ? (P.hdF || 'Aoede') : (P.hdM || 'Charon')) === id;
     return `<div class="vrow"><div class="vn2"><b>${id}</b><span><i class="q q3">HD</i>${g === 'f' ? 'Féminine' : 'Masculine'} · ${d}</span></div>
       <div class="vact"><button class="iconbtn" data-act="hdtry" data-v="${id}" aria-label="Écouter ${id}">${ic.play}</button><button class="pill${on ? ' on' : ''}" data-act="hduse" data-g="${g}" data-v="${id}">${on ? '✓ Choisie' : 'Choisir'}</button></div></div>`; };
-  return `<div class="field"><span>Voix utilisée</span><div class="seg" role="group"><button data-act="pengine" data-v="hd" aria-pressed="${eng === 'hd'}">Voix HD (humaine)</button><button data-act="pengine" data-v="device" aria-pressed="${eng === 'device'}">Voix du téléphone</button></div>
-      <small>La voix HD est une vraie voix de synthèse neuronale (Google Chirp 3 HD). Elle demande Internet ; sans réseau, l'app reprend la voix du téléphone.</small></div>
+  return `${engineSegHTML()}
+      ${eng === 'hd' ? `<small class="muted">Voix Google Chirp 3 HD : elle demande Internet et une clé activée sur le serveur ; sinon l'app reprend la voix du téléphone.</small>` : `<small class="muted">Les voix installées sur votre appareil, listées plus bas.</small>`}
     <div class="field" ${eng === 'hd' ? '' : 'hidden'}><span>Voix HD féminines</span><div class="vlist">${HD_VOICES.f.map(v => row('f', v)).join('')}</div></div>
     <div class="field" ${eng === 'hd' ? '' : 'hidden'}><span>Voix HD masculines</span><div class="vlist">${HD_VOICES.m.map(v => row('m', v)).join('')}</div></div>`;
+}
+
+/* ================= Free human voices =================
+   Bible: every chapter was recorded once in advance with open voices (Kokoro for the female voice, Piper "Tom" for the male one)
+   and is served as real audio files, with the start time of each verse so the text follows the voice.
+   Books: the Piper neural voice runs on the phone itself (downloaded once, then works offline, no limit, no cost). */
+const BA = {times:{}, off:new Set(),
+  base:'https://github.com/fredericetsinyo-design/lisons-ensemble/releases/download/'};
+const pad = (n, k) => String(n).padStart(k, '0');
+const baVoice = () => S.profile.voiceGender === 'm' ? 'h' : 'f';
+const baKey = () => baVoice() + ':' + R.ch;
+function baOn(){ return ENG() === 'libre' && !!(R.content && R.content.bible) && !BA.off.has(baKey()); }
+function baTimes(v, b){ const k = v + b; if (!BA.times[k]) BA.times[k] = fetch(`bible/audio/${v}/${pad(b + 1, 2)}.json`).then(r => r.ok ? r.json() : {}).catch(() => { delete BA.times[k]; return {}; }); return BA.times[k]; }
+const baUrl = (v, b, c) => `${BA.base}bible-audio-${v}-${b < 39 ? 'at' : 'nt'}/${pad(b + 1, 2)}-${pad(c, 3)}.mp3`;
+function baLeave(msg){ BA.off.add(baKey()); if (msg) toast(msg); const cur = TTS.queue[TTS.qi]; TTS.queue = queueOf(R.ch); const i = cur ? TTS.queue.findIndex(x => x.p === cur.p) : 0; TTS.qi = Math.max(0, i); speakCurrent(true); }
+async function baSpeakCurrent(cancel = true){
+  const my = ++TTS.token; clearTimeout(TTS.gapT); const a = hdAudio(); TTS.inGap = false;
+  if (TTS.timerEnd && Date.now() > TTS.timerEnd) { stopTTS(); TTS.timerMin = 0; TTS.timerEnd = 0; $('#tts-timer').textContent = '⏱ Off'; $('#tts-timer').classList.remove('on'); toast('Minuterie terminée'); return; }
+  const item = TTS.queue[TTS.qi];
+  if (item && R.stopAt && (item.ch > R.stopAt.ch || (item.ch === R.stopAt.ch && item.p > R.stopAt.para))) { R.stopAt = null; stopTTS(); toast('Fin du passage'); return; }
+  if (!item && R.stopAt && R.ch >= R.stopAt.ch) { R.stopAt = null; stopTTS(); toast('Fin de la lecture du jour'); return; }
+  if (!item) { try { a.pause(); } catch(e){} if (R.ch < R.content.chapters.length - 1) { gotoChapter(R.ch + 1, true).then(() => { if (TTS.playing && my === TTS.token) { TTS.queue = queueOf(R.ch); TTS.qi = 0; speakCurrent(false); } }); } else { stopTTS(); toast('Fin de la Bible'); } return; }
+  const chap = R.content.chapters[R.ch], v = baVoice();
+  const T = await baTimes(v, chap.b); const t = T[chap.c];
+  if (my !== TTS.token || !TTS.playing) return;
+  if (!t) return baLeave('');                       // this chapter has no recording yet: read it with the phone voice
+  const url = baUrl(v, chap.b, chap.c), at = item.p < 0 ? 0 : (t.v[item.p] ?? 0);
+  setSpeak(item); updateMediaInfo(item); updateListenView(item);
+  a.onended = () => { if (my !== TTS.token || !TTS.playing) return; TTS.qi = TTS.queue.length; baSpeakCurrent(false); };
+  a.ontimeupdate = () => { if (my !== TTS.token || !TTS.playing) return; const ct = a.currentTime + 0.08; let k = -1;
+    for (let i = 0; i < t.v.length; i++) { if (t.v[i] <= ct) k = i; else break; }
+    if (TTS.timerEnd && Date.now() > TTS.timerEnd) { stopTTS(); TTS.timerMin = 0; TTS.timerEnd = 0; $('#tts-timer').textContent = '⏱ Off'; $('#tts-timer').classList.remove('on'); toast('Minuterie terminée'); return; }
+    if (R.stopAt && R.ch === R.stopAt.ch && k > R.stopAt.para) { R.stopAt = null; stopTTS(); toast('Fin du passage'); return; }
+    const qi = k < 0 ? TTS.queue.findIndex(x => x.p < 0) : TTS.queue.findIndex(x => x.p === k);
+    if (qi >= 0 && qi !== TTS.qi) { TTS.qi = qi; const it = TTS.queue[qi]; setSpeak(it); updateListenView(it); } };
+  a.onerror = () => { if (my !== TTS.token || !TTS.playing) return; a.dataset.src = ''; baLeave("Audio de ce chapitre injoignable (connexion ?) : lecture avec la voix du téléphone."); };
+  const fresh = a.dataset.src !== url; if (fresh) { a.dataset.src = url; a.src = url; }
+  a.playbackRate = S.profile.rate; try { a.preservesPitch = true; } catch(e){}
+  const seek = () => { try { if (Math.abs(a.currentTime - at) > 0.35) a.currentTime = at; } catch(e){} };
+  if (cancel || fresh) { if (a.readyState >= 1) seek(); else a.addEventListener('loadedmetadata', seek, {once:true}); }
+  try { await a.play(); } catch(e){ if (my === TTS.token && TTS.playing && e.name !== 'AbortError') baLeave("Lecture audio bloquée : lecture avec la voix du téléphone."); }
+}
+async function baPreview(v, btn){ stopTTS(); const a = hdAudio(); a.onended = null; a.onerror = null; a.ontimeupdate = null;
+  const T = await baTimes(v, 42); const t = T[3];            // Jean 3
+  a.dataset.src = ''; a.src = baUrl(v, 42, 3); a.playbackRate = S.profile.rate;
+  a.addEventListener('loadedmetadata', () => { try { a.currentTime = t ? t.v[15] : 0; } catch(e){} }, {once:true});
+  a.play().catch(() => toast("Échantillon injoignable pour le moment (connexion ?)")); }
+
+const PIPER_VOICES = {f:['fr_FR-siwis-medium', 'Siwis', 'Féminine, douce'], m:['fr_FR-tom-medium', 'Tom', 'Masculine, posée']};
+const PIPER = {w:null, id:0, cb:new Map(), has:{}, prog:{}, off:false, urls:new Map()};
+const piperVoice = () => PIPER_VOICES[S.profile.voiceGender === 'm' ? 'm' : 'f'][0];
+const piperOk = () => typeof Worker !== 'undefined' && typeof WebAssembly !== 'undefined' && 'caches' in self;
+function usePiper(){ return ENG() === 'libre' && !PIPER.off && piperOk() && !!PIPER.has[piperVoice()]; }
+function piperWorker(){
+  if (PIPER.w) return PIPER.w;
+  PIPER.w = new Worker('vendor/piper/piper-worker.js');
+  PIPER.w.onmessage = e => { const m = e.data, c = PIPER.cb.get(m.id); if (!c) return;
+    if (m.type === 'progress') { c.prog && c.prog(m.loaded, m.total); return; }
+    PIPER.cb.delete(m.id); m.error ? c.rej(Object.assign(new Error(m.error), {code:'piper'})) : c.res(m); };
+  PIPER.w.onerror = () => { for (const c of PIPER.cb.values()) c.rej(Object.assign(new Error('worker'), {code:'piper'})); PIPER.cb.clear(); PIPER.w = null; };
+  return PIPER.w;
+}
+function piperCall(msg, prog){ return new Promise((res, rej) => { const id = ++PIPER.id; PIPER.cb.set(id, {res, rej, prog}); piperWorker().postMessage({...msg, id}); }); }
+async function piperCheck(){ if (!piperOk()) return; try { const c = await caches.open('le-piper-v1');
+  for (const [v] of Object.values(PIPER_VOICES)) PIPER.has[v] = !!(await c.match(new URL(`voices/${v}.onnx`, location.href).href)); } catch(e){} }
+async function piperDownload(v){
+  if (!piperOk()) return toast("Ce navigateur ne permet pas d'installer la voix libre.");
+  if (PIPER.prog[v] != null) return; PIPER.prog[v] = 0; render();
+  try { await piperCall({type:'load', voice:v}, (l, t) => { const p = Math.round(100 * l / (t || 1)); if (p !== PIPER.prog[v]) { PIPER.prog[v] = p; const el = document.querySelector(`[data-pip="${v}"]`); if (el) el.textContent = `Téléchargement… ${p} %`; } });
+    PIPER.has[v] = true; PIPER.off = false; toast('Voix installée : vos livres sont maintenant lus avec elle.'); }
+  catch(e){ toast("Téléchargement interrompu. Vérifiez la connexion et réessayez."); }
+  finally { delete PIPER.prog[v]; render(); }
+}
+function piperUrl(text, v){
+  const k = v + '|' + text; if (PIPER.urls.has(k)) return PIPER.urls.get(k);
+  const p = piperCall({type:'speak', voice:v, text}).then(m => URL.createObjectURL(new Blob([m.wav], {type:'audio/wav'})));
+  PIPER.urls.set(k, p); p.catch(() => PIPER.urls.delete(k));
+  if (PIPER.urls.size > 40) { const [old, op] = PIPER.urls.entries().next().value; PIPER.urls.delete(old); op.then(u => setTimeout(() => URL.revokeObjectURL(u), 60000)).catch(() => {}); }
+  return p;
+}
+function piperFallback(){ PIPER.off = true; toast('La voix libre a rencontré un problème : lecture avec la voix du téléphone.'); setTimeout(() => { PIPER.off = false; }, 5 * 60 * 1000); }
+async function piperPreview(v, btn){ stopTTS(); if (btn) btn.disabled = true;
+  try { const u = await piperUrl("Bonjour. Je lis vos livres directement sur votre téléphone, même sans connexion. Ma voix vous convient-elle ?", v);
+    const a = hdAudio(); a.onended = null; a.onerror = null; a.ontimeupdate = null; a.dataset.src = ''; a.src = u; a.playbackRate = S.profile.rate; await a.play(); }
+  catch(e){ toast("Écoute impossible pour le moment."); } finally { if (btn) btn.disabled = false; } }
+function engineSegHTML(){ const eng = ENG();
+  return `<div class="field"><span>Voix utilisée</span><div class="seg" role="group"><button data-act="pengine" data-v="libre" aria-pressed="${eng === 'libre'}">Voix humaine gratuite</button><button data-act="pengine" data-v="device" aria-pressed="${eng === 'device'}">Voix du téléphone</button><button data-act="pengine" data-v="hd" aria-pressed="${eng === 'hd'}">Google HD</button></div></div>`; }
+function libreSettingsHTML(){ const P = S.profile, g = P.voiceGender === 'm' ? 'm' : 'f';
+  const bRow = (k, v, name, d) => `<div class="vrow"><div class="vn2"><b>${name}</b><span><i class="q q3">Humaine</i>${d}</span></div>
+      <div class="vact"><button class="iconbtn" data-act="batry" data-v="${v}" aria-label="Écouter ${name}">${ic.play}</button><button class="pill${g === k ? ' on' : ''}" data-act="libreuse" data-g="${k}">${g === k ? '✓ Choisie' : 'Choisir'}</button></div></div>`;
+  const pRow = k => { const [v, name, d] = PIPER_VOICES[k]; const has = PIPER.has[v], prog = PIPER.prog[v];
+    return `<div class="vrow"><div class="vn2"><b>${name}</b><span><i class="q q2">Sur le téléphone</i>${d} · ${has ? 'installée, marche hors connexion' : 'à télécharger (63 Mo, une seule fois)'}</span></div>
+      <div class="vact">${has ? `<button class="iconbtn" data-act="piptry" data-v="${v}" aria-label="Écouter ${name}">${ic.play}</button><button class="pill${g === k ? ' on' : ''}" data-act="libreuse" data-g="${k}">${g === k ? '✓ Choisie' : 'Choisir'}</button>`
+        : `<button class="pill" data-act="pipdl" data-v="${v}" data-pip="${v}" ${prog != null ? 'disabled' : ''}>${prog != null ? `Téléchargement… ${prog} %` : 'Installer'}</button>`}</div></div>`; };
+  return `${engineSegHTML()}
+    <small class="muted">Gratuite et sans limite. La Bible est lue par une voix humaine enregistrée à l'avance ; vos livres par une voix qui fonctionne directement sur votre téléphone.</small>
+    <div class="field"><span>Pour la Bible</span><div class="vlist">${bRow('f', 'f', 'Siwis (Kokoro)', 'Féminine · très naturelle')}${bRow('m', 'h', 'Tom', 'Masculine · posée')}</div>
+      <small>Chaque chapitre est un vrai fichier audio (environ 1 Mo) : il se lit aussi écran éteint. Il demande Internet ; sans connexion, la voix du téléphone prend le relais.</small></div>
+    <div class="field"><span>Pour vos livres</span>${piperOk() ? `<div class="vlist">${pRow('f')}${pRow('m')}</div>
+      <small>Tant que la voix n'est pas installée, vos livres sont lus avec la voix du téléphone.</small>` : `<small>Ce navigateur ne permet pas d'installer la voix : vos livres sont lus avec la voix du téléphone.</small>`}</div>`;
 }
 
 function startTTS(from){
@@ -1939,7 +2044,10 @@ setInterval(() => { if (!TTS.ok || !TTS.playing || TTS.inGap || isHD()) return;
   try { if (SS.paused) SS.resume();
     if (!SS.speaking && !SS.pending && Date.now() - (TTS.lastStart || 0) > 2500) speakCurrent(true); } catch(e){} }, 3000);
 function speakPassageText(text){
-  if (isHD() && text.length <= 1800) { stopTTS(); hdUrl(speechText(text), hdVoice()).then(url => { const a = hdAudio(); a.onended = null; a.onerror = null; a.src = url; a.playbackRate = S.profile.rate; return a.play(); })
+  if (ENG() === 'libre' && usePiper() && text.length <= 1800) { stopTTS(); const v = piperVoice(); const parts = chunksOfText(text, false).map(c => speechText(text.slice(c.s, c.e))).filter(t => /[\p{L}\p{N}]/u.test(t)); let i = 0; const my = ++TTS.token; const a = hdAudio();
+    const step = async () => { if (my !== TTS.token || i >= parts.length) return; try { const u = await piperUrl(parts[i], v); if (parts[i + 1]) piperUrl(parts[i + 1], v).catch(() => {}); if (my !== TTS.token) return; i++; a.onended = step; a.onerror = null; a.ontimeupdate = null; a.dataset.src = ''; a.src = u; a.playbackRate = S.profile.rate; await a.play(); } catch(e){ piperFallback(e); speakPassageText(text); } };
+    step(); return; }
+  if (hdOn() && text.length <= 1800) { stopTTS(); hdUrl(speechText(text), hdVoice()).then(url => { const a = hdAudio(); a.onended = null; a.onerror = null; a.src = url; a.playbackRate = S.profile.rate; return a.play(); })
     .catch(e => { hdFallback(e); speakPassageText(text); }); return; }
   if (!TTS.ok) return toast("La synthèse vocale n'est pas disponible ici"); stopTTS();
   const parts = chunksOfText(text, S.profile.commas === 'marked'); let i = 0; const my = ++TTS.token;
@@ -2127,7 +2235,11 @@ document.addEventListener('click', async e => {
     case 'pgender': S.profile.voiceGender = el.dataset.v; save(); render(); break;
     case 'test-voice': speakTest(el.dataset.v); break;
     case 'test-sample': speakSample(); break;
-    case 'pengine': S.profile.engine = el.dataset.v; HD.off = false; save(); stopTTS(); render(); break;
+    case 'pengine': S.profile.engine = el.dataset.v; S.profile.engV2 = 1; HD.off = false; PIPER.off = false; BA.off.clear(); save(); stopTTS(); render(); break;
+    case 'pipdl': piperDownload(el.dataset.v); break;
+    case 'piptry': piperPreview(el.dataset.v, el); break;
+    case 'batry': baPreview(el.dataset.v, el); break;
+    case 'libreuse': S.profile.voiceGender = el.dataset.g; save(); render(); break;
     case 'hdtry': hdPreview(el.dataset.v, el); break;
     case 'hduse': { const g = el.dataset.g; S.profile[g === 'f' ? 'hdF' : 'hdM'] = el.dataset.v; S.profile.voiceGender = g; save(); render(); toast(`Voix ${el.dataset.v} choisie`); break; }
     case 'pexpr': S.profile.expressive = el.dataset.v === 'on'; save(); $$('[data-act="pexpr"]').forEach(b => b.setAttribute('aria-pressed', b === el)); break;
@@ -2206,6 +2318,7 @@ if (IS_APP) { const l = $('#dl-link'); if (l) l.hidden = true; }
   if (TTS.ok) { loadVoices(); try { SS.addEventListener('voiceschanged', loadVoices); } catch(e){ SS.onvoiceschanged = loadVoices; } }
   updatePlayBtn();
   try { const p = JSON.parse(localStorage.getItem('le-prefs') || 'null'); if (p) S.profile = {...S.profile, ...p}; } catch(e){}
+  piperCheck();
   const code = new URLSearchParams(location.search).get('code'); if (code) { try { sessionStorage.setItem('le-code', code.trim().toUpperCase()); } catch(e){} }
   if ('serviceWorker' in navigator && location.protocol === 'https:' && !/claude|anthropic/.test(location.hostname)) { navigator.serviceWorker.register('sw.js').catch(() => {}); }
   if (!sb) { showAuth("Le service n'a pas pu se charger. Vérifiez votre connexion Internet puis rechargez la page."); return; }
