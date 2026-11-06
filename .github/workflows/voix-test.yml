@@ -1,0 +1,46 @@
+name: Essai des voix libres
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths: ['voix-test/textes.json', 'voix-test/gen.py', '.github/workflows/voix-test.yml']
+permissions:
+  contents: write
+jobs:
+  voix:
+    strategy:
+      fail-fast: false
+      matrix:
+        engine: [chatterbox, kokoro, piper]
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: '3.11' }
+      - run: sudo apt-get update && sudo apt-get install -y ffmpeg espeak-ng
+      - name: Installer le moteur
+        run: |
+          pip install soundfile numpy
+          case "${{ matrix.engine }}" in
+            chatterbox) pip install torch torchaudio --index-url https://download.pytorch.org/whl/cpu && pip install chatterbox-tts ;;
+            kokoro) pip install torch --index-url https://download.pytorch.org/whl/cpu && pip install "kokoro>=0.9.4" "misaki[fr]" ;;
+            piper) pip install piper-tts && mkdir voices && for v in siwis tom upmc; do for e in onnx onnx.json; do curl -sSL -o voices/fr_FR-$v-medium.$e "https://huggingface.co/rhasspy/piper-voices/resolve/main/fr/fr_FR/$v/medium/fr_FR-$v-medium.$e"; done; done ;;
+          esac
+      - name: Générer
+        run: /usr/bin/time -v python voix-test/gen.py ${{ matrix.engine }} 2>&1 | tail -40
+      - uses: actions/upload-artifact@v4
+        with: { name: 'voix-${{ matrix.engine }}', path: out/ }
+  publier:
+    needs: voix
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with: { path: dl }
+      - run: |
+          mkdir -p voix-test/audio && find dl -name '*.mp3' -exec cp {} voix-test/audio/ \;
+          ls voix-test/audio
+          git config user.name "github-actions" && git config user.email "actions@github.com"
+          git add voix-test/audio && git commit -m "Essai des voix libres : échantillons audio" && git pull --rebase && git push || echo "rien à publier"
