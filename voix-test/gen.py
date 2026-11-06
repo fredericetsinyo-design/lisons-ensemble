@@ -16,7 +16,12 @@ if engine == "chatterbox":
     from chatterbox.mtl_tts import ChatterboxMultilingualTTS
     m = ChatterboxMultilingualTTS.from_pretrained(device="cpu")
     for key, txt in T.items():
-        save(f"chatterbox-{key}", [m.generate(s, language_id="fr", exaggeration=0.45, cfg_weight=0.5).squeeze(0).numpy() for s in sentences(txt)], m.sr)
+        parts=[]
+        for s in sentences(txt):
+            s2 = s.replace("«","").replace("»","").strip()
+            try: parts.append(m.generate(s2, language_id="fr", exaggeration=0.45, cfg_weight=0.5).squeeze(0).numpy())
+            except Exception as e: print("ECHEC", key, repr(s2), e, flush=True)
+        save(f"chatterbox-{key}", parts, m.sr)
 elif engine == "kokoro":
     from kokoro import KPipeline
     p = KPipeline(lang_code="f")
